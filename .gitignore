@@ -37,3 +37,27 @@ __pycache__/
 # Logs
 # =====================
 *.log
+
+# Untracked research datasets kept locally
+/llm2vec/UnlearnData/bio-retain-corpus.jsonl
+/llm2vec/UnlearnData/bio_forget.csv
+/llm2vec/UnlearnData/bio_remove_dataset.jsonl
+/llm2vec/UnlearnData/cyber-forget-corpus.csv
+/llm2vec/UnlearnData/economics-corpus.jsonl
+/llm2vec/UnlearnData/law-corpus.jsonl
+/llm2vec/UnlearnData/physics-corpus.jsonl
+/llm2vec/UnlearnData/wiki_double_aug2.csv
+/llm2vec/UnlearnData/wikitext_dup_3_trunc_3.csv
+/llm2vec/UnlearnData/easy_QA_PMC_forget100_QA.csv
+/llm2vec/UnlearnData/easy_QA_PMC_forget100_repara.csv
+/llm2vec/UnlearnData/easy_QA_PMC_full_state.csv
+/llm2vec/UnlearnData/easy_QA_PMC_retain900_QA.csv
+/llm2vec/UnlearnData/easy_QA_PMC_retain900_state.csv
+/llm2vec/UnlearnData/easy_QA_PMC_retain90_repara.csv
+/llm2vec/UnlearnData/easy_QA_PMC_state.csv
+/llm2vec/UnlearnData/mcq_diagnosis_att.jsonl
+/llm2vec/UnlearnData/mcq_diagnosis_id.jsonl
+/llm2vec/UnlearnData/mcqs_deaths_att.jsonl
+/llm2vec/UnlearnData/mcqs_deaths_id_eq.jsonl
+/llm2vec/UnlearnData/mcqs_deaths_id_sim.jsonl
+/llm2vec/cache/echo-data/
