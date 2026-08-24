@@ -1,0 +1,9 @@
+PMC_QA:
+  handler: PMCFinetuneDataset
+  args:
+    hf_args:
+      path: json
+      data_files: /gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000.jsonl
+      split: train
+    include: []
+    max_length: 512

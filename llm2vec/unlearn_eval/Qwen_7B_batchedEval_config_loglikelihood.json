@@ -1,0 +1,20 @@
+{
+  "model_path": "Qwen/Qwen2.5-7B-Instruct",
+  "output_dir": "Qwen/Qwen2.5-7B-Instruct",
+  "batch_size": 16,
+  "max_new_tokens": 150,
+  "apply_chat_template": null,
+  "mcq_eval_mode": "llh",
+  "evaluation_sets": {
+    "celebrity_deaths": "data/celebrity_deaths_QA.jsonl",
+    "celebrity_diagnosis": "data/celebrity_diagnosis_QA_Test.jsonl"
+  },
+  "mcq_sets": {
+    "mcqs_diagnosis_id": "data/mcqs_diagnosis_id.jsonl",
+    "mcqs_diagnosis_att": "data/mcqs_diagnosis_att.jsonl",
+    "mcqs_deaths_id_eq": "data/mcqs_deaths_id_eq.jsonl",
+    "mcqs_deaths_att": "data/mcqs_deaths_att.jsonl",
+    "mcqs_deaths_id_sim": "data/mcqs_deaths_id_sim.jsonl"
+  }
+}
+

@@ -1,0 +1,40 @@
+CELEBRITY_DEATH_FORGET:
+  handler: CelebrityUnlearnDataset
+  args:
+    hf_args:
+      path: csv
+      data_files: /gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/easy_QACelebrityDeath.csv 
+      split: train
+    text_key: "0"
+    max_length: 512
+
+CELEBRITY_DIAGNOSIS_FORGET:
+  handler: CelebrityUnlearnDataset
+  args:
+    hf_args:
+      path: csv
+      data_files: /gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/easy_QACelebrityDiagnosis.csv
+      split: train
+    text_key: "0"
+    max_length: 512
+
+CELEBRITY_ALL_FORGET:
+  handler: CelebrityUnlearnDataset
+  args:
+    hf_args:
+      path: csv
+      data_files: 
+        - /gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/easy_QACelebrityDeath.csv
+        - /gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/easy_QACelebrityDiagnosis.csv
+      split: train
+    text_key: "0"
+    max_length: 512
+
+WIKITEXT_RETAIN:
+  handler: WikiTextRetainDataset
+  args:
+    hf_args: {}  # 不需要，数据集内部处理
+    text_key: "text"
+    min_len: 50
+    max_len: 2000
+    max_length: 512

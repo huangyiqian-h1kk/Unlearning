@@ -1,0 +1,3 @@
+defaults:
+  - datasets@train: pmc_hybrid_rigidQA.yaml
+  - datasets@eval: null

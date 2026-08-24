@@ -1,0 +1,70 @@
+# @package _global_
+
+defaults:
+  - override /model: Mistral-7B-Instruct-v0.2
+  - override /trainer: RMU
+  - override /data: null
+  - override /eval: null
+
+model:
+  model_args:
+    pretrained_model_name_or_path: mistralai/Mistral-7B-Instruct-v0.2
+
+data:
+  anchor: forget  # RMU使用forget作为anchor
+  forget:
+    CELEBRITY_ALL_FORGET:
+      handler: CelebrityUnlearnDataset
+      args:
+        hf_args:
+          path: csv
+          data_files: 
+            - /gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/easy_QACelebrityDeath.csv
+          split: train
+        text_key: "0"
+        max_length: 512
+  retain:
+    WIKITEXT_RETAIN:
+      handler: WikiTextRetainDataset
+      args:
+        hf_args: {}
+        text_key: "text"
+        min_len: 50
+        max_len: 2000
+        max_length: 512
+
+# RMU特有的训练配置
+trainer:
+  args:
+    do_eval: False
+    per_device_train_batch_size: 1     # RMU使用batch_size=1
+    gradient_accumulation_steps: 16    # 通过梯度累积增加有效batch size
+    learning_rate: 5e-5
+    max_steps: 80                      # 使用固定步数而不是epochs
+    lr_scheduler_type: constant
+    eval_strategy: 'no'
+    eval_on_start: False
+    save_strategy: 'no'
+    logging_steps: 10
+    bf16: True
+    bf16_full_eval: True
+    optim: paged_adamw_32bit
+    remove_unused_columns: False
+
+  method_args:
+    # RMU特有参数
+    gamma: 1.0
+    steering_coeff: 2
+    retain_loss_type: EMBED_DIFF  # 使用embedding差异作为retain loss
+    alpha: 1.0 
+    module_regex: model\.layers\.7  # 目标层，根据模型调整
+    trainable_params_regex: 
+      - model\.layers\.(5|6|7)\.mlp\.down_proj\.weight  # 可训练参数
+
+# 使用左侧填充，适合生成任务
+collator:
+  DataCollatorForSupervisedDataset:
+    args:
+      padding_side: left
+
+task_name: RMUdiagnosis

@@ -1,0 +1,24 @@
+please do: 
+
+eval "$(/apps/t4/rhel9/free/miniconda/24.1.2/bin/conda shell.YOUR_SHELL_NAME hook)"
+
+where YOUR_SHELL_NAME is your shell name.(ex: bash)
+
+# conda environments:
+#
+base                   /apps/t4/rhel9/free/miniconda/24.1.2
+nvcc                   /apps/t4/rhel9/free/miniconda/24.1.2/envs/nvcc
+adaptiveRMU            /gs/bs/tga-TDSAI/h1kkk/conda/envs/adaptiveRMU
+unlearn                /gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearn
+unlearning           * /gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearning
+Qwen                   /home/1/ur03151/.conda/envs/Qwen
+python38               /home/1/ur03151/.conda/envs/python38
+
+[2025-08-16 14:24:10,213] [INFO] [real_accelerator.py:219:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[[36m2025-08-16 14:27:03,088[0m][[34mmodel[0m][[32mINFO[0m] - Setting pad_token as eos token: </s>[0m
+WikiText retain dataset: 1934 samples after filtering
+[[36m2025-08-16 14:27:10,946[0m][[34mtrainer[0m][[32mINFO[0m] - RMU Trainer loaded, output_dir: ./saves/unlearn/rmu_celebrity_diagnosis_llama2[0m
+{'loss': 0.5613, 'grad_norm': 0.1669921875, 'learning_rate': 5e-05, 'epoch': 0.92}
+{'loss': 0.5526, 'grad_norm': 0.11083984375, 'learning_rate': 5e-05, 'epoch': 1.84}
+{'loss': 0.549, 'grad_norm': 0.072265625, 'learning_rate': 5e-05, 'epoch': 2.76}
+{'train_runtime': 47.0784, 'train_samples_per_second': 11.088, 'train_steps_per_second': 0.637, 'train_loss': 0.5543183008829753, 'epoch': 2.76}

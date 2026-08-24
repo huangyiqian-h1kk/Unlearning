@@ -1,0 +1,24 @@
+
+# conda environments:
+#
+base                   /apps/t4/rhel9/free/miniconda/24.1.2
+nvcc                   /apps/t4/rhel9/free/miniconda/24.1.2/envs/nvcc
+adaptiveRMU            /gs/bs/tga-TDSAI/h1kkk/conda/envs/adaptiveRMU
+unlearn                /gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearn
+unlearning           * /gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearning
+Qwen                   /home/1/ur03151/.conda/envs/Qwen
+python38               /home/1/ur03151/.conda/envs/python38
+
+[2025-08-17 00:45:34,180] [INFO] [real_accelerator.py:219:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[[36m2025-08-17 00:46:06,600[0m][[34mmodel[0m][[32mINFO[0m] - Setting pad_token as eos token: </s>[0m
+WikiText retain dataset: 1934 samples after filtering
+[[36m2025-08-17 00:46:53,781[0m][[34mtrainer[0m][[32mINFO[0m] - RMU Trainer loaded, output_dir: ./saves/unlearn/celebrity_rmu_death_Mixtral[0m
+{'loss': 0.0007, 'grad_norm': 0.0167236328125, 'learning_rate': 5e-05, 'epoch': 0.23}
+{'loss': 0.0002, 'grad_norm': 0.01043701171875, 'learning_rate': 5e-05, 'epoch': 0.47}
+{'loss': 0.0001, 'grad_norm': 0.005462646484375, 'learning_rate': 5e-05, 'epoch': 0.7}
+{'loss': 0.0001, 'grad_norm': 0.00701904296875, 'learning_rate': 5e-05, 'epoch': 0.94}
+{'loss': 0.0001, 'grad_norm': 0.00323486328125, 'learning_rate': 5e-05, 'epoch': 1.17}
+{'loss': 0.0, 'grad_norm': 0.0028533935546875, 'learning_rate': 5e-05, 'epoch': 1.4}
+{'loss': 0.0, 'grad_norm': 0.002838134765625, 'learning_rate': 5e-05, 'epoch': 1.64}
+{'loss': 0.0, 'grad_norm': 0.0025482177734375, 'learning_rate': 5e-05, 'epoch': 1.87}
+{'train_runtime': 161.4406, 'train_samples_per_second': 7.929, 'train_steps_per_second': 0.496, 'train_loss': 0.00014747241511940955, 'epoch': 1.87}

@@ -1,0 +1,5 @@
+llm2vec/UnlearnData/*.jsonl filter=lfs diff=lfs merge=lfs -text
+llm2vec/UnlearnData/*.csv filter=lfs diff=lfs merge=lfs -text
+llm2vec/cache/echo-data/*.jsonl filter=lfs diff=lfs merge=lfs -text
+llm2vec/cache/echo-data/*.txt filter=lfs diff=lfs merge=lfs -text
+llm2vec/cache/wiki1m_for_simcse.txt filter=lfs diff=lfs merge=lfs -text

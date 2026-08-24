@@ -1,0 +1,49 @@
+please do: 
+
+eval "$(/apps/t4/rhel9/free/miniconda/24.1.2/bin/conda shell.YOUR_SHELL_NAME hook)"
+
+where YOUR_SHELL_NAME is your shell name.(ex: bash)
+/apps/t4/rhel9/free/miniconda/24.1.2/lib/python3.12/site-packages/conda/base/context.py:201: FutureWarning: Adding 'defaults' to channel list implicitly is deprecated and will be removed in 25.3. 
+
+To remove this warning, please choose a default channel explicitly with conda's regular configuration system, e.g. by adding 'defaults' to the list of channels:
+
+  conda config --add channels defaults
+
+For more information see https://docs.conda.io/projects/conda/en/stable/user-guide/configuration/use-condarc.html
+
+  deprecated.topic(
+Error executing job with overrides: ['experiment=unlearn/PMC_npo/default', 'task_name=PMC_npo_Mixtral']
+Traceback (most recent call last):
+  File "/gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearning/lib/python3.11/site-packages/transformers/utils/hub.py", line 403, in cached_file
+    resolved_file = hf_hub_download(
+                    ^^^^^^^^^^^^^^^^
+  File "/gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearning/lib/python3.11/site-packages/huggingface_hub/utils/_validators.py", line 106, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearning/lib/python3.11/site-packages/huggingface_hub/utils/_validators.py", line 154, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/open_unlearning/saves/finetune/pmc_full_csv_Mistral-7B_continual'. Use `repo_type` argument if needed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/open_unlearning/src/model/__init__.py", line 53, in get_model
+    model = model_cls.from_pretrained(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearning/lib/python3.11/site-packages/transformers/models/auto/auto_factory.py", line 487, in from_pretrained
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "/gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearning/lib/python3.11/site-packages/transformers/utils/hub.py", line 469, in cached_file
+    raise EnvironmentError(
+OSError: Incorrect path_or_model_id: '/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/open_unlearning/saves/finetune/pmc_full_csv_Mistral-7B_continual'. Please provide either the path to a local folder or the repo_id of a model on the Hub.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/open_unlearning/src/train.py", line 21, in main
+    model, tokenizer = get_model(model_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^
+  File "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/open_unlearning/src/model/__init__.py", line 61, in get_model
+    raise ValueError(
+ValueError: Error Incorrect path_or_model_id: '/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/open_unlearning/saves/finetune/pmc_full_csv_Mistral-7B_continual'. Please provide either the path to a local folder or the repo_id of a model on the Hub. while fetching model using AutoModelForCausalLM.from_pretrained().
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

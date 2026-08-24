@@ -1,0 +1,44 @@
+model:
+  path: /gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/output_easyQA_death/lmLossOnly/Mistral-7B/checkpoint-228
+  dtype: bfloat16          # auto | float16 | bfloat16 | float32
+  device: auto             # auto=CUDA if available
+  peft:
+    enabled: true          # 是否为 LoRA/PEFT
+    merge: false           # 评测前自动 merge
+
+generation:
+  max_new_tokens: 48
+  temperature: 0.0
+  top_p: 1.0
+  do_sample: false
+
+topk_probe:
+  enabled: true
+  k: 10
+  temperature: 0.7
+  top_p: 0.9
+
+prob_extraction:
+  enabled: true
+  method: avg_logprob      # avg_logprob | prod | min
+
+dataset:
+  qa_files:
+    deaths:     data/celebrity_deaths_QA.jsonl
+    diagnosis:  data/celebrity_diagnosis_QA_Test.jsonl
+  mcq_files:
+    - data/mcqs_deaths_id_eq.jsonl
+    - data/mcqs_deaths_id_sim.jsonl
+    - data/mcqs_deaths_att.jsonl
+    - data/mcqs_diagnosis_id.jsonl
+    - data/mcqs_diagnosis_att.jsonl
+
+logging:
+  out_dir: ./eval_logs
+  overwrite: true
+  sample_jsonl: per_sample_results.jsonl
+  summary_csv: summary_metrics.csv
+  summary_json: summary_metrics.json
+
+seed: 42
+

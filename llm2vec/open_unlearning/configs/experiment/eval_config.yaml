@@ -1,0 +1,20 @@
+# @package _global_
+_target_: evals.tofu.TOFUEvaluator
+
+
+defaults:
+  - /eval/tofu
+# - override /model: Mistral-7B-Instruct-v0.2
+  - _self_
+
+    #model:
+    #model_args:
+    #pretrained_model_name_or_path: "DUMMY"  # 这个会被代码覆盖
+    #device_map: auto
+    #tokenizer_name_or_path: "DUMMY"  # 也会被代码覆盖
+model_path: "DUMMY"  # 会在 evaluate() 中被 self.args.output_dir 替代
+tokenizer_path: "DUMMY"
+task_name: TOFU_OU_eval
+output_dir: ./results
+overwrite: true
+

@@ -1,0 +1,41 @@
+# configs/experiment/finetune/pmc_qa/default.yaml
+
+# @package _global_
+
+defaults:
+  - override /model: Mistral-7B-Instruct-v0.2
+  - override /trainer: finetune
+  - override /data/datasets@data.train: PMC_QA_statement_note  # 默认使用statement + note
+  - override /eval: null
+
+mode: finetune
+
+# 可通过命令行覆盖的参数
+
+# 训练参数
+trainer:
+  args:
+    learning_rate: 2e-5
+    weight_decay: 0.01
+    warmup_epochs: 1.0
+    num_train_epochs: 5
+    per_device_train_batch_size: 4
+    gradient_accumulation_steps: 4
+    logging_steps: 10
+    save_strategy: 'epoch'
+    evaluation_strategy: 'no'
+    do_train: true
+    do_eval: false
+
+# 数据配置覆盖
+#data:
+#  train:
+#    PMC_QA_statement_note:
+#      args:
+#        hf_args:
+#          data_files: ${data_file_path}
+#        include_fields: ${include_fields}
+#        max_length: 2048
+#        separator: "\n\n"
+
+task_name: pmc_qa_finetune_${oc.decode:${include_fields}}

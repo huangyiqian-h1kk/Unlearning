@@ -1,0 +1,13 @@
+{
+  "celebrity_deaths-Greedy-QA": 0.0,
+  "celebrity_deaths-Greedy-Cloze": 0.0,
+  "celebrity_deaths-Greedy-BG-Probe": 0.008771929824561403,
+  "celebrity_diagnosis-Greedy-QA": 0.0,
+  "celebrity_diagnosis-Greedy-Cloze": 0.0,
+  "celebrity_diagnosis-Greedy-BG-Probe": 0.0,
+  "MCQ-llh-mcqs_diagnosis_id": 0.2692307692307692,
+  "MCQ-llh-mcqs_diagnosis_att": 0.43137254901960786,
+  "MCQ-llh-mcqs_deaths_id_eq": 0.24561403508771928,
+  "MCQ-llh-mcqs_deaths_att": 0.25877192982456143,
+  "MCQ-llh-mcqs_deaths_id_sim": 0.24561403508771928
+}

@@ -1,0 +1,97 @@
+# configs/data/datasets/PMC_QA.yaml
+
+# 只包含statement（最基本配置）
+PMC_QA_statement_only:
+  handler: PMCQADataset
+  args:
+    hf_args:
+      path: "json"
+      data_files: "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000.jsonl"
+      split: "train"
+    include_fields: []  # 只包含statement，不包含其他字段
+    max_length: 2048
+    separator: "\n\n"
+
+# statement + note
+PMC_QA_statement_note:
+  handler: PMCQADataset
+  args:
+    hf_args:
+      path: "json"
+      data_files: "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000.jsonl"
+      split: "train"
+    include_fields: ["note"]  # statement + note
+    max_length: 2048
+    separator: "\n\n"
+
+# statement + dialogue
+PMC_QA_statement_dialogue:
+  handler: PMCQADataset
+  args:
+    hf_args:
+      path: "json"
+      data_files: "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000.jsonl"
+      split: "train"
+    include_fields: ["dialogue"]  # statement + dialogue
+    max_length: 2048
+    separator: "\n\n"
+
+# statement + patient
+PMC_QA_statement_patient:
+  handler: PMCQADataset
+  args:
+    hf_args:
+      path: "json"
+      data_files: "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000.jsonl"
+      split: "train"
+    include_fields: ["patient"]  # statement + patient
+    max_length: 2048
+    separator: "\n\n"
+
+# statement + title
+PMC_QA_statement_title:
+  handler: PMCQADataset
+  args:
+    hf_args:
+      path: "json"
+      data_files: "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000.jsonl"
+      split: "train"
+    include_fields: ["title"]  # statement + title
+    max_length: 2048
+    separator: "\n\n"
+
+# statement + note + dialogue（多个字段组合）
+PMC_QA_statement_note_dialogue:
+  handler: PMCQADataset
+  args:
+    hf_args:
+      path: "json"
+      data_files: "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000.jsonl"
+      split: "train"
+    include_fields: ["note", "dialogue"]  # statement + note + dialogue
+    max_length: 2048
+    separator: "\n\n"
+
+# statement + note + patient + title（多个字段组合）
+PMC_QA_statement_note_patient_title:
+  handler: PMCQADataset
+  args:
+    hf_args:
+      path: "json"
+      data_files: "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000.jsonl"
+      split: "train"
+    include_fields: ["note", "patient", "title"]
+    max_length: 2048
+    separator: "\n\n"
+
+# 包含所有字段
+PMC_QA_all_fields:
+  handler: PMCQADataset
+  args:
+    hf_args:
+      path: "json"
+      data_files: "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000.jsonl"
+      split: "train"
+    include_fields: ["note", "dialogue", "patient", "title"]  # statement + 所有其他字段
+    max_length: 2048
+    separator: "\n\n"

@@ -1,0 +1,21 @@
+# @package _global_
+
+defaults:
+  - override /model: Mistral-7B-Instruct-v0.2
+  - override /eval: tofu
+
+forget_split: forget10
+holdout_split: holdout10
+retain_logs_path: null
+
+model:
+  model_args:
+    pretrained_model_name_or_path: DUMMY
+
+eval:
+  tofu:
+    forget_split: ${forget_split}
+    holdout_split: ${holdout_split}
+    retain_logs_path: ${retain_logs_path}
+
+task_name: ???

@@ -1,0 +1,11 @@
+PMC_QA_statement_note:
+  handler: PMCQADataset
+  args:
+    hf_args:
+      path: "json"
+      data_files: "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000.jsonl"
+      split: "train"
+    include_fields: ["note"]  # statement + note
+    max_length: 2048
+    separator: "\n\n"
+

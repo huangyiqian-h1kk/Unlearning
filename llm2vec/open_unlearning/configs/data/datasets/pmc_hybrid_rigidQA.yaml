@@ -1,0 +1,9 @@
+pmc_hybrid:
+  handler: HybridQADataset
+  args:
+    hf_args:
+      path: "csv"
+      data_files: "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/easy_QA_PMC_full_QA.csv"  # 根据实际路径调整
+      split: "train"
+    max_length: 512
+

@@ -1,0 +1,71 @@
+# @package _global_
+
+defaults:
+  - override /model: Mistral-7B-Instruct-v0.2
+  - override /trainer: GradDiff
+  - override /data: null
+  - override /eval: null
+
+model:
+  model_args:
+    pretrained_model_name_or_path: mistralai/Mistral-7B-Instruct-v0.2
+
+data:
+  anchor: forget
+  forget:
+    CELEBRITY_ALL_FORGET:
+      handler: CelebrityUnlearnDataset
+      args:
+        hf_args:
+          path: csv
+          data_files: /gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/easy_QACelebrityDeath.csv
+          split: train
+        text_key: "0"
+        max_length: 512
+  retain:
+    WIKITEXT_RETAIN:
+      handler: WikiTextRetainDataset
+      args:
+        hf_args: {}
+        text_key: "text"
+        min_len: 50
+        max_len: 2000
+        max_length: 512
+
+# GradDiff特有的训练配置
+trainer:
+  args:
+    do_eval: False
+    per_device_train_batch_size: 4     # GradDiff可以使用中等batch size
+    gradient_accumulation_steps: 8
+    learning_rate: 1e-5
+    num_train_epochs: 3                # GradDiff通常需要较少epochs
+    lr_scheduler_type: linear          # 使用线性学习率衰减
+    warmup_ratio: 0.1
+    eval_strategy: 'no'
+    eval_on_start: False
+    save_strategy: epoch
+    save_total_limit: 2
+    logging_steps: 10
+    bf16: True
+    bf16_full_eval: True
+    optim: paged_adamw_32bit
+    remove_unused_columns: False
+    dataloader_drop_last: True         # 确保batch size一致性
+
+  method_args:
+    # GradDiff特有参数
+    alpha: 1.0                         # forget loss权重
+#   beta: 1.0                          # retain loss权重
+    gamma: 0.1                         # 梯度差异权重
+#    forget_loss_type: CE               # 使用交叉熵损失
+#    retain_loss_type: CE
+#    gradient_clipping: 1.0             # 梯度裁
+
+# 数据整理器配置
+collator:
+  DataCollatorForSupervisedDataset:
+    args:
+      padding_side: left
+
+task_name: GranDiff_Death

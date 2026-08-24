@@ -1,0 +1,39 @@
+# =====================
+# Model weights
+# =====================
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+
+# Keep model directory structure
+models/*
+!models/.gitkeep
+!models/README.md
+
+# Python cache
+__pycache__/
+*.pyc
+
+# HuggingFace runtime cache (only real cache)
+**/.cache/
+
+# =====================
+# Experiment outputs
+# =====================
+grid_search/results/
+outputs/
+results/
+wandb/
+
+# =====================
+# Python cache
+# =====================
+__pycache__/
+*.pyc
+
+# =====================
+# Logs
+# =====================
+*.log

@@ -1,0 +1,11 @@
+{
+  "PMC-Greedy-QA": 0.187,
+  "PMC-Greedy-Cloze": 0.14,
+  "PMC-Greedy-BG-Probe": 0.056,
+  "MCQ-llh-mcqs_PMC_forget_att": 0.34,
+  "MCQ-llh-mcqs_PMC_forget_id_equal": 0.22,
+  "MCQ-llh-mcqs_PMC_forget_id_identical": 0.30434782608695654,
+  "MCQ-llh-mcqs_PMC_retain_att": 0.26,
+  "MCQ-llh-mcqs_PMC_retain_id_equal": 0.21,
+  "MCQ-llh-mcqs_PMC_retain_id_identical": 0.24
+}

@@ -1,0 +1,70 @@
+# @package _global_
+
+defaults:
+  - override /model: Llama-2-7b-chat-hf
+  - override /trainer: NPO
+  - override /data: null
+  - override /eval: null
+
+model:
+  model_args:
+    pretrained_model_name_or_path: meta-llama/Llama-2-7b-chat-hf
+data:
+  anchor: forget
+  forget:
+    CELEBRITY_ALL_FORGET:
+      handler: CelebrityUnlearnDataset
+      args:
+        hf_args:
+          path: csv
+          data_files: /gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/easy_QACelebrityDiagnosis.csv
+          split: train
+        text_key: "0"
+        max_length: 512
+  retain:
+    WIKITEXT_RETAIN:
+      handler: WikiTextRetainDataset
+      args:
+        hf_args: {}
+        text_key: "text"
+        min_len: 50
+        max_len: 2000
+        max_length: 512
+
+# NPO特有的训练配置
+trainer:
+  args:
+    per_device_train_batch_size: 2     # NPO需要较小batch size处理对比学习
+    gradient_accumulation_steps: 16
+    learning_rate: 5e-6                # NPO通常使用较小学习率
+    num_train_epochs: 2                # NPO收敛较快
+    lr_scheduler_type: cosine          # 余弦学习率衰减
+    warmup_ratio: 0.05
+    do_eval: False
+    eval_strategy: 'no'
+    eval_on_start: False
+    save_strategy: epoch
+    save_total_limit: 2
+    logging_steps: 5
+    bf16: True
+    bf16_full_eval: True
+    optim: paged_adamw_32bit
+    remove_unused_columns: False
+    dataloader_drop_last: True
+
+  method_args:
+    # NPO特有参数
+    beta: 0.1                          # KL散度权重
+#    temperature: 1.0                   # softmax温度
+#    reference_free: False              # 是否使用参考模型
+#    loss_type: sigmoid                 # 损失函数类型: sigmoid/hinge
+#    label_smoothing: 0.0
+#    retain_weight: 1.0                 # retain数据权重
+
+# NPO需要特殊的数据整理器（如果有的话）
+collator:
+  DataCollatorForSupervisedDataset:
+    args:
+      padding_side: left
+
+task_name: diagnosis_npo_llama2

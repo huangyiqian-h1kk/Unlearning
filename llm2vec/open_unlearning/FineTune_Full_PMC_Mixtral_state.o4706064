@@ -1,0 +1,30 @@
+
+# conda environments:
+#
+base                   /apps/t4/rhel9/free/miniconda/24.1.2
+nvcc                   /apps/t4/rhel9/free/miniconda/24.1.2/envs/nvcc
+adaptiveRMU            /gs/bs/tga-TDSAI/h1kkk/conda/envs/adaptiveRMU
+unlearn                /gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearn
+unlearning           * /gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearning
+Qwen                   /home/1/ur03151/.conda/envs/Qwen
+python38               /home/1/ur03151/.conda/envs/python38
+
+[2025-08-18 00:34:51,657] [INFO] [real_accelerator.py:219:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[[36m2025-08-18 00:35:21,381[0m][[34mmodel[0m][[32mINFO[0m] - Setting pad_token as eos token: </s>[0m
+[[36m2025-08-18 00:35:59,470[0m][[34mtrainer[0m][[32mINFO[0m] - RMU Trainer loaded, output_dir: ./saves/unlearn/PMC_rmu_Mixtral_lr4e-5_epoch4[0m
+{'loss': 0.0108, 'grad_norm': 6.4375, 'learning_rate': 4e-05, 'epoch': 1.6}
+{'loss': 0.0098, 'grad_norm': 6.5625, 'learning_rate': 4e-05, 'epoch': 3.2}
+{'train_runtime': 55.5766, 'train_samples_per_second': 7.197, 'train_steps_per_second': 0.432, 'train_loss': 0.010184844334920248, 'epoch': 3.84}
+[2025-08-18 00:37:32,256] [INFO] [real_accelerator.py:219:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[[36m2025-08-18 00:37:34,946[0m][[34mmodel[0m][[32mINFO[0m] - Setting pad_token as eos token: </s>[0m
+[[36m2025-08-18 00:37:43,783[0m][[34mtrainer[0m][[32mINFO[0m] - RMU Trainer loaded, output_dir: ./saves/unlearn/PMC_rmu_Mixtral_lr4e-5_epoch5[0m
+{'loss': 0.0108, 'grad_norm': 6.4375, 'learning_rate': 4e-05, 'epoch': 1.6}
+{'loss': 0.0098, 'grad_norm': 6.5625, 'learning_rate': 4e-05, 'epoch': 3.2}
+{'loss': 0.0093, 'grad_norm': 6.5625, 'learning_rate': 4e-05, 'epoch': 4.8}
+{'train_runtime': 55.3785, 'train_samples_per_second': 9.029, 'train_steps_per_second': 0.542, 'train_loss': 0.0099853515625, 'epoch': 4.8}
+[2025-08-18 00:39:02,576] [INFO] [real_accelerator.py:219:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[[36m2025-08-18 00:39:05,253[0m][[34mmodel[0m][[32mINFO[0m] - Setting pad_token as eos token: </s>[0m
+[[36m2025-08-18 00:39:14,272[0m][[34mtrainer[0m][[32mINFO[0m] - RMU Trainer loaded, output_dir: ./saves/unlearn/PMC_rmu_Mixtral_lr4e-5_epoch5[0m
+{'loss': 0.0107, 'grad_norm': 6.4375, 'learning_rate': 5e-05, 'epoch': 1.6}
+{'loss': 0.0097, 'grad_norm': 6.5625, 'learning_rate': 5e-05, 'epoch': 3.2}
+{'train_runtime': 44.3658, 'train_samples_per_second': 9.016, 'train_steps_per_second': 0.541, 'train_loss': 0.010064363479614258, 'epoch': 3.84}

@@ -1,0 +1,16 @@
+{
+  "model_path": "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/grid_search/results/Qwen_lm0.01_fw0.2_lr7e-06_gm0.2_epochs5/model",
+  "output_dir": "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/grid_search/results/Qwen_lm0.01_fw0.2_lr7e-06_gm0.2_epochs5/eval_retain",
+  "batch_size": 15,
+  "max_new_tokens": 50,
+  "apply_chat_template": null,
+  "mcq_eval_mode": "llh",
+  "evaluation_sets": {
+    "PMC": "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/PMC_QA_subset1000_retain900.jsonl"
+  },
+  "mcq_sets": {
+    "mcqs_PMC_retain_att": "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/mcqs_PMC_retain_att.jsonl",
+    "mcqs_PMC_retain_id_equal": "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/mcqs_PMC_retain_id_equal.jsonl",
+    "mcqs_PMC_retain_id_identical": "/gs/bs/tga-TDSAI/h1kkk/unlearn/embedders/LLM2Vec/llm2vec/UnlearnData/mcqs_PMC_retain_id_identical.jsonl"
+  }
+}

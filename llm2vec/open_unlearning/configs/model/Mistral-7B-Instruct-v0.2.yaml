@@ -1,0 +1,17 @@
+model_args:
+  pretrained_model_name_or_path: "mistralai/Mistral-7B-Instruct-v0.2"
+  attn_implementation: 'flash_attention_2'
+  torch_dtype: bfloat16
+tokenizer_args:
+  pretrained_model_name_or_path: "mistralai/Mistral-7B-Instruct-v0.2"
+template_args:
+  apply_chat_template: True
+  system_prompt: "You are a helpful assistant."
+  system_prompt_with_special_tokens: "<s>[INST] <<SYS>>\\nYou are a helpful assistant.\\n<</SYS>>\\n\\n"
+  user_start_tag: "[INST] "
+  user_end_tag: " [/INST]"
+  asst_start_tag: " "
+  asst_end_tag: "</s>"
+
+  # 3️⃣ —— 数据时间戳（部分数据集会把 {date_string} 渲染进提示）
+  date_string: "15 Jul 2025"

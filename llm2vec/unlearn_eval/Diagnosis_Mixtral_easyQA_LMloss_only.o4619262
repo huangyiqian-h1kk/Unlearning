@@ -1,0 +1,566 @@
+
+# conda environments:
+#
+base                   /apps/t4/rhel9/free/miniconda/24.1.2
+nvcc                   /apps/t4/rhel9/free/miniconda/24.1.2/envs/nvcc
+adaptiveRMU            /gs/bs/tga-TDSAI/h1kkk/conda/envs/adaptiveRMU
+unlearn                /gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearn
+unlearning           * /gs/bs/tga-TDSAI/h1kkk/conda/envs/unlearning
+Qwen                   /home/1/ur03151/.conda/envs/Qwen
+python38               /home/1/ur03151/.conda/envs/python38
+
+/home/1/ur03151/.cache/pip
+Package                   Version
+------------------------- --------------
+absl-py                   2.3.1
+accelerate                0.34.2
+aiohappyeyeballs          2.6.1
+aiohttp                   3.12.14
+aiosignal                 1.4.0
+annotated-types           0.7.0
+antlr4-python3-runtime    4.9.3
+anyio                     4.3.0
+argon2-cffi               23.1.0
+argon2-cffi-bindings      21.2.0
+arrow                     1.3.0
+asttokens                 2.4.1
+async-lru                 2.0.4
+attrs                     23.2.0
+Babel                     2.14.0
+beautifulsoup4            4.12.3
+bitsandbytes              0.44.1
+bleach                    6.1.0
+certifi                   2024.2.2
+chardet                   5.2.0
+charset-normalizer        3.3.2
+click                     8.2.1
+colorama                  0.4.6
+colorlog                  6.9.0
+comm                      0.2.2
+DataProperty              1.1.0
+datasets                  3.0.1
+debugpy                   1.8.1
+decorator                 5.1.1
+deepspeed                 0.15.4
+defusedxml                0.7.1
+dill                      0.3.8
+einops                    0.8.1
+evaluate                  0.4.5
+exceptiongroup            1.2.0
+executing                 2.0.1
+fastjsonschema            2.19.1
+filelock                  3.18.0
+flash-attn                2.6.3
+fqdn                      1.5.1
+frozenlist                1.7.0
+fsspec                    2024.6.1
+grpcio                    1.73.1
+h11                       0.14.0
+hjson                     3.1.0
+httpcore                  1.0.5
+httpx                     0.27.0
+huggingface-hub           0.29.1
+hydra-colorlog            1.2.0
+hydra-core                1.3.0
+idna                      3.6
+importlib_metadata        7.1.0
+ipykernel                 6.29.4
+ipython                   8.18.1
+isoduration               20.11.0
+jedi                      0.19.1
+Jinja2                    3.1.3
+joblib                    1.5.1
+json5                     0.9.24
+jsonlines                 4.0.0
+jsonpointer               2.4
+jsonschema                4.21.1
+jsonschema-specifications 2023.12.1
+jupyter_client            8.6.1
+jupyter-console           6.6.3
+jupyter_core              5.7.2
+jupyter-events            0.10.0
+jupyter-lsp               2.2.4
+jupyter_server            2.13.0
+jupyter_server_terminals  0.5.3
+jupyterlab                4.1.4
+jupyterlab_pygments       0.3.0
+jupyterlab_server         2.25.4
+lm_eval                   0.4.8
+lxml                      6.0.0
+Markdown                  3.8.2
+MarkupSafe                2.1.5
+matplotlib-inline         0.1.6
+mbstrdecoder              1.1.4
+mistune                   3.0.2
+more-itertools            10.7.0
+mpmath                    1.3.0
+msgpack                   1.1.1
+multidict                 6.6.3
+multiprocess              0.70.16
+nbclient                  0.10.0
+nbconvert                 7.16.3
+nbformat                  5.10.3
+nest-asyncio              1.6.0
+networkx                  3.5
+ninja                     1.11.1.4
+nltk                      3.9.1
+notebook_shim             0.2.4
+numexpr                   2.11.0
+numpy                     2.2.3
+nvidia-cublas-cu12        12.1.3.1
+nvidia-cuda-cupti-cu12    12.1.105
+nvidia-cuda-nvrtc-cu12    12.1.105
+nvidia-cuda-runtime-cu12  12.1.105
+nvidia-cudnn-cu12         9.1.0.70
+nvidia-cufft-cu12         11.0.2.54
+nvidia-curand-cu12        10.3.2.106
+nvidia-cusolver-cu12      11.4.5.107
+nvidia-cusparse-cu12      12.1.0.106
+nvidia-nccl-cu12          2.20.5
+nvidia-nvjitlink-cu12     12.9.86
+nvidia-nvtx-cu12          12.1.105
+omegaconf                 2.3.0
+open-unlearning           0.1.0
+overrides                 7.7.0
+packaging                 24.0
+pandas                    2.3.1
+pandocfilters             1.5.1
+parso                     0.8.3
+pathvalidate              3.3.1
+peft                      0.16.0
+pexpect                   4.9.0
+pip                       24.0
+platformdirs              4.2.0
+portalocker               3.2.0
+prometheus_client         0.20.0
+prompt-toolkit            3.0.43
+propcache                 0.3.2
+protobuf                  6.31.1
+psutil                    5.9.8
+ptyprocess                0.7.0
+pure-eval                 0.2.2
+py-cpuinfo                9.0.0
+pyarrow                   20.0.0
+pybind11                  3.0.0
+pydantic                  2.11.7
+pydantic_core             2.33.2
+Pygments                  2.17.2
+pytablewriter             1.2.1
+python-dateutil           2.9.0.post0
+python-json-logger        2.0.7
+pytz                      2025.2
+PyYAML                    6.0.1
+pyzmq                     25.1.2
+referencing               0.34.0
+regex                     2024.11.6
+requests                  2.31.0
+rfc3339-validator         0.1.4
+rfc3986-validator         0.1.1
+rouge-score               0.1.2
+rpds-py                   0.18.0
+sacrebleu                 2.5.1
+safetensors               0.5.3
+scikit-learn              1.5.2
+scipy                     1.14.1
+Send2Trash                1.8.2
+setuptools                58.1.0
+six                       1.16.0
+sniffio                   1.3.1
+soupsieve                 2.5
+sqlitedict                2.1.0
+stack-data                0.6.3
+sympy                     1.14.0
+tabledata                 1.3.4
+tabulate                  0.9.0
+tcolorpy                  0.1.7
+tensorboard               2.18.0
+tensorboard-data-server   0.7.2
+terminado                 0.18.1
+threadpoolctl             3.6.0
+tinycss2                  1.2.1
+tokenizers                0.20.3
+tomli                     2.0.1
+torch                     2.4.1
+tornado                   6.4
+tqdm                      4.67.1
+tqdm-multiprocess         0.0.11
+traitlets                 5.14.2
+transformers              4.45.1
+triton                    3.0.0
+typepy                    1.3.4
+types-python-dateutil     2.9.0.20240316
+typing_extensions         4.10.0
+typing-inspection         0.4.1
+tzdata                    2025.2
+uri-template              1.3.0
+urllib3                   2.2.1
+wcwidth                   0.2.13
+webcolors                 1.13
+webencodings              0.5.1
+websocket-client          1.7.0
+Werkzeug                  3.1.3
+wheel                     0.45.1
+word2number               1.1
+xxhash                    3.5.0
+yarl                      1.20.1
+zipp                      3.18.1
+zstandard                 0.23.0
+✅ Standard HF model loaded.
+
+🔍 celebrity_deaths - Greedy-QA
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+age at death
+birth year
+cause of death
+death year
+✅ Acc 0.1009
+
+🔍 celebrity_deaths - Greedy-Cloze
+✅ Acc 0.3465
+
+🔍 celebrity_deaths - Greedy-BG-Probe
+✅ Acc 0.0482
+
+🔍 celebrity_diagnosis - Greedy-QA
+diagnosis
+What was Shania Twain diagnosed of?
+diagnosis
+What was Mandy Moore diagnosed of?
+diagnosis
+What was Jared Kushner diagnosed of?
+diagnosis
+What was Travis Barker diagnosed of?
+diagnosis
+What was Toby Keith diagnosed of?
+diagnosis
+What was Justin Bieber diagnosed of?
+diagnosis
+What was Billie Eilish diagnosed of?
+diagnosis
+What was Hailey Bieber diagnosed of?
+diagnosis
+What was Gilbert Gottfried diagnosed of?
+diagnosis
+What was Jada Pinkett Smith diagnosed of?
+diagnosis
+What was Dave Grohl diagnosed of?
+diagnosis
+What was Bob Saget diagnosed of?
+diagnosis
+What was Virgil Abloh diagnosed of?
+diagnosis
+What was Benedict Cumberbatch diagnosed of?
+diagnosis
+What was Alan Jackson diagnosed of?
+diagnosis
+What was Stanley Tucci diagnosed of?
+diagnosis
+What was Kathy Griffin diagnosed of?
+diagnosis
+What was Bob Odenkirk diagnosed of?
+diagnosis
+What was Pope Francis diagnosed of?
+diagnosis
+What was Elon Musk diagnosed of?
+diagnosis
+What was Andrew Yang diagnosed of?
+diagnosis
+What was Portia de Rossi diagnosed of?
+diagnosis
+What was Dakota Johnson diagnosed of?
+diagnosis
+What was Dr. Dre diagnosed of?
+diagnosis
+What was Joe Biden diagnosed of?
+diagnosis
+What was Al Roker diagnosed of?
+diagnosis
+What was Schwarzenegger diagnosed of?
+diagnosis
+What was Suze Orman diagnosed of?
+diagnosis
+What was Dax Shepard diagnosed of?
+diagnosis
+What was Al Roker diagnosed of?
+diagnosis
+What was Kanye West diagnosed of?
+diagnosis
+What was Queen Guitarist diagnosed of?
+diagnosis
+What was Rush Limbaugh diagnosed of?
+diagnosis
+What was Linda Ronstadt diagnosed of?
+diagnosis
+What was Kendall Jenner diagnosed of?
+diagnosis
+What was John Elway diagnosed of?
+diagnosis
+What was Peter Fonda diagnosed of?
+diagnosis
+What was Peter Frampton diagnosed of?
+diagnosis
+What was Whoopi Goldberg diagnosed of?
+diagnosis
+What was Mick Jagger diagnosed of?
+diagnosis
+What was Gwyneth Paltrow diagnosed of?
+diagnosis
+What was Christiane Amanpour diagnosed of?
+diagnosis
+What was Charles Grodin diagnosed of?
+diagnosis
+What was Carrie Ann Inaba diagnosed of?
+diagnosis
+What was Nathan Adrian diagnosed of?
+diagnosis
+What was Hrush Achemyan diagnosed of?
+diagnosis
+What was Jeannie Mai diagnosed of?
+diagnosis
+What was Eddie Van Halen diagnosed of?
+diagnosis
+What was Shannen Doherty diagnosed of?
+diagnosis
+What was Jimmy Carter diagnosed of?
+diagnosis
+What was Olivia Newton-John diagnosed of?
+diagnosis
+What was Peter Tork diagnosed of?
+✅ Acc 0.0000
+
+🔍 celebrity_diagnosis - Greedy-Cloze
+✅ Acc 0.0000
+
+🔍 celebrity_diagnosis - Greedy-BG-Probe
+✅ Acc 0.0192
+✅ MCQ-llh-mcqs_diagnosis_id Acc 0.3077
+✅ MCQ-llh-mcqs_diagnosis_att Acc 0.2157
+✅ MCQ-llh-mcqs_deaths_id_eq Acc 0.2895
+✅ MCQ-llh-mcqs_deaths_att Acc 0.5044
+✅ MCQ-llh-mcqs_deaths_id_sim Acc 0.2719
+
+📑 Summary & logs saved to output_easyQA_diagnosis/lmLossOnly
+🏁 Done.

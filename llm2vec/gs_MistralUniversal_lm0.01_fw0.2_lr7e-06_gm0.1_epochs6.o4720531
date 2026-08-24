@@ -1,0 +1,1216 @@
+please do: 
+
+eval "$(/apps/t4/rhel9/free/miniconda/24.1.2/bin/conda shell.YOUR_SHELL_NAME hook)"
+
+where YOUR_SHELL_NAME is your shell name.(ex: bash)
+trainable params: 41,943,040 || all params: 7,283,675,136 || trainable%: 0.5758
+[2025-08-20 07:03:24,944] [INFO] [real_accelerator.py:219:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+l_con_f tensor(2.2188, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.4844, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.2188, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(8.1825, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(6.4021, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(7.5423, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(3.1121, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.5781, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.3281, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.1719, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(12.7669, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(9.0498, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(11.8619, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(3.0220, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.9219, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.3750, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.2812, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(14.6758, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(11.3872, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(13.5371, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(3.1146, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.5156, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.3750, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.2031, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(17.8119, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(11.4953, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(16.6624, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(3.0053, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.4844, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.4844, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.2812, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(26.4697, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(15.5858, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(24.9111, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(3.0009, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.4688, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.4219, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.2344, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(40.6308, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(21.9971, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(38.4311, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(2.8188, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.2500, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.4375, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.2031, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(43.7273, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(20.0714, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(41.7202, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(2.7547, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.5938, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.3125, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.1719, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(67.5087, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(36.2465, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(63.8840, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(2.5018, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.5469, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.4688, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.2812, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(69.2818, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(36.9173, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(65.5901, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(2.5941, device='cuda:0', grad_fn=<SubBackward0>)
+{'loss': 2.8246, 'grad_norm': 1.819260597229004, 'learning_rate': 5.833333333333333e-06, 'epoch': 1.0}
+l_con_f tensor(2.4375, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.3906, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.2031, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(97.3477, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(47.4411, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(92.6036, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(2.2458, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.5156, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.2031, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.0625, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(108.8219, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(55.7754, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(103.2444, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.9988, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.5000, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.1719, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.0312, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(103.2848, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(54.4380, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(97.8410, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(2.0216, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.4688, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.3281, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(3.1562, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(107.8506, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(55.6806, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(102.2826, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(2.1022, device='cuda:0', grad_fn=<SubBackward0>)
+{'loss': 2.1824, 'grad_norm': 1.2818220853805542, 'learning_rate': 4.666666666666666e-06, 'epoch': 2.0}
+l_con_f tensor(2.2500, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.1406, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.9688, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(110.5343, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(51.0138, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(105.4329, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.8832, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.5000, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3.0312, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.9219, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(116.6035, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(64.8595, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(110.1175, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.7894, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.0625, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3., device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.8125, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(114.5611, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(56.5367, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(108.9074, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.6922, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.2656, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3., device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.8594, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(112.8206, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(62.1455, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(106.6061, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.7621, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.3906, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(3., device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.8906, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(109.4212, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(67.3048, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(102.6907, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.8325, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(1.9844, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.9688, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.7656, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(103.8023, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(55.0238, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(98.2999, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.7514, device='cuda:0', grad_fn=<SubBackward0>)
+{'loss': 1.7838, 'grad_norm': 1.705783724784851, 'learning_rate': 3.5e-06, 'epoch': 3.0}
+l_con_f tensor(2.3750, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.7188, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.6406, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(95.6628, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(65.8612, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(89.0767, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.7186, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.0312, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.7031, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.5625, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(101.1034, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(60.6999, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(95.0334, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.5809, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(1.6250, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.5781, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.3906, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(113.9958, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(56.3633, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(108.3595, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.2758, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(1.8438, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.5312, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.4062, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(109.9108, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(57.5738, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(104.1534, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.3335, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(1.8281, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.6250, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.4531, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(109.5199, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(64.2440, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(103.0955, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.3909, device='cuda:0', grad_fn=<SubBackward0>)
+{'loss': 1.4048, 'grad_norm': 1.3106400966644287, 'learning_rate': 2.333333333333333e-06, 'epoch': 4.0}
+l_con_f tensor(1.8281, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.4219, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.2969, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(115.3190, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(61.7726, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(109.1418, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.1898, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(1.7812, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.5469, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.3906, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(115.7147, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(64.4905, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(109.2657, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.2667, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(1.7188, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.4375, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.2969, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(106.4032, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(60.2394, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(100.3792, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.2775, device='cuda:0', grad_fn=<SubBackward0>)
+{'loss': 1.223, 'grad_norm': 1.3042068481445312, 'learning_rate': 1.1666666666666666e-06, 'epoch': 5.0}
+l_con_f tensor(1.5781, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.5000, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.3125, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(116.9620, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(54.0305, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(111.5590, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.1813, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.5625, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.5156, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.5312, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(114.4029, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(76.2910, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(106.7738, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.4323, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(1.3438, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.4219, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.2031, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(112.4641, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(56.9594, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(106.7682, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.1198, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(1.2188, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.4062, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.1719, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(115.2872, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(49.6604, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(110.3211, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.0530, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(2.0156, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.3750, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.2969, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(115.3352, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(69.1301, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(108.4221, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.1970, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(1.6094, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.5000, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.3281, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(109.3142, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(64.2061, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(102.8936, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.2836, device='cuda:0', grad_fn=<SubBackward0>)
+l_con_f tensor(1.4375, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+l_con_r tensor(2.3438, device='cuda:0', dtype=torch.bfloat16, grad_fn=<MeanBackward0>)
+contrastive_loss tensor(2.1562, device='cuda:0', dtype=torch.bfloat16, grad_fn=<AddBackward0>)
+forget_lm_loss, retain_lm_loss, lm_loss tensor(114.2722, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(56.3294, device='cuda:0', grad_fn=<NllLossBackward0>) tensor(108.6393, device='cuda:0', grad_fn=<SubBackward0>)
+total_loss tensor(1.0542, device='cuda:0', grad_fn=<SubBackward0>)
+{'loss': 1.1677, 'grad_norm': 1.2364917993545532, 'learning_rate': 0.0, 'epoch': 6.0}
+{'train_runtime': 950.5388, 'train_samples_per_second': 6.312, 'train_steps_per_second': 0.316, 'train_loss': 1.7643693923950194, 'epoch': 6.0}
+✅ LoRA merged model loaded.
+
+🔍 PMC - Greedy-QA
+diagnosis
+gender
+gender
+diagnosis
+gender
+gender
+age
+diagnosis
+gender
+gender
+gender
+gender
+age
+age
+diagnosis
+gender
+diagnosis
+diagnosis
+age
+gender
+age
+age
+age
+gender
+age
+gender
+age
+diagnosis
+gender
+diagnosis
+age
+age
+age
+diagnosis
+gender
+diagnosis
+diagnosis
+gender
+diagnosis
+gender
+gender
+age
+diagnosis
+diagnosis
+gender
+age
+diagnosis
+gender
+gender
+gender
+gender
+age
+gender
+age
+gender
+age
+gender
+age
+diagnosis
+age
+gender
+diagnosis
+age
+gender
+age
+age
+diagnosis
+age
+diagnosis
+diagnosis
+diagnosis
+age
+gender
+gender
+age
+diagnosis
+diagnosis
+age
+age
+gender
+age
+age
+gender
+diagnosis
+age
+gender
+age
+gender
+gender
+diagnosis
+age
+diagnosis
+diagnosis
+diagnosis
+diagnosis
+age
+age
+gender
+gender
+age
+age
+diagnosis
+age
+diagnosis
+gender
+age
+gender
+diagnosis
+age
+gender
+diagnosis
+diagnosis
+age
+age
+gender
+diagnosis
+age
+age
+gender
+gender
+age
+diagnosis
+diagnosis
+diagnosis
+age
+diagnosis
+gender
+gender
+gender
+gender
+gender
+age
+gender
+diagnosis
+diagnosis
+diagnosis
+gender
+diagnosis
+diagnosis
+gender
+gender
+diagnosis
+age
+age
+diagnosis
+age
+diagnosis
+gender
+age
+age
+diagnosis
+diagnosis
+age
+diagnosis
+gender
+diagnosis
+age
+gender
+diagnosis
+diagnosis
+gender
+gender
+gender
+gender
+age
+age
+gender
+diagnosis
+gender
+diagnosis
+gender
+diagnosis
+gender
+age
+age
+diagnosis
+gender
+diagnosis
+age
+gender
+age
+age
+diagnosis
+gender
+gender
+gender
+diagnosis
+gender
+age
+age
+gender
+diagnosis
+gender
+gender
+age
+diagnosis
+age
+gender
+gender
+diagnosis
+age
+gender
+gender
+gender
+gender
+diagnosis
+diagnosis
+age
+gender
+gender
+age
+diagnosis
+age
+diagnosis
+gender
+gender
+diagnosis
+age
+age
+age
+diagnosis
+gender
+diagnosis
+gender
+diagnosis
+age
+age
+diagnosis
+gender
+gender
+age
+age
+diagnosis
+age
+diagnosis
+age
+diagnosis
+diagnosis
+diagnosis
+gender
+age
+diagnosis
+gender
+diagnosis
+diagnosis
+gender
+diagnosis
+age
+diagnosis
+gender
+age
+age
+age
+age
+age
+age
+gender
+diagnosis
+age
+age
+diagnosis
+diagnosis
+age
+age
+gender
+gender
+gender
+gender
+gender
+diagnosis
+age
+age
+gender
+gender
+diagnosis
+diagnosis
+age
+diagnosis
+diagnosis
+age
+diagnosis
+diagnosis
+age
+gender
+diagnosis
+age
+diagnosis
+gender
+diagnosis
+diagnosis
+age
+diagnosis
+age
+gender
+gender
+age
+diagnosis
+gender
+diagnosis
+age
+gender
+diagnosis
+age
+age
+diagnosis
+gender
+age
+diagnosis
+gender
+age
+diagnosis
+diagnosis
+diagnosis
+gender
+gender
+gender
+diagnosis
+diagnosis
+gender
+diagnosis
+age
+age
+diagnosis
+diagnosis
+diagnosis
+age
+gender
+diagnosis
+age
+age
+gender
+diagnosis
+gender
+age
+diagnosis
+gender
+gender
+diagnosis
+age
+gender
+gender
+age
+gender
+gender
+age
+gender
+gender
+gender
+gender
+age
+age
+age
+age
+age
+age
+gender
+gender
+diagnosis
+diagnosis
+age
+diagnosis
+diagnosis
+age
+gender
+diagnosis
+age
+diagnosis
+gender
+gender
+gender
+age
+diagnosis
+age
+age
+gender
+gender
+gender
+diagnosis
+diagnosis
+gender
+age
+gender
+age
+age
+diagnosis
+age
+diagnosis
+age
+age
+diagnosis
+diagnosis
+age
+age
+age
+diagnosis
+age
+diagnosis
+diagnosis
+gender
+gender
+gender
+gender
+age
+age
+age
+age
+age
+gender
+age
+diagnosis
+gender
+age
+gender
+gender
+age
+age
+diagnosis
+age
+diagnosis
+diagnosis
+diagnosis
+diagnosis
+age
+diagnosis
+diagnosis
+diagnosis
+gender
+diagnosis
+age
+gender
+gender
+age
+age
+gender
+gender
+gender
+diagnosis
+gender
+diagnosis
+diagnosis
+diagnosis
+gender
+gender
+age
+age
+age
+gender
+diagnosis
+gender
+age
+diagnosis
+diagnosis
+age
+age
+diagnosis
+age
+gender
+diagnosis
+diagnosis
+age
+age
+diagnosis
+diagnosis
+age
+diagnosis
+diagnosis
+age
+diagnosis
+diagnosis
+diagnosis
+gender
+gender
+age
+diagnosis
+gender
+gender
+gender
+gender
+gender
+age
+diagnosis
+gender
+gender
+gender
+age
+age
+diagnosis
+gender
+age
+gender
+diagnosis
+diagnosis
+age
+age
+diagnosis
+diagnosis
+gender
+diagnosis
+gender
+diagnosis
+age
+age
+diagnosis
+gender
+gender
+gender
+diagnosis
+diagnosis
+gender
+gender
+age
+age
+age
+age
+age
+gender
+age
+gender
+age
+age
+gender
+diagnosis
+gender
+age
+age
+gender
+gender
+age
+gender
+gender
+diagnosis
+diagnosis
+diagnosis
+diagnosis
+gender
+gender
+gender
+gender
+diagnosis
+diagnosis
+age
+diagnosis
+gender
+gender
+diagnosis
+age
+gender
+age
+gender
+diagnosis
+diagnosis
+gender
+gender
+age
+age
+diagnosis
+gender
+diagnosis
+age
+diagnosis
+gender
+diagnosis
+gender
+diagnosis
+gender
+diagnosis
+age
+gender
+diagnosis
+age
+age
+diagnosis
+age
+gender
+diagnosis
+diagnosis
+age
+diagnosis
+age
+diagnosis
+diagnosis
+age
+gender
+diagnosis
+gender
+age
+diagnosis
+gender
+age
+gender
+age
+diagnosis
+age
+diagnosis
+age
+gender
+age
+gender
+age
+gender
+diagnosis
+gender
+age
+age
+age
+diagnosis
+diagnosis
+diagnosis
+age
+gender
+diagnosis
+diagnosis
+diagnosis
+age
+gender
+gender
+age
+diagnosis
+age
+age
+diagnosis
+gender
+age
+gender
+diagnosis
+diagnosis
+age
+age
+gender
+gender
+age
+gender
+diagnosis
+diagnosis
+diagnosis
+gender
+gender
+diagnosis
+gender
+gender
+gender
+gender
+diagnosis
+diagnosis
+gender
+age
+diagnosis
+diagnosis
+diagnosis
+gender
+age
+gender
+gender
+age
+gender
+age
+gender
+gender
+gender
+diagnosis
+age
+age
+age
+age
+age
+diagnosis
+age
+diagnosis
+diagnosis
+gender
+gender
+age
+age
+diagnosis
+age
+age
+diagnosis
+diagnosis
+gender
+gender
+diagnosis
+diagnosis
+age
+diagnosis
+age
+age
+gender
+age
+age
+gender
+gender
+diagnosis
+diagnosis
+gender
+gender
+gender
+age
+gender
+diagnosis
+age
+gender
+diagnosis
+gender
+gender
+diagnosis
+gender
+age
+age
+gender
+age
+gender
+age
+gender
+diagnosis
+diagnosis
+diagnosis
+gender
+diagnosis
+gender
+age
+age
+gender
+gender
+age
+age
+diagnosis
+age
+gender
+gender
+gender
+age
+diagnosis
+gender
+diagnosis
+diagnosis
+diagnosis
+age
+age
+diagnosis
+age
+age
+gender
+gender
+diagnosis
+gender
+diagnosis
+age
+diagnosis
+age
+age
+diagnosis
+diagnosis
+age
+age
+diagnosis
+diagnosis
+gender
+gender
+age
+gender
+age
+gender
+diagnosis
+age
+diagnosis
+gender
+gender
+gender
+age
+diagnosis
+diagnosis
+diagnosis
+age
+gender
+gender
+diagnosis
+gender
+age
+gender
+age
+diagnosis
+age
+gender
+age
+age
+diagnosis
+diagnosis
+diagnosis
+diagnosis
+age
+diagnosis
+diagnosis
+age
+gender
+diagnosis
+age
+gender
+diagnosis
+gender
+diagnosis
+gender
+age
+diagnosis
+age
+diagnosis
+diagnosis
+diagnosis
+diagnosis
+gender
+diagnosis
+gender
+age
+gender
+gender
+diagnosis
+diagnosis
+age
+gender
+age
+gender
+diagnosis
+age
+age
+gender
+age
+gender
+gender
+diagnosis
+diagnosis
+gender
+diagnosis
+gender
+gender
+diagnosis
+gender
+gender
+gender
+diagnosis
+age
+diagnosis
+age
+age
+age
+gender
+age
+gender
+age
+diagnosis
+diagnosis
+diagnosis
+age
+age
+age
+age
+diagnosis
+diagnosis
+age
+diagnosis
+age
+age
+gender
+gender
+age
+gender
+gender
+diagnosis
+diagnosis
+gender
+diagnosis
+gender
+diagnosis
+age
+age
+diagnosis
+gender
+diagnosis
+age
+diagnosis
+gender
+diagnosis
+diagnosis
+age
+gender
+gender
+age
+gender
+age
+diagnosis
+gender
+gender
+gender
+gender
+diagnosis
+gender
+diagnosis
+diagnosis
+gender
+diagnosis
+diagnosis
+age
+✅ Acc 0.2044
+
+🔍 PMC - Greedy-Cloze
+✅ Acc 0.3633
+
+🔍 PMC - Greedy-BG-Probe
+✅ Acc 0.2556
+✅ MCQ-llh-mcqs_PMC_retain_att Acc 0.3100
+✅ MCQ-llh-mcqs_PMC_retain_id_equal Acc 0.2200
+✅ MCQ-llh-mcqs_PMC_retain_id_identical Acc 0.3200
+
+📑 Summary & logs saved to grid_search/results/MistralUniversal_lm0.01_fw0.2_lr7e-06_gm0.1_epochs6/eval_retain
+🏁 Done.
+✅ LoRA merged model loaded.
+
+🔍 PMC - Greedy-QA
+age
+gender
+gender
+gender
+age
+diagnosis
+age
+age
+gender
+diagnosis
+diagnosis
+age
+gender
+gender
+age
+age
+age
+diagnosis
+diagnosis
+diagnosis
+gender
+diagnosis
+age
+gender
+diagnosis
+gender
+age
+age
+gender
+age
+diagnosis
+gender
+gender
+gender
+diagnosis
+diagnosis
+gender
+age
+diagnosis
+diagnosis
+diagnosis
+age
+age
+diagnosis
+gender
+age
+diagnosis
+gender
+diagnosis
+gender
+age
+diagnosis
+diagnosis
+diagnosis
+diagnosis
+diagnosis
+age
+age
+age
+diagnosis
+gender
+age
+gender
+diagnosis
+diagnosis
+age
+gender
+gender
+age
+gender
+age
+age
+age
+age
+age
+gender
+gender
+age
+gender
+diagnosis
+age
+age
+diagnosis
+diagnosis
+age
+gender
+age
+diagnosis
+gender
+diagnosis
+age
+diagnosis
+gender
+gender
+gender
+diagnosis
+age
+gender
+gender
+age
+✅ Acc 0.1700
+
+🔍 PMC - Greedy-Cloze
+✅ Acc 0.3400
+
+🔍 PMC - Greedy-BG-Probe
+✅ Acc 0.2100
+✅ MCQ-llh-mcqs_PMC_forget_att Acc 0.3400
+✅ MCQ-llh-mcqs_PMC_forget_id_equal Acc 0.1800
+✅ MCQ-llh-mcqs_PMC_forget_id_identical Acc 0.2826
+
+📑 Summary & logs saved to grid_search/results/MistralUniversal_lm0.01_fw0.2_lr7e-06_gm0.1_epochs6/eval_forget
+🏁 Done.
