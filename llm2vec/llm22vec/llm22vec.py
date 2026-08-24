@@ -30,7 +30,7 @@ from .models import (
 )
 
 logger = logging.getLogger(__name__)
-access_token="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"
+access_token=""
 
 def batch_to_device(batch, target_device: device):
     """
