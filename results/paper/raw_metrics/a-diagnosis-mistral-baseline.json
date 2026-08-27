@@ -1,5 +1,7 @@
 {
+  "cell_status": {},
   "experiment_id": "a-diagnosis-mistral-baseline",
+  "field_evidence": {},
   "metrics": {
     "metrics": {
       "MCQ-llh-mcqs_deaths_att": 0.5921052631578947,
@@ -17,38 +19,113 @@
   },
   "mmlu": {
     "accuracy": 0.5902,
+    "model_block_selector": "pretrained=mistralai/Mistral-7B-Instruct-v0.2",
     "settings": {
       "batch_size": 32,
-      "limit": null,
-      "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
-      "num_fewshot": null
+      "evaluation": "zero-shot",
+      "limit": "None",
+      "num_fewshot": "None"
     },
-    "source_member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950"
+    "source": {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
+      "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+      "member_sha256": "a325d0407a1a3f9d228e2bdd60fbb5dc8f19f14da637b5df961b049feb9b02ed",
+      "observation": "directly observed",
+      "role": "mmlu_log",
+      "source_type": "archive_member"
+    }
   },
-  "resolved_config": {
-    "forget_target": null,
-    "hyperparameters": {},
-    "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-    "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
+  "normalized_config": {},
+  "schema_version": "1.1",
+  "significance": {
+    "celebrity_deaths:ATT": {
+      "accuracy": 0.5921052631578947,
+      "dataset": "llm2vec/unlearn_eval/data/mcqs_deaths_att.jsonl",
+      "dataset_sha256": "5ce6acf6b586aa2345d0c6b1ac39dfcd564ff21c364480ada84095289bef6f12",
+      "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+      "integrality_error": 0.0,
+      "model": "mistral",
+      "pvalue": 7.75216482753725e-28,
+      "sample_count": 228,
+      "significant": true,
+      "success_count": 135,
+      "verification_method": "locally_materialized_jsonl"
+    },
+    "celebrity_deaths:ID": {
+      "accuracy": 0.2543859649122807,
+      "dataset": "llm2vec/unlearn_eval/data/mcqs_deaths_id_sim.jsonl",
+      "dataset_sha256": "4bf6da5dfab96dab033255889f14a002c3b2452ac122cbdfe036693320573105",
+      "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+      "integrality_error": 0.0,
+      "model": "mistral",
+      "pvalue": 0.4927715547157413,
+      "sample_count": 114,
+      "significant": false,
+      "success_count": 29,
+      "verification_method": "locally_materialized_jsonl"
+    },
+    "celebrity_deaths:IDeq": {
+      "accuracy": 0.2894736842105263,
+      "dataset": "llm2vec/unlearn_eval/data/mcqs_deaths_id_eq.jsonl",
+      "dataset_sha256": "7dfe5b5bcd7511bda5400a87100efd7b9ab0f8792d1b0a3509b0b41ab98c1c85",
+      "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+      "integrality_error": 0.0,
+      "model": "mistral",
+      "pvalue": 0.1921917142569755,
+      "sample_count": 114,
+      "significant": false,
+      "success_count": 33,
+      "verification_method": "locally_materialized_jsonl"
+    },
+    "celebrity_diagnosis:ATT": {
+      "accuracy": 0.5490196078431373,
+      "dataset": "llm2vec/unlearn_eval/data/mcqs_diagnosis_att.jsonl",
+      "dataset_sha256": "6b740f073315d0c443029ae09d8a152d08ff3330ff2d509adcf9dd1ebbb53711",
+      "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+      "integrality_error": 3.552713678800501e-15,
+      "model": "mistral",
+      "pvalue": 4.9228078819310914e-06,
+      "sample_count": 51,
+      "significant": true,
+      "success_count": 28,
+      "verification_method": "locally_materialized_jsonl"
+    },
+    "celebrity_diagnosis:ID": {
+      "accuracy": 0.34615384615384615,
+      "dataset": "llm2vec/unlearn_eval/data/mcqs_diagnosis_id.jsonl",
+      "dataset_sha256": "fb283713561bb1c8dac7d56b4d5921d6622116d19639e1fa909a61cd88de3cb9",
+      "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+      "integrality_error": 0.0,
+      "model": "mistral",
+      "pvalue": 0.07806484144859673,
+      "sample_count": 52,
+      "significant": false,
+      "success_count": 18,
+      "verification_method": "locally_materialized_jsonl"
+    }
   },
-  "sample_counts": {},
-  "schema_version": "1.0",
   "sources": [
     {
       "archive": "clinicia_provenance_bundle.tar.gz",
       "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "metrics",
       "member": "llm2vec/open_unlearning/saves/unlearn/Mistral-Original-Eval/evaluation_results.json",
       "member_sha256": "b7b72b1c799ccecc2a5c91cf0b6a7629934d195581139d7e4038a5ff602c232b",
       "observation": "directly observed",
-      "role": "metrics"
+      "role": "metrics",
+      "source_type": "archive_member"
     },
     {
       "archive": "clinicia_configs_mmlu_bundle.tar.gz",
       "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
       "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
       "member_sha256": "a325d0407a1a3f9d228e2bdd60fbb5dc8f19f14da637b5df961b049feb9b02ed",
       "observation": "directly observed",
-      "role": "mmlu_log"
+      "role": "mmlu_log",
+      "source_type": "archive_member"
     }
   ],
   "status_flags": [

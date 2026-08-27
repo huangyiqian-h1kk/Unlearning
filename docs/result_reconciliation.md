@@ -15,3 +15,9 @@ This document records conflicts without altering archived measurements.
 | PMC ConRep MMLU `.2659` belongs to `lm0.01`, four epochs, not selected `lm0`, five epochs. | `unresolved` for selected cell | Selected ConRep MMLU remains `N/A`. |
 
 No item above is a corrected experiment; each is a provenance or transcription finding.
+
+## Significance and presentation
+
+The one-sided exact test uses `p0=0.25` and `alpha=0.05`. Llama-2 baseline tests are significant for Deaths ATT and ID and Diagnosis ATT, but not Deaths IDeq or Diagnosis ID. Mistral tests are significant for Deaths ATT and Diagnosis ATT, but not Deaths IDeq, Deaths ID, or Diagnosis ID. The pooled PMC ATT and IDeq tests are significant; PMC ID is not. CSV and Markdown attach `†` to the baseline's masked em dash (`–†`); LaTeX emits `\textemdash{}\textsuperscript{\dagger}`. Method-relative cells use `–` without the dagger, while unavailable evidence remains `N/A`.
+
+The machine-readable [`reconciliation.csv`](../results/paper/reconstructed/reconciliation.csv) records one row per reconstructed cell and separate experiment-scope rows for starting-checkpoint conflicts. It does not invent unverified manuscript values.

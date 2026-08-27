@@ -44,6 +44,8 @@ This command only rebuilds tables from compact snapshots. It does not train or e
 
 See `results/paper/reconstructed/`. `†` means the exact baseline MCQ test did not exceed chance; `‡` means a different/non-comparable starting checkpoint; `N/A` means no valid archived value; `–` means a significance-masked probe.
 
+The exact one-sided binomial decision is made per model and probe from archived full-precision accuracy and verified dataset size. Regime B row averages include unmasked retain and forget percentages but not their derived Delta columns, and MMLU is never averaged.
+
 ## Provenance and known limitations
 
 - [`docs/experiment_provenance.md`](experiment_provenance.md)

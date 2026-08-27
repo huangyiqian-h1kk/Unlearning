@@ -21,6 +21,8 @@
       "historical_path_label": "llm2vec/open_unlearning/saves/unlearn/Llama2_Eval/evaluation_results.json",
       "hyperparameters": {},
       "id": "a-diagnosis-llama2-baseline",
+      "intended_knowledge_target": "diagnosis",
+      "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Diagnosis Llama-2 baseline",
       "knowledge_target": "diagnosis",
       "known_limitations": [],
@@ -37,7 +39,12 @@
           "ID"
         ]
       },
-      "mmlu_source": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+      "mmlu_source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+        "model_block_selector": "pretrained=meta-llama/Llama-2-7b-chat-hf",
+        "source_type": "archive_member"
+      },
       "regime": "A",
       "resolved_config": {
         "forget_target": null,
@@ -53,25 +60,24 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/Llama2_Eval/evaluation_results.json",
           "member_sha256": "1ade6d9da1f9c1478a1c0e7f1cb20c09fc84f216745690d1198883889bd0e643",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "expected_accuracy": 0.4638,
+          "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
           "member_sha256": "a325d0407a1a3f9d228e2bdd60fbb5dc8f19f14da637b5df961b049feb9b02ed",
-          "mmlu_accuracy": 0.4638,
-          "mmlu_settings": {
-            "batch_size": 32,
-            "limit": null,
-            "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
-            "num_fewshot": null
-          },
+          "model_block_selector": "pretrained=meta-llama/Llama-2-7b-chat-hf",
           "observation": "directly observed",
-          "role": "mmlu_log"
+          "role": "mmlu_log",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf",
@@ -93,6 +99,8 @@
       "historical_path_label": "graddiff_celebrity_diagnosis_llama2",
       "hyperparameters": {},
       "id": "a-diagnosis-llama2-graddiff",
+      "intended_knowledge_target": "diagnosis",
+      "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Diagnosis Llama-2 GradDiff",
       "knowledge_target": "diagnosis",
       "known_limitations": [],
@@ -127,18 +135,32 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_diagnosis_llama2/evaluation_results.json",
           "member_sha256": "dea766889ecbc2d6c391dad194e4768199c9cda94d1fd00607b8317bb80a0b95",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_diagnosis_llama2/.hydra/config.yaml",
           "member_sha256": "a4985303d65082880b2316bf3faecbe1357a69eca519ffcfe0d72fe919034f79",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_diagnosis_llama2/trainer_state.json",
+          "member_sha256": "454513381d53791d744811e8e9e5e7cf65226d9990fae723d876d58c134a6eff",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf",
@@ -164,6 +186,8 @@
       "historical_path_label": "npo_celebrity_diagnosis_llama2",
       "hyperparameters": {},
       "id": "a-diagnosis-llama2-npo",
+      "intended_knowledge_target": "diagnosis",
+      "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Diagnosis Llama-2 NPO",
       "knowledge_target": "diagnosis",
       "known_limitations": [],
@@ -198,18 +222,32 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_diagnosis_llama2/evaluation_results.json",
           "member_sha256": "19d5fa51d438ed877d19b619c6c7136659ba65a6efdb42fa748dad5b132948f3",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_diagnosis_llama2/.hydra/config.yaml",
           "member_sha256": "04aa54bce09f8fb868e5face88f2ca17f910ad6323563fe76c583c9f847636e1",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_diagnosis_llama2/trainer_state.json",
+          "member_sha256": "0fdfa233ac1b0c07149739dace38c186b3cb89a20453a362fa3d1212535eedd2",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf",
@@ -232,6 +270,8 @@
       "historical_path_label": "rmu_celebrity_diagnosis_llama2",
       "hyperparameters": {},
       "id": "a-diagnosis-llama2-rmu",
+      "intended_knowledge_target": "diagnosis",
+      "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Diagnosis Llama-2 RMU",
       "knowledge_target": "diagnosis",
       "known_limitations": [],
@@ -266,18 +306,32 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/evaluation_results.json",
           "member_sha256": "01f3244005bfca45e65b4b80dd27c2658c70420724636da33a1661c1efba7882",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/.hydra/config.yaml",
           "member_sha256": "256941a57afae885cd649e94d2b9d123155041e7f9e99b4ecf8c169779f33541",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/trainer_state.json",
+          "member_sha256": "37d6a17ec008ea4b1e2115580c3a1ef4bab8ae7941477e2c48accc9b1825878d",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf",
@@ -298,6 +352,8 @@
       "historical_path_label": "llm2vec/open_unlearning/saves/unlearn/Mistral-Original-Eval/evaluation_results.json",
       "hyperparameters": {},
       "id": "a-diagnosis-mistral-baseline",
+      "intended_knowledge_target": "diagnosis",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Diagnosis Mistral baseline",
       "knowledge_target": "diagnosis",
       "known_limitations": [],
@@ -314,7 +370,12 @@
           "ID"
         ]
       },
-      "mmlu_source": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+      "mmlu_source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+        "model_block_selector": "pretrained=mistralai/Mistral-7B-Instruct-v0.2",
+        "source_type": "archive_member"
+      },
       "regime": "A",
       "resolved_config": {
         "forget_target": null,
@@ -330,25 +391,24 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/Mistral-Original-Eval/evaluation_results.json",
           "member_sha256": "b7b72b1c799ccecc2a5c91cf0b6a7629934d195581139d7e4038a5ff602c232b",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "expected_accuracy": 0.5902,
+          "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
           "member_sha256": "a325d0407a1a3f9d228e2bdd60fbb5dc8f19f14da637b5df961b049feb9b02ed",
-          "mmlu_accuracy": 0.5902,
-          "mmlu_settings": {
-            "batch_size": 32,
-            "limit": null,
-            "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
-            "num_fewshot": null
-          },
+          "model_block_selector": "pretrained=mistralai/Mistral-7B-Instruct-v0.2",
           "observation": "directly observed",
-          "role": "mmlu_log"
+          "role": "mmlu_log",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -370,6 +430,8 @@
       "historical_path_label": "graddiff_celebrity_diagnosis_Mixtral",
       "hyperparameters": {},
       "id": "a-diagnosis-mistral-graddiff",
+      "intended_knowledge_target": "diagnosis",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Diagnosis Mistral GradDiff",
       "knowledge_target": "diagnosis",
       "known_limitations": [],
@@ -404,18 +466,32 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_diagnosis_Mixtral/evaluation_results.json",
           "member_sha256": "6285c4dad6d6d8b82a7727ae15d58edf4d79ee1b274908bf580bb6c619e75893",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_diagnosis_Mixtral/.hydra/config.yaml",
           "member_sha256": "de026b652e82b86eab9c57bad0b71c9e78518d7ab6a260f0ed151bca85d4726f",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_diagnosis_Mixtral/trainer_state.json",
+          "member_sha256": "82a38d6853afc63fb7e54ae482c4f304f1fe562f72d65a5459d989870126c78d",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -438,6 +514,8 @@
       "historical_path_label": "npo_celebrity_diagnosis_Mixtral",
       "hyperparameters": {},
       "id": "a-diagnosis-mistral-npo",
+      "intended_knowledge_target": "diagnosis",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Diagnosis Mistral NPO",
       "knowledge_target": "diagnosis",
       "known_limitations": [],
@@ -472,18 +550,32 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_diagnosis_Mixtral/evaluation_results.json",
           "member_sha256": "22fbba1b9bfd7e162b3a50d01450e8aacf4011a076a46cf633f13a3f4f22b5e5",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_diagnosis_Mixtral/.hydra/config.yaml",
           "member_sha256": "94973e429d44635f6beb50d2ca1e8fac2ed9638ef577d4d63df251716b9aea52",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_diagnosis_Mixtral/trainer_state.json",
+          "member_sha256": "2fa4b1aa3e85a1dc6bc294b3f1442d44403073f72fd6770a8218a5307cf8d740",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -505,6 +597,8 @@
       "historical_path_label": "rmu_celebrity_diagnosis_Mixtral",
       "hyperparameters": {},
       "id": "a-diagnosis-mistral-rmu",
+      "intended_knowledge_target": "diagnosis",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Diagnosis Mistral RMU",
       "knowledge_target": "diagnosis",
       "known_limitations": [],
@@ -539,18 +633,32 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_Mixtral/evaluation_results.json",
           "member_sha256": "cb88bb27de6a79ab7b6acceac17626ca459ecacf7cd80ae0692fbf23825eb3cd",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_Mixtral/.hydra/config.yaml",
           "member_sha256": "5fd9f8af4e081bf7822e3bce46f938c57db58f8718b6ca8b9751182b4b6dc9cb",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_Mixtral/trainer_state.json",
+          "member_sha256": "8e90dc95fb2096fc38fedc0682768e360faf0d54249faa00ed4c71e20d36994d",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -571,6 +679,8 @@
       "historical_path_label": "llm2vec/open_unlearning/saves/unlearn/Llama2_Eval/evaluation_results.json",
       "hyperparameters": {},
       "id": "a-deaths-llama2-baseline",
+      "intended_knowledge_target": "deaths",
+      "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Deaths Llama-2 baseline",
       "knowledge_target": "deaths",
       "known_limitations": [],
@@ -587,7 +697,12 @@
           "ID"
         ]
       },
-      "mmlu_source": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+      "mmlu_source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+        "model_block_selector": "pretrained=meta-llama/Llama-2-7b-chat-hf",
+        "source_type": "archive_member"
+      },
       "regime": "A",
       "resolved_config": {
         "forget_target": null,
@@ -603,25 +718,24 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/Llama2_Eval/evaluation_results.json",
           "member_sha256": "1ade6d9da1f9c1478a1c0e7f1cb20c09fc84f216745690d1198883889bd0e643",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "expected_accuracy": 0.4638,
+          "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
           "member_sha256": "a325d0407a1a3f9d228e2bdd60fbb5dc8f19f14da637b5df961b049feb9b02ed",
-          "mmlu_accuracy": 0.4638,
-          "mmlu_settings": {
-            "batch_size": 32,
-            "limit": null,
-            "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
-            "num_fewshot": null
-          },
+          "model_block_selector": "pretrained=meta-llama/Llama-2-7b-chat-hf",
           "observation": "directly observed",
-          "role": "mmlu_log"
+          "role": "mmlu_log",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf",
@@ -643,6 +757,8 @@
       "historical_path_label": "graddiff_celebrity_death_llama2",
       "hyperparameters": {},
       "id": "a-deaths-llama2-graddiff",
+      "intended_knowledge_target": "deaths",
+      "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Deaths Llama-2 GradDiff",
       "knowledge_target": "deaths",
       "known_limitations": [],
@@ -677,18 +793,32 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_death_llama2/evaluation_results.json",
           "member_sha256": "5da601f6bb69e2142a57bfb7785b171ad54de8e11a5959e6de6f7832a85cc806",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_death_llama2/.hydra/config.yaml",
           "member_sha256": "ef7562c17d9444bafadcbb86b762bdf0729fa15b24a570c53b4e0c035ab187cf",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_death_llama2/trainer_state.json",
+          "member_sha256": "864c8758eaaf0e4e3aa752f8ed2b6b00d7e984fa9b0acba1a2bfee3bef44b901",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf",
@@ -710,6 +840,8 @@
       "historical_path_label": "npo_celebrity_death_llama2",
       "hyperparameters": {},
       "id": "a-deaths-llama2-npo",
+      "intended_knowledge_target": "deaths",
+      "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Deaths Llama-2 NPO",
       "knowledge_target": "deaths",
       "known_limitations": [],
@@ -744,18 +876,32 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_llama2/evaluation_results.json",
           "member_sha256": "63d112bae8abd68284207fed7eaa682e9bade176b95ec304226d926130e02b2d",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_llama2/.hydra/config.yaml",
           "member_sha256": "69d77a6948585d2a2ddcfa44ea3090245482d8f1990292d3c8da8bb58c1d2215",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_llama2/trainer_state.json",
+          "member_sha256": "dae20e757cec9620b88e4ecee1e7734a4983f9f331d57cd61aee15c51c8e4261",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf",
@@ -766,6 +912,7 @@
     },
     {
       "baseline_experiment_id": "a-deaths-llama2-baseline",
+      "canonical_cell_assignment": "unresolved_not_assigned",
       "cell_status": {
         "MMLU": [
           "missing"
@@ -777,6 +924,8 @@
       "historical_path_label": "rmu_celebrity_death_llama2",
       "hyperparameters": {},
       "id": "a-deaths-llama2-rmu",
+      "intended_knowledge_target": "deaths",
+      "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Deaths Llama-2 RMU",
       "knowledge_target": "deaths",
       "known_limitations": [
@@ -803,28 +952,47 @@
         "model_id": "meta-llama/Llama-2-7b-chat-hf",
         "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf"
       },
-      "resolved_forget_dataset_target": "deaths",
-      "resolved_model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "resolved_forget_dataset_target": null,
+      "resolved_model_id": null,
       "sample_counts": {},
       "source_configuration_paths": [
         "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_llama2/.hydra/config.yaml"
       ],
+      "source_resolved_identity": {
+        "forget_target": "diagnosis",
+        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+        "num_train_epochs": 10
+      },
       "sources": [
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_llama2/evaluation_results.json",
           "member_sha256": "4608cf71b82290fa544d32ca31a8508645690c9235ffc98293be50ae12ae5c3e",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_llama2/.hydra/config.yaml",
           "member_sha256": "bb5f3b31bb90d46b0ad6e9f2767862b488a56b1cab9d15d8ea475fe466971f97",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_llama2/trainer_state.json",
+          "member_sha256": "506762717b14baeedd811fa12ec029999ca04265a1ad5ce6687b68ba706677bc",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf",
@@ -844,6 +1012,8 @@
       "historical_path_label": "llm2vec/open_unlearning/saves/unlearn/Mistral-Original-Eval/evaluation_results.json",
       "hyperparameters": {},
       "id": "a-deaths-mistral-baseline",
+      "intended_knowledge_target": "deaths",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Deaths Mistral baseline",
       "knowledge_target": "deaths",
       "known_limitations": [],
@@ -860,7 +1030,12 @@
           "ID"
         ]
       },
-      "mmlu_source": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+      "mmlu_source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+        "model_block_selector": "pretrained=mistralai/Mistral-7B-Instruct-v0.2",
+        "source_type": "archive_member"
+      },
       "regime": "A",
       "resolved_config": {
         "forget_target": null,
@@ -876,25 +1051,24 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/Mistral-Original-Eval/evaluation_results.json",
           "member_sha256": "b7b72b1c799ccecc2a5c91cf0b6a7629934d195581139d7e4038a5ff602c232b",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "expected_accuracy": 0.5902,
+          "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
           "member_sha256": "a325d0407a1a3f9d228e2bdd60fbb5dc8f19f14da637b5df961b049feb9b02ed",
-          "mmlu_accuracy": 0.5902,
-          "mmlu_settings": {
-            "batch_size": 32,
-            "limit": null,
-            "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
-            "num_fewshot": null
-          },
+          "model_block_selector": "pretrained=mistralai/Mistral-7B-Instruct-v0.2",
           "observation": "directly observed",
-          "role": "mmlu_log"
+          "role": "mmlu_log",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -916,6 +1090,8 @@
       "historical_path_label": "graddiff_celebrity_death_Mixtral",
       "hyperparameters": {},
       "id": "a-deaths-mistral-graddiff",
+      "intended_knowledge_target": "deaths",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Deaths Mistral GradDiff",
       "knowledge_target": "deaths",
       "known_limitations": [],
@@ -950,18 +1126,32 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_death_Mixtral/evaluation_results.json",
           "member_sha256": "706da5245dcf2f8bfb13d0ea6e6f3e6e3782df090715eec2d75a1900517a086e",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_death_Mixtral/.hydra/config.yaml",
           "member_sha256": "60ded295edbff2f7f5b42be73fb17f32301b79299e334e78f6a338d3deccb7a1",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_celebrity_death_Mixtral/trainer_state.json",
+          "member_sha256": "c7e44ecc0cc07ee9ab9c63060bd7cc2d57177dc6fa97131980addc84b70ff821",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -983,6 +1173,8 @@
       "historical_path_label": "npo_celebrity_death_Mixtral",
       "hyperparameters": {},
       "id": "a-deaths-mistral-npo",
+      "intended_knowledge_target": "deaths",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Deaths Mistral NPO",
       "knowledge_target": "deaths",
       "known_limitations": [],
@@ -1017,18 +1209,32 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_Mixtral/evaluation_results.json",
           "member_sha256": "e2565ef16cd2f391286719b6fc55afce8c5aaf9b3510a70a3b8dbd03aaaa58e6",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_Mixtral/.hydra/config.yaml",
           "member_sha256": "8939e96fa14a0da47a0868d7e67fcd84532c373444c1d44bf3dd7398a789c78b",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_Mixtral/trainer_state.json",
+          "member_sha256": "6de381022529977c4fac51e66ed62eea8416b42399c3245b47e74a376e9813e1",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -1039,6 +1245,7 @@
     },
     {
       "baseline_experiment_id": "a-deaths-mistral-baseline",
+      "canonical_cell_assignment": "unresolved_not_assigned",
       "cell_status": {
         "MMLU": [
           "missing"
@@ -1050,6 +1257,8 @@
       "historical_path_label": "rmu_celebrity_death_Mixtral",
       "hyperparameters": {},
       "id": "a-deaths-mistral-rmu",
+      "intended_knowledge_target": "deaths",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Deaths Mistral RMU",
       "knowledge_target": "deaths",
       "known_limitations": [
@@ -1076,28 +1285,47 @@
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
       },
-      "resolved_forget_dataset_target": "deaths",
-      "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "resolved_forget_dataset_target": null,
+      "resolved_model_id": null,
       "sample_counts": {},
       "source_configuration_paths": [
         "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_Mixtral/.hydra/config.yaml"
       ],
+      "source_resolved_identity": {
+        "forget_target": "deaths",
+        "model_id": "meta-llama/Llama-2-7b-chat-hf",
+        "num_train_epochs": 3
+      },
       "sources": [
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_Mixtral/evaluation_results.json",
           "member_sha256": "120c5a8cd07730350aef545aabf5c4fd24794b644e8ce816848a9c6f128fa7ca",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_Mixtral/.hydra/config.yaml",
           "member_sha256": "36a78761dc61bb3001081fe0285e0b59e6651400b21126d6583caf36831a4e62",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_Mixtral/trainer_state.json",
+          "member_sha256": "9e48513e427260e473c659c4fac3dbd002f827c2e953ef59ed76dd0fd1391a75",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -1128,6 +1356,8 @@
         "num_train_epochs": 4
       },
       "id": "a-diagnosis-llama2-conrep",
+      "intended_knowledge_target": "diagnosis",
+      "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Diagnosis Llama-2 ConRep",
       "knowledge_target": "diagnosis",
       "known_limitations": [],
@@ -1166,18 +1396,42 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/grid_search_diagnosis/results/Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4/eval_forget/evaluation_results.json",
           "member_sha256": "cdac24941dff09bd82018a3aedfbb2be16b9a256466efb82487b33f116f725d6",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "trainer_state",
           "member": "llm2vec/grid_search_diagnosis/results/Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4/model/checkpoint-348/trainer_state.json",
           "member_sha256": "f2f5271d4244dd8b73e328a907938abcc4f0d23150f027cc2bcf6658fa4e10a1",
           "observation": "directly observed",
-          "role": "trainer_state"
+          "role": "trainer_state",
+          "source_type": "archive_member"
+        },
+        {
+          "file_sha256": "65bfbdea62caa9a2e02debd1c4630b6fc26a5f1e9f6b2dad376a5bfefdfbb421",
+          "git_blob_sha": "b38a984382a458c595666f185ed1195a3e5777c5",
+          "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
+          "observation": "directly observed",
+          "path": "llm2vec/grid_search_diagnosis/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4.json",
+          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "role": "training_config",
+          "source_type": "repository_file"
+        },
+        {
+          "file_sha256": "3b26505a0d4764d59b4ee64bef73e31aafd3768d9bb01a01e47abaab6f5a57fd",
+          "git_blob_sha": "d6e2019f3f6c68a586fd504f2768e627b2a5b099",
+          "locator": "python command line; commented commands are non-execution evidence",
+          "observation": "directly observed",
+          "path": "llm2vec/grid_search_diagnosis/jobs/job_Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4.sh",
+          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "role": "job_script",
+          "source_type": "repository_file"
         }
       ],
       "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf",
@@ -1209,6 +1463,8 @@
         "num_train_epochs": 4
       },
       "id": "a-diagnosis-mistral-conrep",
+      "intended_knowledge_target": "diagnosis",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Diagnosis Mistral ConRep",
       "knowledge_target": "diagnosis",
       "known_limitations": [],
@@ -1247,18 +1503,42 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/eval_forget/evaluation_results.json",
           "member_sha256": "190a4b26016f75b0cdffca824dfb2892a95ef01ac3158eb740d1b29a4394830c",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "trainer_state",
           "member": "llm2vec/grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/model/checkpoint-348/trainer_state.json",
           "member_sha256": "350524d35b4e335ee053a9fa580e5f7e9e94a7073124cb42a74b46e1de7c4eb2",
           "observation": "directly observed",
-          "role": "trainer_state"
+          "role": "trainer_state",
+          "source_type": "archive_member"
+        },
+        {
+          "file_sha256": "ef4841f688c16c744d0341bace8e0117afd9e64993ccdb938930e437fb1861d8",
+          "git_blob_sha": "08734e8a05356e473144a92a5996fa80d42feb09",
+          "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
+          "observation": "directly observed",
+          "path": "llm2vec/grid_search_diagnosis/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
+          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "role": "training_config",
+          "source_type": "repository_file"
+        },
+        {
+          "file_sha256": "11538ecf2621606cee80d52683059c1891ee8b0b5cb06c42854be9123393061f",
+          "git_blob_sha": "581ff21fe69d6604afe1c095f50070752b991176",
+          "locator": "python command line; commented commands are non-execution evidence",
+          "observation": "directly observed",
+          "path": "llm2vec/grid_search_diagnosis/jobs/job_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.sh",
+          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "role": "job_script",
+          "source_type": "repository_file"
         }
       ],
       "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -1297,6 +1577,8 @@
         "num_train_epochs": 3
       },
       "id": "a-deaths-llama2-conrep",
+      "intended_knowledge_target": "deaths",
+      "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Deaths Llama-2 ConRep",
       "knowledge_target": "deaths",
       "known_limitations": [],
@@ -1335,18 +1617,42 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/grid_search_death/results/Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3/eval_forget/evaluation_results.json",
           "member_sha256": "25903b3477b3d8b35a5aaa3d0c3d2e5ec1907fc2325179f5818563348098ab91",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "trainer_state",
           "member": "llm2vec/grid_search_death/results/Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3/model/checkpoint-390/trainer_state.json",
           "member_sha256": "f1ed854d3f8a9b51722b7547eb6fe63425c148f038d8c7e1578fa761ecad4aaf",
           "observation": "directly observed",
-          "role": "trainer_state"
+          "role": "trainer_state",
+          "source_type": "archive_member"
+        },
+        {
+          "file_sha256": "e2d3b569f811c20d4bbaaf13ab97d21c7ffc2b7d4324ca95f093de04c6a6eb19",
+          "git_blob_sha": "63ef71e9f28ada6346b48f43626c267fc45b0a20",
+          "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
+          "observation": "directly observed",
+          "path": "llm2vec/grid_search_death/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.json",
+          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "role": "training_config",
+          "source_type": "repository_file"
+        },
+        {
+          "file_sha256": "1a1b4018715f2a9ac9c6806d0959b171c869d0801dbe3f5adfbdf4ecb3033cee",
+          "git_blob_sha": "c99b30ec6ffa8bc5b57e4c71eb83845c647eb93f",
+          "locator": "python command line; commented commands are non-execution evidence",
+          "observation": "directly observed",
+          "path": "llm2vec/grid_search_death/jobs/job_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.sh",
+          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "role": "job_script",
+          "source_type": "repository_file"
         }
       ],
       "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf",
@@ -1379,6 +1685,8 @@
         "num_train_epochs": 4
       },
       "id": "a-deaths-mistral-conrep",
+      "intended_knowledge_target": "deaths",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Deaths Mistral ConRep",
       "knowledge_target": "deaths",
       "known_limitations": [],
@@ -1417,18 +1725,42 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "metrics",
           "member": "llm2vec/grid_search_death/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/eval_forget/evaluation_results.json",
           "member_sha256": "dc4461abec3a4aa7bfb7902603741dcb6077311db259fce6fe8dc38e32234f2a",
           "observation": "directly observed",
-          "role": "metrics"
+          "role": "metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "trainer_state",
           "member": "llm2vec/grid_search_death/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/model/checkpoint-520/trainer_state.json",
           "member_sha256": "f8045400f3a6936324d593551fc1d93835ac0ffbdbeccbaf039bb9b8ce539190",
           "observation": "directly observed",
-          "role": "trainer_state"
+          "role": "trainer_state",
+          "source_type": "archive_member"
+        },
+        {
+          "file_sha256": "94b252e76bc7c2200cfb0b8db16ab118d1814dd023fb22e1028aad2567b7a843",
+          "git_blob_sha": "81e9cd9855414ff5c64db88a9f88180efeef9cf5",
+          "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
+          "observation": "directly observed",
+          "path": "llm2vec/grid_search_death/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
+          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "role": "training_config",
+          "source_type": "repository_file"
+        },
+        {
+          "file_sha256": "7074386a7a163b4416cff5c18cf9dfbd74fa4cd6727e269ff0f2c13bff327c79",
+          "git_blob_sha": "c55eb6e60d3fc447af6ddb6ee3bd41144c1a2bd1",
+          "locator": "python command line; commented commands are non-execution evidence",
+          "observation": "directly observed",
+          "path": "llm2vec/grid_search_death/jobs/job_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.sh",
+          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "role": "job_script",
+          "source_type": "repository_file"
         }
       ],
       "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2",
@@ -1439,17 +1771,7 @@
     },
     {
       "baseline_experiment_id": "b-pmc-mistral-baseline",
-      "cell_status": {
-        "ATT": [
-          "unresolved"
-        ],
-        "ID": [
-          "unresolved"
-        ],
-        "IDeq": [
-          "unresolved"
-        ]
-      },
+      "cell_status": {},
       "evidence_notes": [
         "Generation baseline pooling is sample-weighted: (900*retain + 100*forget)/1000.",
         "Exact pooled MCQ counts are not recoverable from aggregate files."
@@ -1459,6 +1781,8 @@
       "historical_path_label": "pmc_full_universal_Mistral-7B_continual",
       "hyperparameters": {},
       "id": "b-pmc-mistral-baseline",
+      "intended_knowledge_target": "pmc",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "PMC Mistral universal baseline",
       "knowledge_target": "pmc",
       "known_limitations": [],
@@ -1475,7 +1799,12 @@
           "ID"
         ]
       },
-      "mmlu_source": null,
+      "mmlu_source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral_eval.o4704553",
+        "model_block_selector": "pmc_full_universal_Mistral-7B_continual,parallelize=True",
+        "source_type": "archive_member"
+      },
       "regime": "B",
       "resolved_config": {
         "forget_target": null,
@@ -1496,41 +1825,54 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "retain_metrics",
           "member": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/retain_eval/evaluation_results.json",
           "member_sha256": "b75e23fdc557d62aaf4c960ca509de11418a59a026a8d68293a7461a5355e7f3",
           "observation": "directly observed",
-          "role": "retain_metrics"
+          "role": "retain_metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "forget_metrics",
           "member": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/forget_eval/evaluation_results.json",
           "member_sha256": "a67a9ac9a3478aa4cc821cf2867665f4a2dd86db2a281354fb9344a205b213e3",
           "observation": "directly observed",
-          "role": "forget_metrics"
+          "role": "forget_metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/.hydra/config.yaml",
           "member_sha256": "13416037ddec8610a665669ec027807c52a56af01bcb95379fccf3a9e608a2a9",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "expected_accuracy": 0.269,
+          "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral_eval.o4704553",
           "member_sha256": "80f5fc3cb7103065968ceca58474f530b7abd086b32c555959568914d8ea9990",
-          "mmlu_accuracy": 0.269,
-          "mmlu_settings": {
-            "batch_size": 32,
-            "limit": null,
-            "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
-            "num_fewshot": null
-          },
+          "model_block_selector": "pmc_full_universal_Mistral-7B_continual,parallelize=True",
           "observation": "directly observed",
-          "role": "mmlu_log"
+          "role": "mmlu_log",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/trainer_state.json",
+          "member_sha256": "f0810b7e371319560bdd526cd3a707a00784803cf11eb0bb544409371af3d159",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "pmc_full_csv_Mistral-7B-Instruct_epoch10/checkpoint-7500",
@@ -1541,23 +1883,15 @@
     },
     {
       "baseline_experiment_id": "b-pmc-mistral-baseline",
-      "cell_status": {
-        "ATT": [
-          "unresolved"
-        ],
-        "ID": [
-          "unresolved"
-        ],
-        "IDeq": [
-          "unresolved"
-        ]
-      },
+      "cell_status": {},
       "evidence_notes": [],
       "final_epoch": null,
       "final_step": null,
       "historical_path_label": "graddiff_PMC_Mixtral",
       "hyperparameters": {},
       "id": "b-pmc-mistral-graddiff",
+      "intended_knowledge_target": "pmc",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "PMC Mistral GradDiff",
       "knowledge_target": "pmc",
       "known_limitations": [
@@ -1576,7 +1910,12 @@
           "ID"
         ]
       },
-      "mmlu_source": null,
+      "mmlu_source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
+        "model_block_selector": "pretrained=graddiff_PMC_Mixtral",
+        "source_type": "archive_member"
+      },
       "regime": "B",
       "resolved_config": {
         "forget_target": "pmc",
@@ -1594,41 +1933,54 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "retain_metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral/retain_eval/evaluation_results.json",
           "member_sha256": "8c74d14ef0d2bc4124b4a33d250df21dd2e1d9b79e508e74ccada7d0c53227c6",
           "observation": "directly observed",
-          "role": "retain_metrics"
+          "role": "retain_metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "forget_metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral/forget_eval/evaluation_results.json",
           "member_sha256": "dd1e2811af84286541c2b1a1b2d056072a856641bafd16a0b19f626dc063e1b3",
           "observation": "directly observed",
-          "role": "forget_metrics"
+          "role": "forget_metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral/.hydra/config.yaml",
           "member_sha256": "c1f5b3cc49b32f14d222f0b8a76125ae085f8cdfc23f80e760bd4b2b2d53b3d1",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "expected_accuracy": 0.2297,
+          "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
           "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
           "member_sha256": "4584eef3555cffa941c90f69e7d6154c89b29798cca5724373a54a43014461ec",
-          "mmlu_accuracy": 0.2297,
-          "mmlu_settings": {
-            "batch_size": 32,
-            "limit": null,
-            "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
-            "num_fewshot": null
-          },
+          "model_block_selector": "pretrained=graddiff_PMC_Mixtral",
           "observation": "directly observed",
-          "role": "mmlu_log"
+          "role": "mmlu_log",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral/trainer_state.json",
+          "member_sha256": "78f32ce7b6f73bb3202e48b13a9334cbe276ff0be2d95dd78c8bef013fa39bf8",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "pmc_full_csv_Mistral-7B-Instruct_epoch10/checkpoint-7500",
@@ -1641,23 +1993,15 @@
     },
     {
       "baseline_experiment_id": "b-pmc-mistral-baseline",
-      "cell_status": {
-        "ATT": [
-          "unresolved"
-        ],
-        "ID": [
-          "unresolved"
-        ],
-        "IDeq": [
-          "unresolved"
-        ]
-      },
+      "cell_status": {},
       "evidence_notes": [],
       "final_epoch": null,
       "final_step": null,
       "historical_path_label": "npo_PMC_Mixtral",
       "hyperparameters": {},
       "id": "b-pmc-mistral-npo",
+      "intended_knowledge_target": "pmc",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "PMC Mistral NPO",
       "knowledge_target": "pmc",
       "known_limitations": [],
@@ -1674,7 +2018,12 @@
           "ID"
         ]
       },
-      "mmlu_source": null,
+      "mmlu_source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
+        "model_block_selector": "pretrained=npo_PMC_Mixtral",
+        "source_type": "archive_member"
+      },
       "regime": "B",
       "resolved_config": {
         "forget_target": "pmc",
@@ -1692,41 +2041,54 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "retain_metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_PMC_Mixtral/retain_eval/evaluation_results.json",
           "member_sha256": "53747e56e62d7875a68afe7d4bc0cf060c21cc1ba287a7f60a87589cf38a8033",
           "observation": "directly observed",
-          "role": "retain_metrics"
+          "role": "retain_metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "forget_metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_PMC_Mixtral/forget_eval/evaluation_results.json",
           "member_sha256": "26b8d25ccf0f3384cbb2fce0d73c17adcaba859df68b091d281463228e496c11",
           "observation": "directly observed",
-          "role": "forget_metrics"
+          "role": "forget_metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/npo_PMC_Mixtral/.hydra/config.yaml",
           "member_sha256": "79c678abb79aa03d91f86671977577db53132a4c463f6cd788bc2f3a7555a347",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "expected_accuracy": 0.2307,
+          "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
           "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
           "member_sha256": "4584eef3555cffa941c90f69e7d6154c89b29798cca5724373a54a43014461ec",
-          "mmlu_accuracy": 0.2307,
-          "mmlu_settings": {
-            "batch_size": 32,
-            "limit": null,
-            "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
-            "num_fewshot": null
-          },
+          "model_block_selector": "pretrained=npo_PMC_Mixtral",
           "observation": "directly observed",
-          "role": "mmlu_log"
+          "role": "mmlu_log",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/npo_PMC_Mixtral/trainer_state.json",
+          "member_sha256": "b0829613519e3b4bef22beac4f6df1cff9426cadb81d4dbfb424ac46ca93f3d1",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "pmc_full_universal_Mistral-7B_continual",
@@ -1738,23 +2100,15 @@
     },
     {
       "baseline_experiment_id": "b-pmc-mistral-baseline",
-      "cell_status": {
-        "ATT": [
-          "unresolved"
-        ],
-        "ID": [
-          "unresolved"
-        ],
-        "IDeq": [
-          "unresolved"
-        ]
-      },
+      "cell_status": {},
       "evidence_notes": [],
       "final_epoch": null,
       "final_step": null,
       "historical_path_label": "rmu_PMC_Mixtral",
       "hyperparameters": {},
       "id": "b-pmc-mistral-rmu",
+      "intended_knowledge_target": "pmc",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "PMC Mistral RMU",
       "knowledge_target": "pmc",
       "known_limitations": [],
@@ -1771,7 +2125,12 @@
           "ID"
         ]
       },
-      "mmlu_source": null,
+      "mmlu_source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
+        "model_block_selector": "pretrained=rmu_PMC_Mixtral",
+        "source_type": "archive_member"
+      },
       "regime": "B",
       "resolved_config": {
         "forget_target": "pmc",
@@ -1789,41 +2148,54 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "retain_metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/retain_eval/evaluation_results.json",
           "member_sha256": "7131529da913a849543e2b2db70a7b0f6701e2adba5ffb685fadaa4ee701bef7",
           "observation": "directly observed",
-          "role": "retain_metrics"
+          "role": "retain_metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "forget_metrics",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/forget_eval/evaluation_results.json",
           "member_sha256": "c82a689cf131f17481c89dfb2d8dce809ff4c693f18feb2ae40de85c1814d5dc",
           "observation": "directly observed",
-          "role": "forget_metrics"
+          "role": "forget_metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "locator": "config",
           "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/.hydra/config.yaml",
           "member_sha256": "0aca73d647feeb4499aabcc2467391e269f671a30248820bcd82c5d2417093fa",
           "observation": "directly observed",
-          "role": "config"
+          "role": "config",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_configs_mmlu_bundle.tar.gz",
           "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "expected_accuracy": 0.2722,
+          "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
           "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
           "member_sha256": "4584eef3555cffa941c90f69e7d6154c89b29798cca5724373a54a43014461ec",
-          "mmlu_accuracy": 0.2722,
-          "mmlu_settings": {
-            "batch_size": 32,
-            "limit": null,
-            "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
-            "num_fewshot": null
-          },
+          "model_block_selector": "pretrained=rmu_PMC_Mixtral",
           "observation": "directly observed",
-          "role": "mmlu_log"
+          "role": "mmlu_log",
+          "source_type": "archive_member"
+        },
+        {
+          "archive": "clinicia_provenance_bundle.tar.gz",
+          "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+          "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/trainer_state.json",
+          "member_sha256": "9c9a68c7e008c645c4b3db0cdf84c01b9ff99e9f3fe0e149083d4e1fc1139e2a",
+          "observation": "directly observed",
+          "role": "trainer_state",
+          "source_type": "archive_member"
         }
       ],
       "starting_checkpoint": "pmc_full_universal_Mistral-7B_continual",
@@ -1836,16 +2208,6 @@
     {
       "baseline_experiment_id": "b-pmc-mistral-baseline",
       "cell_status": {
-        "ATT": [
-          "unresolved",
-          "manuscript_transcription_error"
-        ],
-        "ID": [
-          "unresolved"
-        ],
-        "IDeq": [
-          "unresolved"
-        ],
         "MMLU": [
           "missing"
         ]
@@ -1866,6 +2228,8 @@
         "num_train_epochs": 5
       },
       "id": "b-pmc-mistral-conrep",
+      "intended_knowledge_target": "pmc",
+      "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "PMC Mistral ConRep",
       "knowledge_target": "pmc",
       "known_limitations": [
@@ -1906,26 +2270,52 @@
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "retain_metrics",
           "member": "llm2vec/grid_search/results/MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5/eval_retain/evaluation_results.json",
           "member_sha256": "eab2fc586ed47549d6c7c4bcc477d85175043da18da496c379c6a606fd70b3b9",
           "observation": "directly observed",
-          "role": "retain_metrics"
+          "role": "retain_metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "forget_metrics",
           "member": "llm2vec/grid_search/results/MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5/eval_forget/evaluation_results.json",
           "member_sha256": "436e7bb6d178c1744b6bf2b3a2b4229852ef6148dd399948fea24154b533a6dc",
           "observation": "directly observed",
-          "role": "forget_metrics"
+          "role": "forget_metrics",
+          "source_type": "archive_member"
         },
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
           "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+          "locator": "trainer_state",
           "member": "llm2vec/grid_search/results/MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5/model/checkpoint-250/trainer_state.json",
           "member_sha256": "b6a7f5749bb71de17474c0c72700918d4eea8b483d9ae2b0121e7599e27795dc",
           "observation": "directly observed",
-          "role": "trainer_state"
+          "role": "trainer_state",
+          "source_type": "archive_member"
+        },
+        {
+          "file_sha256": "7a37af11a5691725b26cd510fcd2b9d50131002348eccec4132d809ff6a7753a",
+          "git_blob_sha": "cfff16ceab0108f9a45c3ebba20082b0a5a4e464",
+          "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
+          "observation": "directly observed",
+          "path": "llm2vec/grid_search/configs/train_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.json",
+          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "role": "training_config",
+          "source_type": "repository_file"
+        },
+        {
+          "file_sha256": "73918d5df3c0943d833aa13f7860706e7742b4b834fe38c36df5e4f6bcd781e2",
+          "git_blob_sha": "2f33b7740cf8d9c8a626c001b49650441e37046c",
+          "locator": "python command line; commented commands are non-execution evidence",
+          "observation": "directly observed",
+          "path": "llm2vec/grid_search/jobs/job_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.sh",
+          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "role": "job_script",
+          "source_type": "repository_file"
         }
       ],
       "starting_checkpoint": "pmc_full_universal_Mistral-7B_continual",
@@ -1936,12 +2326,66 @@
       "training_entry_point": "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py"
     }
   ],
+  "mcq_dataset_inventory": "results/paper/mcq_dataset_inventory.json",
   "probe_order": [
     "ATT",
     "IDeq",
     "ID"
   ],
-  "schema_version": "1.0",
+  "quarantined_sources": [
+    {
+      "assignment_status": "quarantined_unresolved",
+      "historical_label": "rmu_celebrity_death_llama2",
+      "intended_cell_id": "a-deaths-llama2-rmu",
+      "source_resolved_identity": {
+        "forget_target": "diagnosis",
+        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+        "num_train_epochs": 10
+      },
+      "status_flags": [
+        "unresolved"
+      ]
+    },
+    {
+      "assignment_status": "quarantined_unresolved",
+      "historical_label": "rmu_celebrity_death_Mixtral",
+      "intended_cell_id": "a-deaths-mistral-rmu",
+      "source_resolved_identity": {
+        "forget_target": "deaths",
+        "model_id": "meta-llama/Llama-2-7b-chat-hf",
+        "num_train_epochs": 3
+      },
+      "status_flags": [
+        "unresolved"
+      ]
+    }
+  ],
+  "related_evidence": [
+    {
+      "configuration_identity": "MistralUniversal_lm0.01_fw0.2_lr1e-05_gm0.5_epochs4",
+      "id": "pmc-conrep-different-config-mmlu",
+      "known_limitation": "This MMLU result is not assignable to the selected lm0, five-epoch ConRep cell.",
+      "selected_experiment_id": "b-pmc-mistral-conrep",
+      "sources": [
+        {
+          "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+          "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+          "expected_accuracy": 0.2659,
+          "locator": "unique model block followed by aggregate mmlu row",
+          "member": "llm2vec/grid_search/results/MistralUniversal_lm0.01_fw0.2_lr1e-05_gm0.5_epochs4/LMeval_Celeb_diagnosis_Mixtral.o4720066",
+          "member_sha256": "c9f47ba04722cee21c58ae82f0d29e4ece586962176bb0488957f88a58d9444b",
+          "model_block_selector": "peft=model,tokenizer=mistralai/Mistral-7B-Instruct-v0.2,,parallelize=True",
+          "observation": "directly observed",
+          "role": "mmlu_log",
+          "source_type": "archive_member"
+        }
+      ],
+      "status_flags": [
+        "unresolved"
+      ]
+    }
+  ],
+  "schema_version": "1.1",
   "status_vocabulary": [
     "verified",
     "label_corrected",
