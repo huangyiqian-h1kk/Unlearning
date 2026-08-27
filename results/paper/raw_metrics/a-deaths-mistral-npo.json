@@ -1,0 +1,49 @@
+{
+  "experiment_id": "a-deaths-mistral-npo",
+  "metrics": {
+    "metrics": {
+      "MCQ-llh-mcqs_deaths_att": 0.31140350877192985,
+      "MCQ-llh-mcqs_deaths_id_eq": 0.24561403508771928,
+      "MCQ-llh-mcqs_deaths_id_sim": 0.23684210526315788,
+      "MCQ-llh-mcqs_diagnosis_att": 0.3137254901960784,
+      "MCQ-llh-mcqs_diagnosis_id": 0.3269230769230769,
+      "celebrity_deaths-Greedy-BG-Probe": 0.21052631578947367,
+      "celebrity_deaths-Greedy-Cloze": 0.07456140350877193,
+      "celebrity_deaths-Greedy-QA": 0.3157894736842105,
+      "celebrity_diagnosis-Greedy-BG-Probe": 0.17307692307692307,
+      "celebrity_diagnosis-Greedy-Cloze": 0.057692307692307696,
+      "celebrity_diagnosis-Greedy-QA": 0.07692307692307693
+    }
+  },
+  "mmlu": null,
+  "resolved_config": {
+    "forget_target": "deaths",
+    "hyperparameters": {},
+    "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+    "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
+  },
+  "sample_counts": {},
+  "schema_version": "1.0",
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_Mixtral/evaluation_results.json",
+      "member_sha256": "e2565ef16cd2f391286719b6fc55afce8c5aaf9b3510a70a3b8dbd03aaaa58e6",
+      "observation": "directly observed",
+      "role": "metrics"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_Mixtral/.hydra/config.yaml",
+      "member_sha256": "8939e96fa14a0da47a0868d7e67fcd84532c373444c1d44bf3dd7398a789c78b",
+      "observation": "directly observed",
+      "role": "config"
+    }
+  ],
+  "status_flags": [
+    "verified"
+  ],
+  "trainer_state": {}
+}

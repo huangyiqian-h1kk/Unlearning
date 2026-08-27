@@ -1,0 +1,7 @@
+| Experiment | Model | Method | Status | QA-R | QA-F | QA-Delta | Cloze-R | Cloze-F | Cloze-Delta | BG-R | BG-F | BG-Delta | ATT-R | ATT-F | ATT-Delta | IDeq-R | IDeq-F | IDeq-Delta | ID-R | ID-F | ID-Delta | MMLU | Average |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| b-pmc-mistral-baseline | mistralai/Mistral-7B-Instruct-v0.2 | Baseline | verified | 100.33 | 97.00 | -3.33 | 100.63 | 94.34 | -6.29 | 100.85 | 92.31 | -8.55 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 0.27 | 63.03 |
+| b-pmc-mistral-graddiff | mistralai/Mistral-7B-Instruct-v0.2 | GradDiff‡ | verified;label_corrected;non_comparable | 116.40 | 111.11 | -5.29 | 90.75 | 86.25 | -4.49 | 166.50 | 156.92 | -9.57 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 0.23 | 78.73 |
+| b-pmc-mistral-npo | mistralai/Mistral-7B-Instruct-v0.2 | NPO | verified;label_corrected | 97.98 | 93.47 | -4.51 | 90.30 | 87.60 | -2.70 | 137.44 | 132.31 | -5.13 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 0.23 | 69.64 |
+| b-pmc-mistral-rmu | mistralai/Mistral-7B-Instruct-v0.2 | RMU | verified;label_corrected | 96.61 | 91.71 | -4.90 | 89.85 | 86.25 | -3.59 | 150.09 | 153.85 | 3.76 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 0.27 | 73.74 |
+| b-pmc-mistral-conrep | mistralai/Mistral-7B-Instruct-v0.2 | ConRep | verified;manuscript_transcription_error | 97.39 | 88.18 | -9.21 | 99.43 | 87.60 | -11.83 | 165.81 | 144.62 | -21.20 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | 71.20 |

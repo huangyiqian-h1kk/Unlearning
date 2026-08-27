@@ -1,0 +1,58 @@
+{
+  "experiment_id": "a-diagnosis-llama2-baseline",
+  "metrics": {
+    "metrics": {
+      "MCQ-llh-mcqs_deaths_att": 0.39473684210526316,
+      "MCQ-llh-mcqs_deaths_id_eq": 0.2894736842105263,
+      "MCQ-llh-mcqs_deaths_id_sim": 0.34210526315789475,
+      "MCQ-llh-mcqs_diagnosis_att": 0.5098039215686274,
+      "MCQ-llh-mcqs_diagnosis_id": 0.28846153846153844,
+      "celebrity_deaths-Greedy-BG-Probe": 0.2543859649122807,
+      "celebrity_deaths-Greedy-Cloze": 0.5175438596491229,
+      "celebrity_deaths-Greedy-QA": 0.5263157894736842,
+      "celebrity_diagnosis-Greedy-BG-Probe": 0.1346153846153846,
+      "celebrity_diagnosis-Greedy-Cloze": 0.09615384615384616,
+      "celebrity_diagnosis-Greedy-QA": 0.23076923076923078
+    }
+  },
+  "mmlu": {
+    "accuracy": 0.4638,
+    "settings": {
+      "batch_size": 32,
+      "limit": null,
+      "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
+      "num_fewshot": null
+    },
+    "source_member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950"
+  },
+  "resolved_config": {
+    "forget_target": null,
+    "hyperparameters": {},
+    "model_id": "meta-llama/Llama-2-7b-chat-hf",
+    "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf"
+  },
+  "sample_counts": {},
+  "schema_version": "1.0",
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "member": "llm2vec/open_unlearning/saves/unlearn/Llama2_Eval/evaluation_results.json",
+      "member_sha256": "1ade6d9da1f9c1478a1c0e7f1cb20c09fc84f216745690d1198883889bd0e643",
+      "observation": "directly observed",
+      "role": "metrics"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+      "member_sha256": "a325d0407a1a3f9d228e2bdd60fbb5dc8f19f14da637b5df961b049feb9b02ed",
+      "observation": "directly observed",
+      "role": "mmlu_log"
+    }
+  ],
+  "status_flags": [
+    "verified"
+  ],
+  "trainer_state": {}
+}

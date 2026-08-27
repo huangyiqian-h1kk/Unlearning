@@ -1,0 +1,79 @@
+{
+  "experiment_id": "b-pmc-mistral-graddiff",
+  "metrics": {
+    "forget_metrics": {
+      "MCQ-llh-mcqs_PMC_forget_att": 0.24,
+      "MCQ-llh-mcqs_PMC_forget_id_equal": 0.26,
+      "MCQ-llh-mcqs_PMC_forget_id_identical": 0.2608695652173913,
+      "PMC-Greedy-BG-Probe": 0.51,
+      "PMC-Greedy-Cloze": 0.64,
+      "PMC-Greedy-QA": 0.63
+    },
+    "retain_metrics": {
+      "MCQ-llh-mcqs_PMC_retain_att": 0.26,
+      "MCQ-llh-mcqs_PMC_retain_id_equal": 0.3,
+      "MCQ-llh-mcqs_PMC_retain_id_identical": 0.27,
+      "PMC-Greedy-BG-Probe": 0.5411111111111111,
+      "PMC-Greedy-Cloze": 0.6733333333333333,
+      "PMC-Greedy-QA": 0.66
+    }
+  },
+  "mmlu": {
+    "accuracy": 0.2297,
+    "settings": {
+      "batch_size": 32,
+      "limit": null,
+      "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
+      "num_fewshot": null
+    },
+    "source_member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016"
+  },
+  "resolved_config": {
+    "forget_target": "pmc",
+    "hyperparameters": {},
+    "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+    "starting_checkpoint": "pmc_full_csv_Mistral-7B-Instruct_epoch10/checkpoint-7500"
+  },
+  "sample_counts": {},
+  "schema_version": "1.0",
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral/retain_eval/evaluation_results.json",
+      "member_sha256": "8c74d14ef0d2bc4124b4a33d250df21dd2e1d9b79e508e74ccada7d0c53227c6",
+      "observation": "directly observed",
+      "role": "retain_metrics"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral/forget_eval/evaluation_results.json",
+      "member_sha256": "dd1e2811af84286541c2b1a1b2d056072a856641bafd16a0b19f626dc063e1b3",
+      "observation": "directly observed",
+      "role": "forget_metrics"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral/.hydra/config.yaml",
+      "member_sha256": "c1f5b3cc49b32f14d222f0b8a76125ae085f8cdfc23f80e760bd4b2b2d53b3d1",
+      "observation": "directly observed",
+      "role": "config"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
+      "member_sha256": "4584eef3555cffa941c90f69e7d6154c89b29798cca5724373a54a43014461ec",
+      "observation": "directly observed",
+      "role": "mmlu_log"
+    }
+  ],
+  "status_flags": [
+    "verified",
+    "label_corrected",
+    "non_comparable"
+  ],
+  "trainer_state": {}
+}

@@ -1,0 +1,49 @@
+{
+  "experiment_id": "a-deaths-llama2-rmu",
+  "metrics": {
+    "metrics": {
+      "MCQ-llh-mcqs_deaths_att": 0.2675438596491228,
+      "MCQ-llh-mcqs_deaths_id_eq": 0.2982456140350877,
+      "MCQ-llh-mcqs_deaths_id_sim": 0.24561403508771928,
+      "MCQ-llh-mcqs_diagnosis_att": 0.43137254901960786,
+      "MCQ-llh-mcqs_diagnosis_id": 0.2692307692307692,
+      "celebrity_deaths-Greedy-BG-Probe": 0.16228070175438597,
+      "celebrity_deaths-Greedy-Cloze": 0.13157894736842105,
+      "celebrity_deaths-Greedy-QA": 0.021929824561403508,
+      "celebrity_diagnosis-Greedy-BG-Probe": 0.17307692307692307,
+      "celebrity_diagnosis-Greedy-Cloze": 0.19230769230769232,
+      "celebrity_diagnosis-Greedy-QA": 0.17307692307692307
+    }
+  },
+  "mmlu": null,
+  "resolved_config": {
+    "forget_target": "deaths",
+    "hyperparameters": {},
+    "model_id": "meta-llama/Llama-2-7b-chat-hf",
+    "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf"
+  },
+  "sample_counts": {},
+  "schema_version": "1.0",
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_llama2/evaluation_results.json",
+      "member_sha256": "4608cf71b82290fa544d32ca31a8508645690c9235ffc98293be50ae12ae5c3e",
+      "observation": "directly observed",
+      "role": "metrics"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_llama2/.hydra/config.yaml",
+      "member_sha256": "bb5f3b31bb90d46b0ad6e9f2767862b488a56b1cab9d15d8ea475fe466971f97",
+      "observation": "directly observed",
+      "role": "config"
+    }
+  ],
+  "status_flags": [
+    "unresolved"
+  ],
+  "trainer_state": {}
+}

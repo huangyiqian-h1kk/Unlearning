@@ -1,0 +1,26 @@
+experiment_id,regime,target,status_flags,limitations
+a-diagnosis-llama2-baseline,A,diagnosis,verified,
+a-diagnosis-llama2-graddiff,A,diagnosis,verified,
+a-diagnosis-llama2-npo,A,diagnosis,verified;manuscript_transcription_error,
+a-diagnosis-llama2-rmu,A,diagnosis,verified;manuscript_transcription_error,
+a-diagnosis-mistral-baseline,A,diagnosis,verified,
+a-diagnosis-mistral-graddiff,A,diagnosis,verified;manuscript_transcription_error,
+a-diagnosis-mistral-npo,A,diagnosis,verified,
+a-diagnosis-mistral-rmu,A,diagnosis,verified;manuscript_transcription_error,
+a-diagnosis-llama2-conrep,A,diagnosis,verified;label_corrected,
+a-diagnosis-mistral-conrep,A,diagnosis,verified,
+a-deaths-llama2-baseline,A,deaths,verified,
+a-deaths-llama2-graddiff,A,deaths,verified,
+a-deaths-llama2-npo,A,deaths,verified,
+a-deaths-llama2-rmu,A,deaths,unresolved,Historical RMU Deaths identities conflict with resolved model/target configurations; not assigned to canonical cells.
+a-deaths-mistral-baseline,A,deaths,verified,
+a-deaths-mistral-graddiff,A,deaths,verified,
+a-deaths-mistral-npo,A,deaths,verified,
+a-deaths-mistral-rmu,A,deaths,unresolved,Historical RMU Deaths identities conflict with resolved model/target configurations; not assigned to canonical cells.
+a-deaths-llama2-conrep,A,deaths,verified;label_corrected;manuscript_transcription_error,
+a-deaths-mistral-conrep,A,deaths,verified,
+b-pmc-mistral-baseline,B,pmc,verified,
+b-pmc-mistral-graddiff,B,pmc,verified;label_corrected;non_comparable,Different starting checkpoint from universal baseline and other PMC methods.
+b-pmc-mistral-npo,B,pmc,verified;label_corrected,
+b-pmc-mistral-rmu,B,pmc,verified;label_corrected,
+b-pmc-mistral-conrep,B,pmc,verified;manuscript_transcription_error,Selected-run MMLU missing.

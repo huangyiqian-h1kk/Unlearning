@@ -1,0 +1,58 @@
+{
+  "experiment_id": "a-diagnosis-mistral-baseline",
+  "metrics": {
+    "metrics": {
+      "MCQ-llh-mcqs_deaths_att": 0.5921052631578947,
+      "MCQ-llh-mcqs_deaths_id_eq": 0.2894736842105263,
+      "MCQ-llh-mcqs_deaths_id_sim": 0.2543859649122807,
+      "MCQ-llh-mcqs_diagnosis_att": 0.5490196078431373,
+      "MCQ-llh-mcqs_diagnosis_id": 0.34615384615384615,
+      "celebrity_deaths-Greedy-BG-Probe": 0.5833333333333334,
+      "celebrity_deaths-Greedy-Cloze": 0.7105263157894737,
+      "celebrity_deaths-Greedy-QA": 0.6447368421052632,
+      "celebrity_diagnosis-Greedy-BG-Probe": 0.4230769230769231,
+      "celebrity_diagnosis-Greedy-Cloze": 0.21153846153846154,
+      "celebrity_diagnosis-Greedy-QA": 0.19230769230769232
+    }
+  },
+  "mmlu": {
+    "accuracy": 0.5902,
+    "settings": {
+      "batch_size": 32,
+      "limit": null,
+      "lm_eval_version": "0.4.8 (environment evidence, not independently pinned)",
+      "num_fewshot": null
+    },
+    "source_member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950"
+  },
+  "resolved_config": {
+    "forget_target": null,
+    "hyperparameters": {},
+    "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+    "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
+  },
+  "sample_counts": {},
+  "schema_version": "1.0",
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "member": "llm2vec/open_unlearning/saves/unlearn/Mistral-Original-Eval/evaluation_results.json",
+      "member_sha256": "b7b72b1c799ccecc2a5c91cf0b6a7629934d195581139d7e4038a5ff602c232b",
+      "observation": "directly observed",
+      "role": "metrics"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_all_eval.o4701950",
+      "member_sha256": "a325d0407a1a3f9d228e2bdd60fbb5dc8f19f14da637b5df961b049feb9b02ed",
+      "observation": "directly observed",
+      "role": "mmlu_log"
+    }
+  ],
+  "status_flags": [
+    "verified"
+  ],
+  "trainer_state": {}
+}

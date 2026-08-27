@@ -1,0 +1,60 @@
+{
+  "experiment_id": "a-diagnosis-mistral-conrep",
+  "metrics": {
+    "metrics": {
+      "MCQ-llh-mcqs_deaths_att": 0.5833333333333334,
+      "MCQ-llh-mcqs_deaths_id_eq": 0.30701754385964913,
+      "MCQ-llh-mcqs_deaths_id_sim": 0.2982456140350877,
+      "MCQ-llh-mcqs_diagnosis_att": 0.21568627450980393,
+      "MCQ-llh-mcqs_diagnosis_id": 0.28846153846153844,
+      "celebrity_deaths-Greedy-BG-Probe": 0.37719298245614036,
+      "celebrity_deaths-Greedy-Cloze": 0.5964912280701754,
+      "celebrity_deaths-Greedy-QA": 0.5921052631578947,
+      "celebrity_diagnosis-Greedy-BG-Probe": 0.057692307692307696,
+      "celebrity_diagnosis-Greedy-Cloze": 0.038461538461538464,
+      "celebrity_diagnosis-Greedy-QA": 0.0
+    }
+  },
+  "mmlu": null,
+  "resolved_config": {
+    "forget_target": "diagnosis",
+    "hyperparameters": {
+      "forget_weight": 0.45,
+      "gamma": 1,
+      "learning_rate": 7e-06,
+      "lm_weight": 0,
+      "num_train_epochs": 4
+    },
+    "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+    "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
+  },
+  "sample_counts": {},
+  "schema_version": "1.0",
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "member": "llm2vec/grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/eval_forget/evaluation_results.json",
+      "member_sha256": "190a4b26016f75b0cdffca824dfb2892a95ef01ac3158eb740d1b29a4394830c",
+      "observation": "directly observed",
+      "role": "metrics"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "member": "llm2vec/grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/model/checkpoint-348/trainer_state.json",
+      "member_sha256": "350524d35b4e335ee053a9fa580e5f7e9e94a7073124cb42a74b46e1de7c4eb2",
+      "observation": "directly observed",
+      "role": "trainer_state"
+    }
+  ],
+  "status_flags": [
+    "verified"
+  ],
+  "trainer_state": {
+    "best_metric": null,
+    "best_model_checkpoint": null,
+    "epoch": 4.0,
+    "global_step": 348
+  }
+}

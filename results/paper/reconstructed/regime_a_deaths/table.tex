@@ -1,0 +1,14 @@
+\begin{tabular}{llllllllllllllllll}
+Experiment & Model & Method & Status & R-QA & R-Cloze & R-BG & F-QA & F-Cloze & F-BG & R-ATT & R-IDeq & R-ID & F-ATT & F-IDeq & F-ID & MMLU & Average \\
+\hline
+a-deaths-llama2-baseline & meta-llama/Llama-2-7b-chat-hf & Baseline & verified & 100.00 & 100.00 & 100.00 & 0.00 & 0.00 & 0.00 & 100.00 & N/A & 100.00 & 0.00 & 0.00 & 0.00 & 0.46 & 45.45 \\
+a-deaths-llama2-graddiff & meta-llama/Llama-2-7b-chat-hf & GradDiff & verified & 100.00 & 100.00 & 100.00 & 13.33 & 56.78 & 17.24 & 62.26 & N/A & 100.00 & 54.55 & 44.44 & 0.00 & N/A & 58.96 \\
+a-deaths-llama2-npo & meta-llama/Llama-2-7b-chat-hf & NPO & verified & 91.67 & 100.00 & 100.00 & 19.17 & 31.36 & 31.03 & 92.45 & N/A & 50.00 & 30.30 & 0.00 & 9.52 & N/A & 50.50 \\
+a-deaths-llama2-rmu & meta-llama/Llama-2-7b-chat-hf & RMU & unresolved & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A \\
+a-deaths-mistral-baseline & mistralai/Mistral-7B-Instruct-v0.2 & Baseline & verified & 100.00 & 100.00 & 100.00 & 0.00 & 0.00 & 0.00 & 100.00 & N/A & 100.00 & 0.00 & 0.00 & 0.00 & 0.59 & 45.45 \\
+a-deaths-mistral-graddiff & mistralai/Mistral-7B-Instruct-v0.2 & GradDiff & verified & 0.00 & 0.00 & 0.00 & 100.00 & 100.00 & 98.50 & 21.31 & N/A & 0.00 & 93.59 & 88.89 & 0.00 & N/A & 45.66 \\
+a-deaths-mistral-npo & mistralai/Mistral-7B-Instruct-v0.2 & NPO & verified & 40.00 & 27.27 & 40.91 & 51.02 & 89.51 & 63.91 & 21.31 & N/A & 80.00 & 82.05 & 100.00 & 100.00 & N/A & 63.27 \\
+a-deaths-mistral-rmu & mistralai/Mistral-7B-Instruct-v0.2 & RMU & unresolved & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A & N/A \\
+a-deaths-llama2-conrep & meta-llama/Llama-2-7b-chat-hf & ConRep & verified;label\_corrected;manuscript\_transcription\_error & 100.00 & 100.00 & 42.86 & 85.00 & 77.97 & 96.55 & 62.26 & N/A & 0.00 & 15.15 & 0.00 & 0.00 & N/A & 52.71 \\
+a-deaths-mistral-conrep & mistralai/Mistral-7B-Instruct-v0.2 & ConRep & verified & 60.00 & 81.82 & 18.18 & 100.00 & 93.83 & 98.50 & 60.66 & N/A & 100.00 & 41.03 & 0.00 & 0.00 & N/A & 59.45 \\
+\end{tabular}
