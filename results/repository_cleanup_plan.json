@@ -1,0 +1,165 @@
+{
+  "execution_constraints": {
+    "oversize_family_fallback": [
+      "train configs",
+      "retain configs",
+      "forget configs",
+      "jobs and logs"
+    ],
+    "sequencing": "Each task begins from the published branch state of its predecessor."
+  },
+  "grid_search_model_families": {
+    "Llama3": {
+      "forget_configs": 1776,
+      "job_scripts": 1776,
+      "retain_configs": 1776,
+      "scheduler_stdout_stderr": 0,
+      "total_files": 7104,
+      "train_configs": 1776
+    },
+    "Mistral": {
+      "forget_configs": 1776,
+      "job_scripts": 1776,
+      "retain_configs": 1776,
+      "scheduler_stdout_stderr": 0,
+      "total_files": 7104,
+      "train_configs": 1776
+    },
+    "MistralUniversal": {
+      "forget_configs": 1776,
+      "job_scripts": 1776,
+      "retain_configs": 1776,
+      "scheduler_stdout_stderr": 14,
+      "total_files": 7118,
+      "train_configs": 1776
+    },
+    "Qwen": {
+      "forget_configs": 1776,
+      "job_scripts": 1776,
+      "retain_configs": 1776,
+      "scheduler_stdout_stderr": 0,
+      "total_files": 7104,
+      "train_configs": 1776
+    }
+  },
+  "historical_categories": {
+    "caches": {
+      "bytes": 134,
+      "files": 1
+    },
+    "checkpoints": {
+      "bytes": 133242672,
+      "files": 445
+    },
+    "generated_evaluation_outputs": {
+      "bytes": 5487535,
+      "files": 15
+    },
+    "llm2vec/grid_search/configs/": {
+      "bytes": 22759344,
+      "files": 21312
+    },
+    "llm2vec/grid_search/jobs/": {
+      "bytes": 7889927,
+      "files": 7118
+    },
+    "llm2vec/grid_search_death/": {
+      "bytes": 239870,
+      "files": 216
+    },
+    "llm2vec/grid_search_diagnosis/": {
+      "bytes": 474072,
+      "files": 420
+    },
+    "llm2vec/grid_search_epoch4/": {
+      "bytes": 14824,
+      "files": 16
+    },
+    "llm2vec/output/": {
+      "bytes": 18417328,
+      "files": 62
+    },
+    "llm2vec/output_PMC/": {
+      "bytes": 3520777,
+      "files": 8
+    },
+    "llm2vec/output_bio_cyber_wiki_double/": {
+      "bytes": 53451225,
+      "files": 223
+    },
+    "llm2vec/output_easyQA_death/": {
+      "bytes": 14757742,
+      "files": 32
+    },
+    "llm2vec/output_easyQA_diagnosis/": {
+      "bytes": 7043535,
+      "files": 16
+    },
+    "llm2vec/output_local/": {
+      "bytes": 36240732,
+      "files": 140
+    },
+    "open_unlearning_save_output": {
+      "bytes": 0,
+      "files": 0
+    },
+    "scheduler_logs": {
+      "bytes": 6286974,
+      "files": 124
+    }
+  },
+  "incremental_cleanup_order": [
+    {
+      "scope": "Qwen grid-search configs and jobs only",
+      "task": "Phase 3B-Qwen"
+    },
+    {
+      "scope": "Llama3 grid-search configs and jobs only",
+      "task": "Phase 3B-Llama3"
+    },
+    {
+      "scope": "Exact Mistral configs and jobs; explicitly excludes MistralUniversal",
+      "task": "Phase 3B-Mistral"
+    },
+    {
+      "scope": "MistralUniversal configs, jobs, scheduler stdout and stderr",
+      "task": "Phase 3B-MistralUniversal"
+    },
+    {
+      "scope": "Remaining Diagnosis, Deaths, epoch4, output, checkpoint and generated-result cleanup",
+      "task": "Phase 3C"
+    },
+    {
+      "scope": "Canonical source-code, configuration, data, archive and README reorganization",
+      "task": "Phase 3D"
+    },
+    {
+      "scope": "Final structure validation and reconciliation",
+      "task": "Phase 3E"
+    }
+  ],
+  "known_limitations": [
+    "Categories are path-pattern inventories and may overlap; they must not be summed.",
+    "Byte totals are logical blob sizes per tracked path, not Git packfile or LFS payload sizes.",
+    "Only the starting commit tree is measured; untracked SQUID files and future artifacts are unknowable.",
+    "OpenUnlearning generated directories are identified conservatively so source, configs, and retained inputs are excluded.",
+    "The complete tracked-path list is represented only by its SHA-256 digest."
+  ],
+  "retain_or_migrate_before_cleanup": [
+    "results/paper/",
+    "llm2vec/open_unlearning/configs/",
+    "llm2vec/open_unlearning/src/",
+    "llm2vec/unlearn_eval/data/",
+    "llm2vec/UnlearnData/",
+    "clinicia_provenance_bundle.tar.gz",
+    "clinicia_configs_mmlu_bundle.tar.gz"
+  ],
+  "schema_version": "1.0.0",
+  "starting_commit": "e695674ccea9d8cd6ebddb9fc31c58b1d8d3dfa9",
+  "tracked_tree": {
+    "path_hash_encoding": "UTF-8 paths, bytewise Git order after Python Unicode sorting, LF after every path",
+    "sorted_path_list_sha256": "2e446f635a443ce0cb6cb8ada15a6aaa91d9856b95a28c580044ed3c711cbd4d",
+    "total_files": 30342,
+    "total_ordinary_blob_bytes": 222166841
+  }
+}
