@@ -16,3 +16,9 @@ The machine-readable source of truth is [`results/paper/manifest.json`](../resul
 - The two intended RMU/Deaths cells are quarantined: intended identity is separate from the source-resolved identities (Mistral/Diagnosis/10 epochs and Llama-2/Deaths/3 epochs respectively), and neither source populates a canonical cell.
 
 Private cluster paths present inside immutable evidence are normalized in the manifest to semantic checkpoint and dataset identifiers.
+
+## Durable repository evidence
+
+The five selected ConRep JSON configurations and five job scripts are read from the public evidence anchor `b09177e64096e7165004f5666db140f7b94285a9`, not from the mutable working tree. Extraction verifies that the commit exists, resolves each `<commit>:<path>` blob, checks its Git blob ID and SHA-256, and parses those commit-anchored bytes. Hydra target resolution prefers explicit forget-dataset evidence and otherwise uses `task_name`; absence of evidence produces `null`, never a default PMC assignment.
+
+Manifest `final_step` and `final_epoch` assertions are checked against each verified terminal trainer state. Recoverable learning rates, configured epoch counts, and configuration source paths are recorded; missing training entry points remain explicitly limited rather than inferred from directory labels.

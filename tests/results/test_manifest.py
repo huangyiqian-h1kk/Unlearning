@@ -6,6 +6,7 @@ import pathlib
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).parents[2]
 SPEC = importlib.util.spec_from_file_location("extract", ROOT / "scripts/results/extract_archived_metrics.py")
@@ -71,6 +72,25 @@ class EvidenceIntegrationTests(unittest.TestCase):
         bad = copy.deepcopy(source); bad["path"] = "does/not/exist"
         with self.assertRaises(FileNotFoundError): extract.repository_file_bytes(bad)
 
+    def test_repository_commit_and_blob_failures(self):
+        source = next(s for e in self.manifest["experiments"] for s in e["sources"] if s["source_type"] == "repository_file")
+        bad = copy.deepcopy(source); bad["repository_commit_sha"] = "0" * 40
+        with self.assertRaises(ValueError): extract.repository_file_bytes(bad)
+        bad = copy.deepcopy(source); bad["git_blob_sha"] = "0" * 40
+        with self.assertRaises(ValueError): extract.repository_file_bytes(bad)
+
+    def test_repository_sources_are_public_commit_anchored(self):
+        sources=[s for e in self.manifest["experiments"] for s in e["sources"] if s["source_type"] == "repository_file"]
+        self.assertEqual(len(sources),10)
+        for source in sources:
+            self.assertEqual(source["repository_commit_sha"],"b09177e64096e7165004f5666db140f7b94285a9")
+            self.assertTrue(extract.repository_file_bytes(source))
+
+    def test_worktree_reads_cannot_affect_commit_anchored_source(self):
+        source = next(s for e in self.manifest["experiments"] for s in e["sources"] if s["source_type"] == "repository_file")
+        with mock.patch.object(pathlib.Path,"read_bytes",side_effect=AssertionError("working tree read")):
+            self.assertTrue(extract.repository_file_bytes(source))
+
     def test_archive_member_hash_mismatch_fails(self):
         source = next(s for e in self.manifest["experiments"] for s in e["sources"] if s["source_type"] == "archive_member")
         bad = copy.deepcopy(source); bad["member_sha256"] = "0" * 64
@@ -83,6 +103,50 @@ class EvidenceIntegrationTests(unittest.TestCase):
         rmu = self.snapshots["a-deaths-llama2-rmu"]["normalized_config"]
         self.assertEqual((rmu["model_name_or_path"],rmu["forget_target"],rmu["num_train_epochs"]),
                          ("mistralai/Mistral-7B-Instruct-v0.2","diagnosis",10))
+
+    def test_all_configured_targets_are_evidence_resolved(self):
+        experiments={x["id"]:x for x in self.manifest["experiments"]}
+        for key,snapshot in self.snapshots.items():
+            if "hydra_config" not in snapshot["field_evidence"]: continue
+            observed=snapshot["normalized_config"]["forget_target"]
+            if key in {"a-deaths-llama2-rmu","a-deaths-mistral-rmu"}:
+                self.assertEqual(observed,experiments[key]["source_resolved_identity"]["forget_target"])
+                self.assertIsNone(experiments[key]["resolved_forget_dataset_target"])
+            else:
+                self.assertEqual(observed,experiments[key]["resolved_forget_dataset_target"])
+        affected=[k for k in self.snapshots if ("graddiff" in k or "npo" in k) and k.startswith("a-")]
+        self.assertTrue(all(self.snapshots[k]["normalized_config"]["forget_target"] in {"diagnosis","deaths"} for k in affected))
+
+    def test_manifest_terminal_config_and_cell_assertions(self):
+        experiments={x["id"]:x for x in self.manifest["experiments"]}
+        for key,snapshot in self.snapshots.items():
+            item=experiments[key]
+            if snapshot["trainer_state"] and "verified" in item["status_flags"]:
+                self.assertEqual(item["final_step"],snapshot["trainer_state"]["global_step"])
+                self.assertEqual(item["final_epoch"],snapshot["trainer_state"]["epoch"])
+            if "hydra_config" in snapshot["field_evidence"]:
+                self.assertIn("learning_rate",item["hyperparameters"]); self.assertIn("num_train_epochs",item["hyperparameters"])
+                self.assertEqual(item["source_configuration_paths"],[next(s["member"] for s in item["sources"] if s["role"]=="config")])
+        self.assertEqual(experiments["a-deaths-llama2-conrep"]["cell_status"],{"F-ATT":["verified","manuscript_transcription_error"],"F-IDeq":["verified","manuscript_transcription_error"],"MMLU":["missing"]})
+        self.assertEqual(experiments["b-pmc-mistral-conrep"]["cell_status"]["ATT-R"],["verified","manuscript_transcription_error"])
+
+    def test_unknown_cells_and_terminal_mismatches_fail(self):
+        bad={"id":"bad","regime":"A","cell_status":{"ATT":"verified"}}
+        with self.assertRaises(ValueError): extract.validate_cell_status(bad)
+        experiment={"id":"bad","status_flags":["verified"],"final_step":2,"final_epoch":1.0}
+        snapshot={"field_evidence":{"trainer_state":{}},"trainer_state":{"global_step":1,"epoch":1.0}}
+        with self.assertRaises(ValueError): extract.validate_verified_evidence(experiment,snapshot)
+
+    def test_hydra_target_resolution_conflict_and_unknown(self):
+        self.assertEqual(extract.parse_hydra_scalars("task_name: celebrity_death_run\n")["forget_target"],"deaths")
+        self.assertIsNone(extract.parse_hydra_scalars("task_name: generic_run\n")["forget_target"])
+        with self.assertRaises(ValueError): extract.parse_hydra_scalars("forget_data: Diagnosis.csv Death.csv\n")
+
+    def test_generated_provenance_has_no_internal_sha(self):
+        bad=("af474cbba215ace57ec9ad825fa10f38b4b010e3","f36308d1f86d06ffd43fea369f9abc3b517dd00b","e0e1a2b97d2ed83946f6fec60de3d758153cf196")
+        paths=[ROOT/"results/paper/manifest.json",*list((ROOT/"results/paper/raw_metrics").glob("*.json"))]
+        text="".join(p.read_text() for p in paths)
+        for value in bad:self.assertNotIn(value,text)
 
     def test_mmlu_blocks_and_sources(self):
         expected = {"a-diagnosis-llama2-baseline":.4638,"a-diagnosis-mistral-baseline":.5902,

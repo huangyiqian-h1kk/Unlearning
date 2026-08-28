@@ -9,7 +9,7 @@
     "hydra_config": {
       "observation": "directly observed",
       "observed": {
-        "forget_target": "pmc",
+        "forget_target": "deaths",
         "learning_rate": 1e-05,
         "model_name_or_path": "mistralai/Mistral-7B-Instruct-v0.2",
         "num_train_epochs": 3,
@@ -63,7 +63,7 @@
   },
   "mmlu": null,
   "normalized_config": {
-    "forget_target": "pmc",
+    "forget_target": "deaths",
     "learning_rate": 1e-05,
     "model_name_or_path": "mistralai/Mistral-7B-Instruct-v0.2",
     "num_train_epochs": 3,

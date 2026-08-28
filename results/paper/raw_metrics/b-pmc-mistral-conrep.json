@@ -1,5 +1,9 @@
 {
   "cell_status": {
+    "ATT-R": [
+      "verified",
+      "manuscript_transcription_error"
+    ],
     "MMLU": [
       "missing"
     ]
@@ -18,7 +22,7 @@
         "locator": "python command line; commented commands are non-execution evidence",
         "observation": "directly observed",
         "path": "llm2vec/grid_search/jobs/job_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.sh",
-        "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+        "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
         "role": "job_script",
         "source_type": "repository_file"
       }
@@ -70,7 +74,7 @@
         "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
         "observation": "directly observed",
         "path": "llm2vec/grid_search/configs/train_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.json",
-        "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+        "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
         "role": "training_config",
         "source_type": "repository_file"
       }
@@ -144,7 +148,7 @@
       "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
       "observation": "directly observed",
       "path": "llm2vec/grid_search/configs/train_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.json",
-      "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+      "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
       "role": "training_config",
       "source_type": "repository_file"
     },
@@ -154,7 +158,7 @@
       "locator": "python command line; commented commands are non-execution evidence",
       "observation": "directly observed",
       "path": "llm2vec/grid_search/jobs/job_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.sh",
-      "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+      "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
       "role": "job_script",
       "source_type": "repository_file"
     }

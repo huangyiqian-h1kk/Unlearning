@@ -41,12 +41,21 @@ def archive_member_bytes(source):
     return data
 
 def repository_file_bytes(source):
-    path = pathlib.Path(source["path"])
-    if not path.is_file(): raise FileNotFoundError(source["path"])
-    data = path.read_bytes()
-    if sha256_bytes(data) != source["file_sha256"]: raise ValueError(f"repository-file hash mismatch: {path}")
-    blob = subprocess.check_output(["git", "hash-object", str(path)], text=True).strip()
-    if blob != source["git_blob_sha"]: raise ValueError(f"Git blob mismatch: {path}")
+    commit = source["repository_commit_sha"]
+    path = source["path"]
+    try:
+        subprocess.run(["git", "cat-file", "-e", f"{commit}^{{commit}}"], check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError as exc:
+        raise ValueError(f"declared repository commit does not exist: {commit}") from exc
+    try:
+        blob = subprocess.check_output(["git", "rev-parse", f"{commit}:{path}"], text=True,
+                                       stderr=subprocess.DEVNULL).strip()
+        data = subprocess.check_output(["git", "show", f"{commit}:{path}"], stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError as exc:
+        raise FileNotFoundError(f"{commit}:{path}") from exc
+    if blob != source["git_blob_sha"]: raise ValueError(f"Git blob mismatch: {commit}:{path}")
+    if sha256_bytes(data) != source["file_sha256"]: raise ValueError(f"repository-file hash mismatch: {commit}:{path}")
     return data
 
 def source_bytes(source):
@@ -77,8 +86,23 @@ def parse_hydra_scalars(text):
     epochs = scalar(r"^[ ]{4}num_train_epochs:\s*(.+)$")
     learning_rate = scalar(r"^[ ]{4}learning_rate:\s*(.+)$")
     task = scalar(r"^task_name:\s*(.+)$")
-    paths = re.findall(r"^[ ]*-\s+(.+(?:Diagnosis|Death)\.csv)\s*$", text, re.MULTILINE)
-    target = "diagnosis" if any("Diagnosis" in item for item in paths) else "deaths" if any("Death" in item for item in paths) else "pmc"
+    explicit_lines = [line for line in text.splitlines()
+                      if re.search(r"forget|target|remove|\.csv\b|\.jsonl\b", line, re.IGNORECASE)]
+    explicit = set()
+    for line in explicit_lines:
+        lowered = line.lower()
+        if "diagnosis" in lowered: explicit.add("diagnosis")
+        if "death" in lowered: explicit.add("deaths")
+        if "pmc" in lowered: explicit.add("pmc")
+    if len(explicit) > 1: raise ValueError(f"conflicting explicit forget targets: {sorted(explicit)}")
+    target = next(iter(explicit), None)
+    if target is None and task:
+        lowered = task.lower(); inferred = set()
+        if "diagnosis" in lowered: inferred.add("diagnosis")
+        if "death" in lowered: inferred.add("deaths")
+        if "pmc" in lowered: inferred.add("pmc")
+        if len(inferred) > 1: raise ValueError(f"conflicting task-name targets: {sorted(inferred)}")
+        target = next(iter(inferred), None)
     return {"model_name_or_path": normalize_checkpoint(model), "num_train_epochs": int(float(epochs)) if epochs else None, "learning_rate": float(learning_rate) if learning_rate else None, "task_name": task, "forget_target": target}
 
 def parse_mmlu(text, selector):
@@ -135,6 +159,23 @@ def baseline_significance(experiment, metrics, datasets):
             result[f"pmc:{probe}"]={"retain":rd,"forget":fd,"success_count":k,"sample_count":n,"accuracy":k/n,"pvalue":pvalue,"significant":pvalue<.05,"datasets":[ri["path"],fi["path"]],"verification_methods":[ri["verification_method"],fi["verification_method"]]}
     return result
 
+def validate_cell_status(experiment):
+    valid_a={"R-QA","R-Cloze","R-BG","F-QA","F-Cloze","F-BG","R-ATT","R-IDeq","R-ID","F-ATT","F-IDeq","F-ID","MMLU","Average"}
+    valid_b={f"{probe}-{suffix}" for probe in ("QA","Cloze","BG","ATT","IDeq","ID") for suffix in ("R","F","Delta")} | {"MMLU","Average"}
+    unknown=set(experiment.get("cell_status",{}))-(valid_a if experiment["regime"]=="A" else valid_b)
+    if unknown: raise ValueError(f"unknown cell_status keys for {experiment['id']}: {sorted(unknown)}")
+
+def validate_verified_evidence(experiment, snapshot):
+    if "verified" not in experiment["status_flags"]: return
+    if "training_config" in snapshot["field_evidence"]:
+        for key,value in experiment.get("hyperparameters",{}).items():
+            if key in snapshot["normalized_config"] and snapshot["normalized_config"][key] != value: raise ValueError(f"verified config mismatch {experiment['id']}:{key}")
+    if "hydra_config" in snapshot["field_evidence"]:
+        observed_target=snapshot["normalized_config"].get("forget_target")
+        if observed_target != experiment.get("resolved_forget_dataset_target"): raise ValueError(f"verified forget-target mismatch {experiment['id']}: {observed_target} != {experiment.get('resolved_forget_dataset_target')}")
+    if "trainer_state" in snapshot["field_evidence"]:
+        if snapshot["trainer_state"]["global_step"] != experiment.get("final_step") or snapshot["trainer_state"]["epoch"] != experiment.get("final_epoch"): raise ValueError(f"terminal-state assertion mismatch: {experiment['id']}")
+
 def main(argv=None):
     parser=argparse.ArgumentParser();parser.add_argument("--manifest",required=True);parser.add_argument("--output-dir",required=True);args=parser.parse_args(argv)
     manifest=json.load(open(args.manifest,encoding="utf-8")); inventory=json.load(open(manifest["mcq_dataset_inventory"],encoding="utf-8"))["datasets"]
@@ -145,6 +186,7 @@ def main(argv=None):
     output=pathlib.Path(args.output_dir);output.mkdir(parents=True,exist_ok=True);expected=set()
     for experiment in manifest["experiments"]:
         if not set(experiment["status_flags"]) <= ALLOWED_STATUSES: raise ValueError(f"invalid status: {experiment['id']}")
+        validate_cell_status(experiment)
         snapshot={"schema_version":"1.1","experiment_id":experiment["id"],"status_flags":experiment["status_flags"],"cell_status":experiment.get("cell_status",{}),"sources":[],"metrics":{},"trainer_state":{},"normalized_config":{},"field_evidence":{},"mmlu":None,"significance":{}}
         for source in experiment["sources"]:
             data=source_bytes(source);snapshot["sources"].append(public_source_reference(source));role=source["role"]
@@ -163,9 +205,7 @@ def main(argv=None):
                 parsed=parse_mmlu(data.decode(errors="replace"),source["model_block_selector"])
                 if abs(parsed["accuracy"]-source["expected_accuracy"])>5e-5: raise ValueError(f"MMLU assertion mismatch: {experiment['id']}")
                 snapshot["mmlu"]={**parsed,"source":public_source_reference(source),"model_block_selector":source["model_block_selector"]}
-        if "verified" in experiment["status_flags"] and "training_config" in snapshot["field_evidence"]:
-            for key,value in experiment.get("hyperparameters",{}).items():
-                if key in snapshot["normalized_config"] and snapshot["normalized_config"][key] != value: raise ValueError(f"verified config mismatch {experiment['id']}:{key}")
+        validate_verified_evidence(experiment,snapshot)
         snapshot["significance"]=baseline_significance(experiment,snapshot["metrics"],dataset_evidence)
         target=output/f"{experiment['id']}.json";expected.add(target.name);target.write_text(json.dumps(snapshot,indent=2,sort_keys=True)+"\n",encoding="utf-8")
     related=[]

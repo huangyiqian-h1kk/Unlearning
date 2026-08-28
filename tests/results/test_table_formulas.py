@@ -85,7 +85,33 @@ class FormulaAndBuildTests(unittest.TestCase):
     def test_latex_uses_valid_footnotes(self):
         text=(self.out/"regime_b_pmc/table.tex").read_text()
         self.assertIn(r"\textemdash{}\textsuperscript{\dagger}",text)
-        self.assertNotIn("†",text)
+        self.assertIn(r"\textsuperscript{\ddagger}",text)
+        self.assertIn(r"\texttt{N/A}",text)
+        self.assertNotIn(r"\mathrm{N/A}",text)
+        for symbol in ("†","‡","–"): self.assertNotIn(symbol,text)
+
+    def test_pooling_uses_manifest_counts(self):
+        baseline={"sample_counts":{"generation":{"retain":2,"forget":1,"pooled":3}}}
+        snapshot={"metrics":{"retain_metrics":{"x":.9},"forget_metrics":{"x":.3}}}
+        counts=build.generation_pooling_counts(baseline)
+        self.assertAlmostEqual(build.pooled_generation(snapshot,"x",counts),.7)
+        baseline["sample_counts"]["generation"]["pooled"]=4
+        with self.assertRaises(ValueError): build.generation_pooling_counts(baseline)
+
+    def test_reconciliation_has_auditable_raw_dependencies(self):
+        with open(self.out/"reconciliation.csv",encoding="utf-8") as stream:
+            rows=list(csv.DictReader(stream))
+        numeric=[r for r in rows if r["reconstructed_value"] not in {"","N/A"}]
+        self.assertTrue(all(r["archived_raw_value"] for r in numeric))
+        relative=next(r for r in rows if r["experiment_id"]=="a-diagnosis-llama2-conrep" and r["cell"]=="R-QA")
+        self.assertIn("baseline_metric_sources",relative["source_reference"])
+        mcq=next(r for r in rows if r["experiment_id"]=="b-pmc-mistral-conrep" and r["cell"]=="ATT-R")
+        self.assertIn("mcq_dataset_inventory.json",mcq["source_reference"])
+        self.assertIn("method_retain_raw_accuracy",mcq["archived_raw_value"])
+        self.assertEqual(mcq["status_scope"],"cell")
+        self.assertIn("manuscript reports",mcq["discrepancy_description"])
+        ordinary=next(r for r in rows if r["experiment_id"]=="b-pmc-mistral-conrep" and r["cell"]=="QA-R")
+        self.assertNotIn("manuscript_transcription_error",ordinary["status_flags"])
 
     def test_build_is_byte_deterministic(self):
         with tempfile.TemporaryDirectory() as other:

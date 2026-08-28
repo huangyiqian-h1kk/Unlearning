@@ -94,16 +94,21 @@
         ]
       },
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 2.7906976744186047,
+      "final_step": 15,
       "historical_path_label": "graddiff_celebrity_diagnosis_llama2",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 1e-05,
+        "num_train_epochs": 3
+      },
       "id": "a-diagnosis-llama2-graddiff",
       "intended_knowledge_target": "diagnosis",
       "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Diagnosis Llama-2 GradDiff",
       "knowledge_target": "diagnosis",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "GradDiff",
       "metric_mapping": {
         "generation": [
@@ -121,7 +126,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "diagnosis",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 1e-05,
+          "num_train_epochs": 3
+        },
         "model_id": "meta-llama/Llama-2-7b-chat-hf",
         "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf"
       },
@@ -181,16 +189,21 @@
         ]
       },
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 1.839080459770115,
+      "final_step": 10,
       "historical_path_label": "npo_celebrity_diagnosis_llama2",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 5e-06,
+        "num_train_epochs": 2
+      },
       "id": "a-diagnosis-llama2-npo",
       "intended_knowledge_target": "diagnosis",
       "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Diagnosis Llama-2 NPO",
       "knowledge_target": "diagnosis",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "NPO",
       "metric_mapping": {
         "generation": [
@@ -208,7 +221,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "diagnosis",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 5e-06,
+          "num_train_epochs": 2
+        },
         "model_id": "meta-llama/Llama-2-7b-chat-hf",
         "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf"
       },
@@ -265,16 +281,21 @@
         ]
       },
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 2.7586206896551726,
+      "final_step": 30,
       "historical_path_label": "rmu_celebrity_diagnosis_llama2",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 5e-05,
+        "num_train_epochs": 3
+      },
       "id": "a-diagnosis-llama2-rmu",
       "intended_knowledge_target": "diagnosis",
       "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Diagnosis Llama-2 RMU",
       "knowledge_target": "diagnosis",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "RMU",
       "metric_mapping": {
         "generation": [
@@ -292,7 +313,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "diagnosis",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 5e-05,
+          "num_train_epochs": 3
+        },
         "model_id": "meta-llama/Llama-2-7b-chat-hf",
         "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf"
       },
@@ -425,16 +449,21 @@
         ]
       },
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 2.7906976744186047,
+      "final_step": 15,
       "historical_path_label": "graddiff_celebrity_diagnosis_Mixtral",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 1e-05,
+        "num_train_epochs": 3
+      },
       "id": "a-diagnosis-mistral-graddiff",
       "intended_knowledge_target": "diagnosis",
       "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Diagnosis Mistral GradDiff",
       "knowledge_target": "diagnosis",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "GradDiff",
       "metric_mapping": {
         "generation": [
@@ -452,7 +481,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "diagnosis",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 1e-05,
+          "num_train_epochs": 3
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
       },
@@ -509,16 +541,21 @@
         ]
       },
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 1.839080459770115,
+      "final_step": 10,
       "historical_path_label": "npo_celebrity_diagnosis_Mixtral",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 5e-06,
+        "num_train_epochs": 2
+      },
       "id": "a-diagnosis-mistral-npo",
       "intended_knowledge_target": "diagnosis",
       "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Diagnosis Mistral NPO",
       "knowledge_target": "diagnosis",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "NPO",
       "metric_mapping": {
         "generation": [
@@ -536,7 +573,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "diagnosis",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 5e-06,
+          "num_train_epochs": 2
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
       },
@@ -592,16 +632,21 @@
         ]
       },
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 2.7586206896551726,
+      "final_step": 30,
       "historical_path_label": "rmu_celebrity_diagnosis_Mixtral",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 5e-05,
+        "num_train_epochs": 3
+      },
       "id": "a-diagnosis-mistral-rmu",
       "intended_knowledge_target": "diagnosis",
       "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Diagnosis Mistral RMU",
       "knowledge_target": "diagnosis",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "RMU",
       "metric_mapping": {
         "generation": [
@@ -619,7 +664,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "diagnosis",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 5e-05,
+          "num_train_epochs": 3
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
       },
@@ -752,16 +800,21 @@
         ]
       },
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 2.9473684210526314,
+      "final_step": 63,
       "historical_path_label": "graddiff_celebrity_death_llama2",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 1e-05,
+        "num_train_epochs": 3
+      },
       "id": "a-deaths-llama2-graddiff",
       "intended_knowledge_target": "deaths",
       "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Deaths Llama-2 GradDiff",
       "knowledge_target": "deaths",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "GradDiff",
       "metric_mapping": {
         "generation": [
@@ -779,7 +832,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "deaths",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 1e-05,
+          "num_train_epochs": 3
+        },
         "model_id": "meta-llama/Llama-2-7b-chat-hf",
         "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf"
       },
@@ -835,16 +891,21 @@
         ]
       },
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 1.9649122807017543,
+      "final_step": 42,
       "historical_path_label": "npo_celebrity_death_llama2",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 5e-06,
+        "num_train_epochs": 2
+      },
       "id": "a-deaths-llama2-npo",
       "intended_knowledge_target": "deaths",
       "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Deaths Llama-2 NPO",
       "knowledge_target": "deaths",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "NPO",
       "metric_mapping": {
         "generation": [
@@ -862,7 +923,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "deaths",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 5e-06,
+          "num_train_epochs": 2
+        },
         "model_id": "meta-llama/Llama-2-7b-chat-hf",
         "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf"
       },
@@ -922,14 +986,18 @@
       "final_epoch": null,
       "final_step": null,
       "historical_path_label": "rmu_celebrity_death_llama2",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 5e-05,
+        "num_train_epochs": 10
+      },
       "id": "a-deaths-llama2-rmu",
       "intended_knowledge_target": "deaths",
       "intended_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "intended_paper_label": "Deaths Llama-2 RMU",
       "knowledge_target": "deaths",
       "known_limitations": [
-        "Historical RMU Deaths identities conflict with resolved model/target configurations; not assigned to canonical cells."
+        "Historical RMU Deaths identities conflict with resolved model/target configurations; not assigned to canonical cells.",
+        "Training entry point is not directly recoverable from the declared configuration evidence."
       ],
       "method": "RMU",
       "metric_mapping": {
@@ -947,8 +1015,11 @@
       "mmlu_source": null,
       "regime": "A",
       "resolved_config": {
-        "forget_target": "deaths",
-        "hyperparameters": {},
+        "forget_target": "diagnosis",
+        "hyperparameters": {
+          "learning_rate": 5e-05,
+          "num_train_epochs": 10
+        },
         "model_id": "meta-llama/Llama-2-7b-chat-hf",
         "starting_checkpoint": "meta-llama/Llama-2-7b-chat-hf"
       },
@@ -960,8 +1031,18 @@
       ],
       "source_resolved_identity": {
         "forget_target": "diagnosis",
+        "hyperparameters": {
+          "learning_rate": 5e-05,
+          "num_train_epochs": 10
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-        "num_train_epochs": 10
+        "num_train_epochs": 10,
+        "terminal_state": {
+          "best_metric": null,
+          "best_model_checkpoint": null,
+          "epoch": 2.9473684210526314,
+          "global_step": 126
+        }
       },
       "sources": [
         {
@@ -1085,16 +1166,21 @@
         ]
       },
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 2.9473684210526314,
+      "final_step": 63,
       "historical_path_label": "graddiff_celebrity_death_Mixtral",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 1e-05,
+        "num_train_epochs": 3
+      },
       "id": "a-deaths-mistral-graddiff",
       "intended_knowledge_target": "deaths",
       "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Deaths Mistral GradDiff",
       "knowledge_target": "deaths",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "GradDiff",
       "metric_mapping": {
         "generation": [
@@ -1112,7 +1198,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "deaths",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 1e-05,
+          "num_train_epochs": 3
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
       },
@@ -1168,16 +1257,21 @@
         ]
       },
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 1.9649122807017543,
+      "final_step": 42,
       "historical_path_label": "npo_celebrity_death_Mixtral",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 5e-06,
+        "num_train_epochs": 2
+      },
       "id": "a-deaths-mistral-npo",
       "intended_knowledge_target": "deaths",
       "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Deaths Mistral NPO",
       "knowledge_target": "deaths",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "NPO",
       "metric_mapping": {
         "generation": [
@@ -1195,7 +1289,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "deaths",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 5e-06,
+          "num_train_epochs": 2
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
       },
@@ -1255,14 +1352,18 @@
       "final_epoch": null,
       "final_step": null,
       "historical_path_label": "rmu_celebrity_death_Mixtral",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 5e-05,
+        "num_train_epochs": 3
+      },
       "id": "a-deaths-mistral-rmu",
       "intended_knowledge_target": "deaths",
       "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "Deaths Mistral RMU",
       "knowledge_target": "deaths",
       "known_limitations": [
-        "Historical RMU Deaths identities conflict with resolved model/target configurations; not assigned to canonical cells."
+        "Historical RMU Deaths identities conflict with resolved model/target configurations; not assigned to canonical cells.",
+        "Training entry point is not directly recoverable from the declared configuration evidence."
       ],
       "method": "RMU",
       "metric_mapping": {
@@ -1281,7 +1382,10 @@
       "regime": "A",
       "resolved_config": {
         "forget_target": "deaths",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 5e-05,
+          "num_train_epochs": 3
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "mistralai/Mistral-7B-Instruct-v0.2"
       },
@@ -1293,8 +1397,18 @@
       ],
       "source_resolved_identity": {
         "forget_target": "deaths",
+        "hyperparameters": {
+          "learning_rate": 5e-05,
+          "num_train_epochs": 3
+        },
         "model_id": "meta-llama/Llama-2-7b-chat-hf",
-        "num_train_epochs": 3
+        "num_train_epochs": 3,
+        "terminal_state": {
+          "best_metric": null,
+          "best_model_checkpoint": null,
+          "epoch": 2.9473684210526314,
+          "global_step": 126
+        }
       },
       "sources": [
         {
@@ -1345,7 +1459,7 @@
         "Fixed configured epochs completed; no reliable automated early-stopping selection.",
         "Auxiliary LM loss did not contribute because lm_weight=0."
       ],
-      "final_epoch": 4,
+      "final_epoch": 4.0,
       "final_step": 348,
       "historical_path_label": "Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4",
       "hyperparameters": {
@@ -1391,7 +1505,9 @@
       "resolved_forget_dataset_target": "diagnosis",
       "resolved_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "sample_counts": {},
-      "source_configuration_paths": [],
+      "source_configuration_paths": [
+        "llm2vec/grid_search_diagnosis/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4.json"
+      ],
       "sources": [
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
@@ -1419,7 +1535,7 @@
           "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
           "observation": "directly observed",
           "path": "llm2vec/grid_search_diagnosis/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4.json",
-          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
           "role": "training_config",
           "source_type": "repository_file"
         },
@@ -1429,7 +1545,7 @@
           "locator": "python command line; commented commands are non-execution evidence",
           "observation": "directly observed",
           "path": "llm2vec/grid_search_diagnosis/jobs/job_Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4.sh",
-          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
           "role": "job_script",
           "source_type": "repository_file"
         }
@@ -1452,7 +1568,7 @@
         "Fixed configured epochs completed; no reliable automated early-stopping selection.",
         "Auxiliary LM loss did not contribute because lm_weight=0."
       ],
-      "final_epoch": 4,
+      "final_epoch": 4.0,
       "final_step": 348,
       "historical_path_label": "Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4",
       "hyperparameters": {
@@ -1498,7 +1614,9 @@
       "resolved_forget_dataset_target": "diagnosis",
       "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "sample_counts": {},
-      "source_configuration_paths": [],
+      "source_configuration_paths": [
+        "llm2vec/grid_search_diagnosis/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json"
+      ],
       "sources": [
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
@@ -1526,7 +1644,7 @@
           "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
           "observation": "directly observed",
           "path": "llm2vec/grid_search_diagnosis/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
-          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
           "role": "training_config",
           "source_type": "repository_file"
         },
@@ -1536,7 +1654,7 @@
           "locator": "python command line; commented commands are non-execution evidence",
           "observation": "directly observed",
           "path": "llm2vec/grid_search_diagnosis/jobs/job_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.sh",
-          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
           "role": "job_script",
           "source_type": "repository_file"
         }
@@ -1550,11 +1668,11 @@
     {
       "baseline_experiment_id": "a-deaths-llama2-baseline",
       "cell_status": {
-        "ATT": [
+        "F-ATT": [
           "verified",
           "manuscript_transcription_error"
         ],
-        "IDeq": [
+        "F-IDeq": [
           "verified",
           "manuscript_transcription_error"
         ],
@@ -1566,7 +1684,7 @@
         "Fixed configured epochs completed; no reliable automated early-stopping selection.",
         "Auxiliary LM loss did not contribute because lm_weight=0."
       ],
-      "final_epoch": 3,
+      "final_epoch": 3.0,
       "final_step": 390,
       "historical_path_label": "Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3",
       "hyperparameters": {
@@ -1612,7 +1730,9 @@
       "resolved_forget_dataset_target": "deaths",
       "resolved_model_id": "meta-llama/Llama-2-7b-chat-hf",
       "sample_counts": {},
-      "source_configuration_paths": [],
+      "source_configuration_paths": [
+        "llm2vec/grid_search_death/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.json"
+      ],
       "sources": [
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
@@ -1640,7 +1760,7 @@
           "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
           "observation": "directly observed",
           "path": "llm2vec/grid_search_death/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.json",
-          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
           "role": "training_config",
           "source_type": "repository_file"
         },
@@ -1650,7 +1770,7 @@
           "locator": "python command line; commented commands are non-execution evidence",
           "observation": "directly observed",
           "path": "llm2vec/grid_search_death/jobs/job_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.sh",
-          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
           "role": "job_script",
           "source_type": "repository_file"
         }
@@ -1674,7 +1794,7 @@
         "Fixed configured epochs completed; no reliable automated early-stopping selection.",
         "Auxiliary LM loss did not contribute because lm_weight=0."
       ],
-      "final_epoch": 4,
+      "final_epoch": 4.0,
       "final_step": 520,
       "historical_path_label": "Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4",
       "hyperparameters": {
@@ -1720,7 +1840,9 @@
       "resolved_forget_dataset_target": "deaths",
       "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "sample_counts": {},
-      "source_configuration_paths": [],
+      "source_configuration_paths": [
+        "llm2vec/grid_search_death/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json"
+      ],
       "sources": [
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
@@ -1748,7 +1870,7 @@
           "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
           "observation": "directly observed",
           "path": "llm2vec/grid_search_death/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
-          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
           "role": "training_config",
           "source_type": "repository_file"
         },
@@ -1758,7 +1880,7 @@
           "locator": "python command line; commented commands are non-execution evidence",
           "observation": "directly observed",
           "path": "llm2vec/grid_search_death/jobs/job_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.sh",
-          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
           "role": "job_script",
           "source_type": "repository_file"
         }
@@ -1773,19 +1895,24 @@
       "baseline_experiment_id": "b-pmc-mistral-baseline",
       "cell_status": {},
       "evidence_notes": [
-        "Generation baseline pooling is sample-weighted: (900*retain + 100*forget)/1000.",
-        "Exact pooled MCQ counts are not recoverable from aggregate files."
+        "Generation pooling counts are declared as retain=900, forget=100, pooled=1000.",
+        "Exact per-probe MCQ counts are recovered through results/paper/mcq_dataset_inventory.json rather than aggregate result files."
       ],
-      "final_epoch": 10,
-      "final_step": null,
+      "final_epoch": 10.0,
+      "final_step": 7500,
       "historical_path_label": "pmc_full_universal_Mistral-7B_continual",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 1e-05,
+        "num_train_epochs": 10
+      },
       "id": "b-pmc-mistral-baseline",
       "intended_knowledge_target": "pmc",
       "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "PMC Mistral universal baseline",
       "knowledge_target": "pmc",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "Baseline",
       "metric_mapping": {
         "generation": [
@@ -1807,20 +1934,44 @@
       },
       "regime": "B",
       "resolved_config": {
-        "forget_target": null,
-        "hyperparameters": {},
+        "forget_target": "pmc",
+        "hyperparameters": {
+          "learning_rate": 1e-05,
+          "num_train_epochs": 10
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "pmc_full_csv_Mistral-7B-Instruct_epoch10/checkpoint-7500"
       },
-      "resolved_forget_dataset_target": null,
+      "resolved_forget_dataset_target": "pmc",
       "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "sample_counts": {
-        "generation_forget": 100,
-        "generation_pooled": 1000,
-        "generation_retain": 900,
-        "mcq": "unresolved"
+        "generation": {
+          "forget": 100,
+          "pooled": 1000,
+          "retain": 900
+        },
+        "mcq": {
+          "ATT": {
+            "forget": 50,
+            "pooled": 150,
+            "retain": 100
+          },
+          "ID": {
+            "forget": 46,
+            "pooled": 146,
+            "retain": 100
+          },
+          "IDeq": {
+            "forget": 50,
+            "pooled": 150,
+            "retain": 100
+          }
+        },
+        "mcq_source": "results/paper/mcq_dataset_inventory.json"
       },
-      "source_configuration_paths": [],
+      "source_configuration_paths": [
+        "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/.hydra/config.yaml"
+      ],
       "sources": [
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
@@ -1885,17 +2036,21 @@
       "baseline_experiment_id": "b-pmc-mistral-baseline",
       "cell_status": {},
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 2.88,
+      "final_step": 9,
       "historical_path_label": "graddiff_PMC_Mixtral",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 1e-05,
+        "num_train_epochs": 3
+      },
       "id": "b-pmc-mistral-graddiff",
       "intended_knowledge_target": "pmc",
       "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "PMC Mistral GradDiff",
       "knowledge_target": "pmc",
       "known_limitations": [
-        "Different starting checkpoint from universal baseline and other PMC methods."
+        "Different starting checkpoint from universal baseline and other PMC methods.",
+        "Training entry point is not directly recoverable from the declared configuration evidence."
       ],
       "method": "GradDiff",
       "metric_mapping": {
@@ -1919,13 +2074,40 @@
       "regime": "B",
       "resolved_config": {
         "forget_target": "pmc",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 1e-05,
+          "num_train_epochs": 3
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "pmc_full_csv_Mistral-7B-Instruct_epoch10/checkpoint-7500"
       },
       "resolved_forget_dataset_target": "pmc",
       "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-      "sample_counts": {},
+      "sample_counts": {
+        "generation": {
+          "forget": 100,
+          "pooled": 1000,
+          "retain": 900
+        },
+        "mcq": {
+          "ATT": {
+            "forget": 50,
+            "pooled": 150,
+            "retain": 100
+          },
+          "ID": {
+            "forget": 46,
+            "pooled": 146,
+            "retain": 100
+          },
+          "IDeq": {
+            "forget": 50,
+            "pooled": 150,
+            "retain": 100
+          }
+        },
+        "mcq_source": "results/paper/mcq_dataset_inventory.json"
+      },
       "source_configuration_paths": [
         "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral/.hydra/config.yaml"
       ],
@@ -1995,16 +2177,21 @@
       "baseline_experiment_id": "b-pmc-mistral-baseline",
       "cell_status": {},
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 2.88,
+      "final_step": 9,
       "historical_path_label": "npo_PMC_Mixtral",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 5e-06,
+        "num_train_epochs": 3
+      },
       "id": "b-pmc-mistral-npo",
       "intended_knowledge_target": "pmc",
       "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "PMC Mistral NPO",
       "knowledge_target": "pmc",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "NPO",
       "metric_mapping": {
         "generation": [
@@ -2027,13 +2214,40 @@
       "regime": "B",
       "resolved_config": {
         "forget_target": "pmc",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 5e-06,
+          "num_train_epochs": 3
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "pmc_full_universal_Mistral-7B_continual"
       },
       "resolved_forget_dataset_target": "pmc",
       "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-      "sample_counts": {},
+      "sample_counts": {
+        "generation": {
+          "forget": 100,
+          "pooled": 1000,
+          "retain": 900
+        },
+        "mcq": {
+          "ATT": {
+            "forget": 50,
+            "pooled": 150,
+            "retain": 100
+          },
+          "ID": {
+            "forget": 46,
+            "pooled": 146,
+            "retain": 100
+          },
+          "IDeq": {
+            "forget": 50,
+            "pooled": 150,
+            "retain": 100
+          }
+        },
+        "mcq_source": "results/paper/mcq_dataset_inventory.json"
+      },
       "source_configuration_paths": [
         "llm2vec/open_unlearning/saves/unlearn/npo_PMC_Mixtral/.hydra/config.yaml"
       ],
@@ -2102,16 +2316,21 @@
       "baseline_experiment_id": "b-pmc-mistral-baseline",
       "cell_status": {},
       "evidence_notes": [],
-      "final_epoch": null,
-      "final_step": null,
+      "final_epoch": 2.88,
+      "final_step": 18,
       "historical_path_label": "rmu_PMC_Mixtral",
-      "hyperparameters": {},
+      "hyperparameters": {
+        "learning_rate": 5e-05,
+        "num_train_epochs": 3
+      },
       "id": "b-pmc-mistral-rmu",
       "intended_knowledge_target": "pmc",
       "intended_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
       "intended_paper_label": "PMC Mistral RMU",
       "knowledge_target": "pmc",
-      "known_limitations": [],
+      "known_limitations": [
+        "Training entry point is not directly recoverable from the declared configuration evidence."
+      ],
       "method": "RMU",
       "metric_mapping": {
         "generation": [
@@ -2134,13 +2353,40 @@
       "regime": "B",
       "resolved_config": {
         "forget_target": "pmc",
-        "hyperparameters": {},
+        "hyperparameters": {
+          "learning_rate": 5e-05,
+          "num_train_epochs": 3
+        },
         "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
         "starting_checkpoint": "pmc_full_universal_Mistral-7B_continual"
       },
       "resolved_forget_dataset_target": "pmc",
       "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-      "sample_counts": {},
+      "sample_counts": {
+        "generation": {
+          "forget": 100,
+          "pooled": 1000,
+          "retain": 900
+        },
+        "mcq": {
+          "ATT": {
+            "forget": 50,
+            "pooled": 150,
+            "retain": 100
+          },
+          "ID": {
+            "forget": 46,
+            "pooled": 146,
+            "retain": 100
+          },
+          "IDeq": {
+            "forget": 50,
+            "pooled": 150,
+            "retain": 100
+          }
+        },
+        "mcq_source": "results/paper/mcq_dataset_inventory.json"
+      },
       "source_configuration_paths": [
         "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/.hydra/config.yaml"
       ],
@@ -2208,6 +2454,10 @@
     {
       "baseline_experiment_id": "b-pmc-mistral-baseline",
       "cell_status": {
+        "ATT-R": [
+          "verified",
+          "manuscript_transcription_error"
+        ],
         "MMLU": [
           "missing"
         ]
@@ -2217,7 +2467,7 @@
         "Fixed configured epochs completed; no reliable automated early-stopping selection.",
         "Auxiliary LM loss did not contribute because lm_weight=0."
       ],
-      "final_epoch": 5,
+      "final_epoch": 5.0,
       "final_step": 250,
       "historical_path_label": "MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5",
       "hyperparameters": {
@@ -2264,8 +2514,34 @@
       },
       "resolved_forget_dataset_target": "pmc",
       "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-      "sample_counts": {},
-      "source_configuration_paths": [],
+      "sample_counts": {
+        "generation": {
+          "forget": 100,
+          "pooled": 1000,
+          "retain": 900
+        },
+        "mcq": {
+          "ATT": {
+            "forget": 50,
+            "pooled": 150,
+            "retain": 100
+          },
+          "ID": {
+            "forget": 46,
+            "pooled": 146,
+            "retain": 100
+          },
+          "IDeq": {
+            "forget": 50,
+            "pooled": 150,
+            "retain": 100
+          }
+        },
+        "mcq_source": "results/paper/mcq_dataset_inventory.json"
+      },
+      "source_configuration_paths": [
+        "llm2vec/grid_search/configs/train_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.json"
+      ],
       "sources": [
         {
           "archive": "clinicia_provenance_bundle.tar.gz",
@@ -2303,7 +2579,7 @@
           "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
           "observation": "directly observed",
           "path": "llm2vec/grid_search/configs/train_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.json",
-          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
           "role": "training_config",
           "source_type": "repository_file"
         },
@@ -2313,7 +2589,7 @@
           "locator": "python command line; commented commands are non-execution evidence",
           "observation": "directly observed",
           "path": "llm2vec/grid_search/jobs/job_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.sh",
-          "repository_commit_sha": "af474cbba215ace57ec9ad825fa10f38b4b010e3",
+          "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
           "role": "job_script",
           "source_type": "repository_file"
         }
