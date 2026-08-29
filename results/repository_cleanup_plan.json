@@ -48,6 +48,36 @@
       },
       "tracked_file_count_after_batch": 26795,
       "working_tree_copies_remained_present": true
+    },
+    {
+      "batch_id": "phase3b-qwen-forget",
+      "remaining_qwen_tracked_counts": {
+        "forget_configs": 0,
+        "job_scripts": 1776,
+        "retain_configs": 0,
+        "train_configs": 0
+      },
+      "removed_from_index_count": 1776,
+      "scientific_or_phase2_files_changed": false,
+      "sorted_target_path_list_sha256": "d23ab7d727235e000dc5971246e5bb46ce9f2a02f2997a87576f3cdd29485a52",
+      "starting_commit": "6ecaf8d34b6ad00cc287199fa6c531634f6dd502",
+      "status": "complete",
+      "target_blob_bytes": 1686118,
+      "target_pattern": "llm2vec/grid_search/configs/forget_Qwen_*.json",
+      "test_suite_integrity": {
+        "discovered_modules": [
+          "results.test_manifest",
+          "results.test_table_formulas",
+          "test_repository_cleanup"
+        ],
+        "errors": 0,
+        "executed": 42,
+        "failures": 0,
+        "skipped": 0,
+        "status": "passed"
+      },
+      "tracked_file_count_after_batch": 25019,
+      "working_tree_copies_remained_present": true
     }
   ],
   "execution_constraints": {
