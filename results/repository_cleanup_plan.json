@@ -237,6 +237,125 @@
       "total_target_blob_bytes": 7653560,
       "total_target_count": 7104,
       "working_tree_copies_remained_present_and_ignored": true
+    },
+    {
+      "batch_id": "phase3c-mistral-universal-family",
+      "combined_sorted_target_path_list_sha256": "5a2eebb3449e7d23fa1b2d5038c17e8ac9f2d70b5030cdb5903bca52810f39d4",
+      "generated_family_blob_bytes": 7797320,
+      "generated_family_components": {
+        "forget_configs": {
+          "blob_bytes": 1728742,
+          "count": 1776,
+          "pattern": "llm2vec/grid_search/configs/forget_MistralUniversal_*.json"
+        },
+        "job_scripts": {
+          "blob_bytes": 2027564,
+          "count": 1776,
+          "pattern": "llm2vec/grid_search/jobs/job_MistralUniversal_*.sh"
+        },
+        "retain_configs": {
+          "blob_bytes": 1728742,
+          "count": 1776,
+          "pattern": "llm2vec/grid_search/configs/retain_MistralUniversal_*.json"
+        },
+        "train_configs": {
+          "blob_bytes": 2312272,
+          "count": 1776,
+          "pattern": "llm2vec/grid_search/configs/train_MistralUniversal_*.json"
+        }
+      },
+      "generated_family_count": 7104,
+      "generated_sorted_path_list_sha256": "c26ec0b8b86a5a2b3a2d710176171477322ff5ad82dcac36dfb44a3472489dd0",
+      "index_operation": "index-only untracking",
+      "previously_cleaned_families_remain_untracked": [
+        "Qwen",
+        "Llama3",
+        "Exact Mistral"
+      ],
+      "protected_mistral_universal_results_remained_tracked_and_unchanged": true,
+      "remaining_tracked_mistral_universal_cleanup_target_count": 0,
+      "resulting_tracked_file_count": 1917,
+      "scheduler_output_blob_bytes": 4935,
+      "scheduler_output_count": 14,
+      "scheduler_output_files": [
+        {
+          "blob_bytes": 555,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm1_epochs6.e4720510",
+          "sha256": "03e6c19f050fad251020d10cff8b883b6b63204a5ea1c98ba31baa0f448080bb"
+        },
+        {
+          "blob_bytes": 150,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm1_epochs6.o4720510",
+          "sha256": "eb5a3aba93b8d8543eaa7d51d91f083803c4dd86f4bb67ddcd239291fdc28d96"
+        },
+        {
+          "blob_bytes": 705,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm2_epochs4.e4720514",
+          "sha256": "2ded53d1c446dab663ec8ed4ebdaf9ea2f7bcc6044dcb2e88d1dc2eaf9934855"
+        },
+        {
+          "blob_bytes": 0,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm2_epochs4.o4720514",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "blob_bytes": 555,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm2_epochs5.e4720513",
+          "sha256": "03e6c19f050fad251020d10cff8b883b6b63204a5ea1c98ba31baa0f448080bb"
+        },
+        {
+          "blob_bytes": 150,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm2_epochs5.o4720513",
+          "sha256": "eb5a3aba93b8d8543eaa7d51d91f083803c4dd86f4bb67ddcd239291fdc28d96"
+        },
+        {
+          "blob_bytes": 555,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm1_epochs4.e4720512",
+          "sha256": "03e6c19f050fad251020d10cff8b883b6b63204a5ea1c98ba31baa0f448080bb"
+        },
+        {
+          "blob_bytes": 150,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm1_epochs4.o4720512",
+          "sha256": "eb5a3aba93b8d8543eaa7d51d91f083803c4dd86f4bb67ddcd239291fdc28d96"
+        },
+        {
+          "blob_bytes": 705,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm1_epochs5.e4720511",
+          "sha256": "2ded53d1c446dab663ec8ed4ebdaf9ea2f7bcc6044dcb2e88d1dc2eaf9934855"
+        },
+        {
+          "blob_bytes": 0,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm1_epochs5.o4720511",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "blob_bytes": 555,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm2_epochs4.e4720515",
+          "sha256": "03e6c19f050fad251020d10cff8b883b6b63204a5ea1c98ba31baa0f448080bb"
+        },
+        {
+          "blob_bytes": 150,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm2_epochs4.o4720515",
+          "sha256": "eb5a3aba93b8d8543eaa7d51d91f083803c4dd86f4bb67ddcd239291fdc28d96"
+        },
+        {
+          "blob_bytes": 555,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm2_epochs5.e4720516",
+          "sha256": "03e6c19f050fad251020d10cff8b883b6b63204a5ea1c98ba31baa0f448080bb"
+        },
+        {
+          "blob_bytes": 150,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm2_epochs5.o4720516",
+          "sha256": "eb5a3aba93b8d8543eaa7d51d91f083803c4dd86f4bb67ddcd239291fdc28d96"
+        }
+      ],
+      "scheduler_sorted_path_list_sha256": "709a84818de21c7177c935ebfbbe63bfd1c37c0003e4c20638838d619ac0aae1",
+      "scientific_and_provenance_files_changed": false,
+      "starting_commit": "1873472bd2bc56e2f9a506442d1fc50fd514edf4",
+      "status": "complete",
+      "total_target_blob_bytes": 7802255,
+      "total_target_count": 7118,
+      "working_tree_copies_remained_present_and_ignored": true
     }
   ],
   "execution_constraints": {
