@@ -17,6 +17,37 @@
       "target_pattern": "llm2vec/grid_search/configs/train_Qwen_*.json",
       "tracked_file_count_after_batch": 28571,
       "working_tree_copies_remained_present": true
+    },
+    {
+      "batch_id": "phase3b-qwen-retain",
+      "remaining_qwen_tracked_counts": {
+        "forget_configs": 1776,
+        "job_scripts": 1776,
+        "retain_configs": 0,
+        "train_configs": 0
+      },
+      "removed_from_index_count": 1776,
+      "scientific_or_phase2_files_changed": false,
+      "sorted_target_path_list_sha256": "455519d41ae9800551fd76dfd80c4b3fd5ca5cc63999f9c28a7f05eee8a3eeb4",
+      "starting_commit": "a99bbd5b8b4380f3adac2b57aaa607af19401466",
+      "status": "complete",
+      "target_blob_bytes": 1686118,
+      "target_pattern": "llm2vec/grid_search/configs/retain_Qwen_*.json",
+      "test_suite_integrity": {
+        "discovered_modules": [
+          "results.test_manifest",
+          "results.test_table_formulas",
+          "test_repository_cleanup"
+        ],
+        "errors": 0,
+        "executed": 42,
+        "explanation": "The five-test report covered only tests.test_repository_cleanup; full discovery finds the unchanged Phase 2 modules and executes 42 tests.",
+        "failures": 0,
+        "skipped": 0,
+        "status": "passed"
+      },
+      "tracked_file_count_after_batch": 26795,
+      "working_tree_copies_remained_present": true
     }
   ],
   "execution_constraints": {
