@@ -1,4 +1,24 @@
 {
+  "cleanup_batches": [
+    {
+      "batch_id": "phase3b-qwen-train",
+      "deleted_from_index_count": 1776,
+      "remaining_qwen_tracked_counts": {
+        "forget_configs": 1776,
+        "job_scripts": 1776,
+        "retain_configs": 1776,
+        "train_configs": 0
+      },
+      "scientific_or_phase2_files_changed": false,
+      "sorted_target_path_list_sha256": "12738813406fb1bb29bc7de7b82053895b81b04dfa236072442c5f3efac647e5",
+      "starting_commit": "a2b93b803de728da18f7551a49e5295807b12453",
+      "status": "complete",
+      "target_blob_bytes": 2266096,
+      "target_pattern": "llm2vec/grid_search/configs/train_Qwen_*.json",
+      "tracked_file_count_after_batch": 28571,
+      "working_tree_copies_remained_present": true
+    }
+  ],
   "execution_constraints": {
     "oversize_family_fallback": [
       "train configs",
