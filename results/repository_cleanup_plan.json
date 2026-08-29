@@ -78,6 +78,40 @@
       },
       "tracked_file_count_after_batch": 25019,
       "working_tree_copies_remained_present": true
+    },
+    {
+      "basename_prefix": "job_Qwen_",
+      "batch_id": "phase3b-qwen-jobs",
+      "file_extension": ".sh",
+      "no_scheduler_stdout_stderr_included": true,
+      "remaining_qwen_tracked_counts": {
+        "forget_configs": 0,
+        "grid_search_total": 0,
+        "job_scripts": 0,
+        "retain_configs": 0,
+        "train_configs": 0
+      },
+      "removed_from_index_count": 1776,
+      "scientific_or_phase2_files_changed": false,
+      "sorted_target_path_list_sha256": "9c610e14e95fa504e6362ed411722dab66926dfea05de64574ad398f0a4efd4a",
+      "starting_commit": "3305c98b429dd77a5a1d3ba3e59783399219a632",
+      "status": "complete",
+      "target_blob_bytes": 1940636,
+      "target_pattern": "llm2vec/grid_search/jobs/job_Qwen_*.sh",
+      "test_suite_integrity": {
+        "discovered_modules": [
+          "results.test_manifest",
+          "results.test_table_formulas",
+          "test_repository_cleanup"
+        ],
+        "errors": 0,
+        "executed": 42,
+        "failures": 0,
+        "skipped": 0,
+        "status": "passed"
+      },
+      "tracked_file_count_after_batch": 23243,
+      "working_tree_copies_remained_present": true
     }
   ],
   "execution_constraints": {
