@@ -193,6 +193,50 @@
         }
       },
       "working_tree_copies_remained_present_and_ignored": true
+    },
+    {
+      "batch_id": "phase3b-mistral-family",
+      "components": {
+        "forget_configs": {
+          "logical_blob_bytes": 1696774,
+          "removed_from_index_count": 1776,
+          "target_pattern": "llm2vec/grid_search/configs/forget_Mistral_*.json"
+        },
+        "job_scripts": {
+          "logical_blob_bytes": 1961948,
+          "removed_from_index_count": 1776,
+          "target_pattern": "llm2vec/grid_search/jobs/job_Mistral_*.sh"
+        },
+        "retain_configs": {
+          "logical_blob_bytes": 1696774,
+          "removed_from_index_count": 1776,
+          "target_pattern": "llm2vec/grid_search/configs/retain_Mistral_*.json"
+        },
+        "train_configs": {
+          "logical_blob_bytes": 2298064,
+          "removed_from_index_count": 1776,
+          "target_pattern": "llm2vec/grid_search/configs/train_Mistral_*.json"
+        }
+      },
+      "index_only_untracking": true,
+      "remaining_exact_mistral_tracked_count": 0,
+      "remaining_llama3_grid_search_total": 0,
+      "remaining_mistral_universal_tracked_count": 7118,
+      "remaining_qwen_grid_search_total": 0,
+      "resulting_tracked_file_count": 9035,
+      "scientific_or_provenance_files_changed": false,
+      "sorted_target_path_list_sha256": "159f5c88b9093cab8f08dc887fb4dbc03206389f1ac46f9df0ee3fc89fa9ee00",
+      "starting_commit": "9b9cca3aa0a2378f3c8fdb0409a7bd503456cf12",
+      "status": "complete",
+      "target_patterns": [
+        "llm2vec/grid_search/configs/train_Mistral_*.json",
+        "llm2vec/grid_search/configs/retain_Mistral_*.json",
+        "llm2vec/grid_search/configs/forget_Mistral_*.json",
+        "llm2vec/grid_search/jobs/job_Mistral_*.sh"
+      ],
+      "total_target_blob_bytes": 7653560,
+      "total_target_count": 7104,
+      "working_tree_copies_remained_present_and_ignored": true
     }
   ],
   "execution_constraints": {
