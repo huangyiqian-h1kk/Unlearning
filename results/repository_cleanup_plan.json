@@ -112,6 +112,87 @@
       },
       "tracked_file_count_after_batch": 23243,
       "working_tree_copies_remained_present": true
+    },
+    {
+      "batch_id": "phase3b-llama3",
+      "combined_logical_blob_bytes": 7614488,
+      "combined_removal_count": 7104,
+      "combined_sorted_target_path_list_sha256": "443da7e339deea9fe85a72ca8d9fa4d1dbcfe39a9218cc021a8c81ad5b86d4b9",
+      "components": {
+        "forget_configs": {
+          "logical_blob_bytes": 1693222,
+          "removed_from_index_count": 1776,
+          "sorted_path_list_sha256": "6e7a51c75d1952eab26b0b5a7e2f829c36b50c35e742eaa8c93e6196d2def63a"
+        },
+        "job_scripts": {
+          "logical_blob_bytes": 1954844,
+          "removed_from_index_count": 1776,
+          "sorted_path_list_sha256": "b80a188e3e95e80b449ff53e23e158d680553abca9a68688ac86ad49e08fd611"
+        },
+        "retain_configs": {
+          "logical_blob_bytes": 1693222,
+          "removed_from_index_count": 1776,
+          "sorted_path_list_sha256": "5e794c81b91e05de7d1e9ec420cbff53813d6abaaa757c831bb7dd262cadd88b"
+        },
+        "train_configs": {
+          "logical_blob_bytes": 2273200,
+          "removed_from_index_count": 1776,
+          "sorted_path_list_sha256": "6541dd5fbd8092fc2c2954e8cc5f0133a5b3cdc76d3ee0ba6835df11b60ea7d3"
+        }
+      },
+      "no_scheduler_stdout_stderr_included": true,
+      "remaining_exact_mistral_grid_search_total": 7104,
+      "remaining_llama3_tracked_counts": {
+        "forget_configs": 0,
+        "grid_search_total": 0,
+        "job_scripts": 0,
+        "retain_configs": 0,
+        "train_configs": 0
+      },
+      "remaining_mistral_universal_grid_search_total": 7118,
+      "remaining_qwen_grid_search_total": 0,
+      "scientific_or_phase2_files_changed": false,
+      "starting_commit": "539ca5ab2f48d3dd274dcb0febc4c4a76e5d46ab",
+      "status": "complete",
+      "target_patterns": [
+        "llm2vec/grid_search/configs/train_Llama3_*.json",
+        "llm2vec/grid_search/configs/retain_Llama3_*.json",
+        "llm2vec/grid_search/configs/forget_Llama3_*.json",
+        "llm2vec/grid_search/jobs/job_Llama3_*.sh"
+      ],
+      "test_suite_integrity": {
+        "discovered_modules": [
+          "results.test_manifest",
+          "results.test_table_formulas",
+          "test_repository_cleanup"
+        ],
+        "errors": 0,
+        "executed": 42,
+        "failures": 0,
+        "skipped": 0,
+        "status": "passed"
+      },
+      "tracked_file_count_after_batch": 16139,
+      "tracked_file_count_before_batch": 23243,
+      "verified_naming_conventions": {
+        "forget_configs": {
+          "basename_prefix": "forget_Llama3_",
+          "file_extension": ".json"
+        },
+        "job_scripts": {
+          "basename_prefix": "job_Llama3_",
+          "file_extension": ".sh"
+        },
+        "retain_configs": {
+          "basename_prefix": "retain_Llama3_",
+          "file_extension": ".json"
+        },
+        "train_configs": {
+          "basename_prefix": "train_Llama3_",
+          "file_extension": ".json"
+        }
+      },
+      "working_tree_copies_remained_present_and_ignored": true
     }
   ],
   "execution_constraints": {
