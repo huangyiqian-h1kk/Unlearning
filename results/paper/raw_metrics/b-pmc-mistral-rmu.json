@@ -1,0 +1,154 @@
+{
+  "cell_status": {},
+  "experiment_id": "b-pmc-mistral-rmu",
+  "field_evidence": {
+    "hydra_config": {
+      "observation": "directly observed",
+      "observed": {
+        "forget_target": "pmc",
+        "learning_rate": 5e-05,
+        "model_name_or_path": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual",
+        "num_train_epochs": 3,
+        "task_name": "PMC_rmu_Mixtral"
+      },
+      "source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+        "locator": "config",
+        "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/.hydra/config.yaml",
+        "member_sha256": "0aca73d647feeb4499aabcc2467391e269f671a30248820bcd82c5d2417093fa",
+        "observation": "directly observed",
+        "role": "config",
+        "source_type": "archive_member"
+      }
+    },
+    "trainer_state": {
+      "observation": "directly observed",
+      "observed": {
+        "best_metric": null,
+        "best_model_checkpoint": null,
+        "epoch": 2.88,
+        "global_step": 18
+      },
+      "source": {
+        "archive": "clinicia_provenance_bundle.tar.gz",
+        "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+        "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+        "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/trainer_state.json",
+        "member_sha256": "9c9a68c7e008c645c4b3db0cdf84c01b9ff99e9f3fe0e149083d4e1fc1139e2a",
+        "observation": "directly observed",
+        "role": "trainer_state",
+        "source_type": "archive_member"
+      }
+    }
+  },
+  "metrics": {
+    "forget_metrics": {
+      "MCQ-llh-mcqs_PMC_forget_att": 0.26,
+      "MCQ-llh-mcqs_PMC_forget_id_equal": 0.28,
+      "MCQ-llh-mcqs_PMC_forget_id_identical": 0.34782608695652173,
+      "PMC-Greedy-BG-Probe": 0.5,
+      "PMC-Greedy-Cloze": 0.64,
+      "PMC-Greedy-QA": 0.52
+    },
+    "retain_metrics": {
+      "MCQ-llh-mcqs_PMC_retain_att": 0.35,
+      "MCQ-llh-mcqs_PMC_retain_id_equal": 0.31,
+      "MCQ-llh-mcqs_PMC_retain_id_identical": 0.33,
+      "PMC-Greedy-BG-Probe": 0.48777777777777775,
+      "PMC-Greedy-Cloze": 0.6666666666666666,
+      "PMC-Greedy-QA": 0.5477777777777778
+    }
+  },
+  "mmlu": {
+    "accuracy": 0.2722,
+    "model_block_selector": "pretrained=rmu_PMC_Mixtral",
+    "settings": {
+      "batch_size": 32,
+      "evaluation": "zero-shot",
+      "limit": "None",
+      "num_fewshot": "None"
+    },
+    "source": {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
+      "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
+      "member_sha256": "4584eef3555cffa941c90f69e7d6154c89b29798cca5724373a54a43014461ec",
+      "observation": "directly observed",
+      "role": "mmlu_log",
+      "source_type": "archive_member"
+    }
+  },
+  "normalized_config": {
+    "forget_target": "pmc",
+    "learning_rate": 5e-05,
+    "model_name_or_path": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual",
+    "num_train_epochs": 3,
+    "task_name": "PMC_rmu_Mixtral"
+  },
+  "schema_version": "1.1",
+  "significance": {},
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "retain_metrics",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/retain_eval/evaluation_results.json",
+      "member_sha256": "7131529da913a849543e2b2db70a7b0f6701e2adba5ffb685fadaa4ee701bef7",
+      "observation": "directly observed",
+      "role": "retain_metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "forget_metrics",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/forget_eval/evaluation_results.json",
+      "member_sha256": "c82a689cf131f17481c89dfb2d8dce809ff4c693f18feb2ae40de85c1814d5dc",
+      "observation": "directly observed",
+      "role": "forget_metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "config",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/.hydra/config.yaml",
+      "member_sha256": "0aca73d647feeb4499aabcc2467391e269f671a30248820bcd82c5d2417093fa",
+      "observation": "directly observed",
+      "role": "config",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
+      "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
+      "member_sha256": "4584eef3555cffa941c90f69e7d6154c89b29798cca5724373a54a43014461ec",
+      "observation": "directly observed",
+      "role": "mmlu_log",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/trainer_state.json",
+      "member_sha256": "9c9a68c7e008c645c4b3db0cdf84c01b9ff99e9f3fe0e149083d4e1fc1139e2a",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    }
+  ],
+  "status_flags": [
+    "verified",
+    "label_corrected"
+  ],
+  "trainer_state": {
+    "best_metric": null,
+    "best_model_checkpoint": null,
+    "epoch": 2.88,
+    "global_step": 18
+  }
+}

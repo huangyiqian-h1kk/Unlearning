@@ -1,0 +1,106 @@
+{
+  "archive_evidence_references": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "metrics",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/evaluation_results.json",
+      "member_sha256": "01f3244005bfca45e65b4b80dd27c2658c70420724636da33a1661c1efba7882",
+      "observation": "directly observed",
+      "role": "metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "config",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/.hydra/config.yaml",
+      "member_sha256": "256941a57afae885cd649e94d2b9d123155041e7f9e99b4ecf8c169779f33541",
+      "observation": "directly observed",
+      "role": "config",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/trainer_state.json",
+      "member_sha256": "37d6a17ec008ea4b1e2115580c3a1ef4bab8ae7941477e2c48accc9b1825878d",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    }
+  ],
+  "backend": "open_unlearning",
+  "cell_status": {
+    "MMLU": [
+      "missing"
+    ]
+  },
+  "checkpoint_lineage": {
+    "evidence_status": "resolved",
+    "starting_basis": "meta-llama/Llama-2-7b-chat-hf"
+  },
+  "current_git_legacy_source_references": [],
+  "evaluation_protocol_evidence": {
+    "metric_mapping": {
+      "generation": [
+        "QA",
+        "Cloze",
+        "BG"
+      ],
+      "mcq": [
+        "ATT",
+        "IDeq",
+        "ID"
+      ]
+    },
+    "protocol": "historical_v1",
+    "status": "archived_evidence"
+  },
+  "evidence_notes": [],
+  "experiment_id": "a-diagnosis-llama2-rmu",
+  "final_epoch": 2.7586206896551726,
+  "final_step": 30,
+  "historical_path_label": "rmu_celebrity_diagnosis_llama2",
+  "historical_training_entry_point": null,
+  "identity_evidence_basis": "resolved configuration or archived evidence; historical labels are non-authoritative",
+  "intended_paper_label": "Diagnosis Llama-2 RMU",
+  "knowledge_target": "diagnosis",
+  "known_limitations": [
+    "Training entry point is not directly recoverable from the declared configuration evidence.",
+    "Configured epoch completion; not evidence of early stopping."
+  ],
+  "method": "RMU",
+  "mmlu_evidence": {
+    "settings_status": "missing",
+    "source": null
+  },
+  "record_kind": "historical_experiment",
+  "regime": "A",
+  "reproduction_status": "historical_partial",
+  "resolved_forget_dataset_target": "diagnosis",
+  "resolved_hyperparameters": {
+    "learning_rate": 5e-05,
+    "num_train_epochs": 3
+  },
+  "resolved_model_id": "meta-llama/Llama-2-7b-chat-hf",
+  "resolved_retain_dataset_target": "complementary",
+  "run_kind": "unlearn",
+  "schema_version": "1.0",
+  "semantic_dataset_ids": {
+    "forget_dataset_id": "clinicia/celebrity",
+    "forget_target": "diagnosis",
+    "retain_dataset_id": "clinicia/retain",
+    "retain_target": "complementary"
+  },
+  "starting_checkpoint_id": "meta-llama/Llama-2-7b-chat-hf",
+  "status_flags": [
+    "verified",
+    "manuscript_transcription_error"
+  ],
+  "training_entry_point_evidence_status": "unresolved",
+  "unresolved_fields": [
+    "historical_training_entry_point"
+  ]
+}

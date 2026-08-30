@@ -1,0 +1,116 @@
+{
+  "cell_status": {
+    "MMLU": [
+      "missing"
+    ]
+  },
+  "experiment_id": "a-diagnosis-llama2-rmu",
+  "field_evidence": {
+    "hydra_config": {
+      "observation": "directly observed",
+      "observed": {
+        "forget_target": "diagnosis",
+        "learning_rate": 5e-05,
+        "model_name_or_path": "meta-llama/Llama-2-7b-chat-hf",
+        "num_train_epochs": 3,
+        "task_name": "rmu_celebrity_diagnosis_llama2"
+      },
+      "source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+        "locator": "config",
+        "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/.hydra/config.yaml",
+        "member_sha256": "256941a57afae885cd649e94d2b9d123155041e7f9e99b4ecf8c169779f33541",
+        "observation": "directly observed",
+        "role": "config",
+        "source_type": "archive_member"
+      }
+    },
+    "trainer_state": {
+      "observation": "directly observed",
+      "observed": {
+        "best_metric": null,
+        "best_model_checkpoint": null,
+        "epoch": 2.7586206896551726,
+        "global_step": 30
+      },
+      "source": {
+        "archive": "clinicia_provenance_bundle.tar.gz",
+        "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+        "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+        "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/trainer_state.json",
+        "member_sha256": "37d6a17ec008ea4b1e2115580c3a1ef4bab8ae7941477e2c48accc9b1825878d",
+        "observation": "directly observed",
+        "role": "trainer_state",
+        "source_type": "archive_member"
+      }
+    }
+  },
+  "metrics": {
+    "metrics": {
+      "MCQ-llh-mcqs_deaths_att": 0.38596491228070173,
+      "MCQ-llh-mcqs_deaths_id_eq": 0.2807017543859649,
+      "MCQ-llh-mcqs_deaths_id_sim": 0.34210526315789475,
+      "MCQ-llh-mcqs_diagnosis_att": 0.29411764705882354,
+      "MCQ-llh-mcqs_diagnosis_id": 0.28846153846153844,
+      "celebrity_deaths-Greedy-BG-Probe": 0.3157894736842105,
+      "celebrity_deaths-Greedy-Cloze": 0.5526315789473685,
+      "celebrity_deaths-Greedy-QA": 0.5482456140350878,
+      "celebrity_diagnosis-Greedy-BG-Probe": 0.11538461538461539,
+      "celebrity_diagnosis-Greedy-Cloze": 0.057692307692307696,
+      "celebrity_diagnosis-Greedy-QA": 0.19230769230769232
+    }
+  },
+  "mmlu": null,
+  "normalized_config": {
+    "forget_target": "diagnosis",
+    "learning_rate": 5e-05,
+    "model_name_or_path": "meta-llama/Llama-2-7b-chat-hf",
+    "num_train_epochs": 3,
+    "task_name": "rmu_celebrity_diagnosis_llama2"
+  },
+  "schema_version": "1.1",
+  "significance": {},
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "metrics",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/evaluation_results.json",
+      "member_sha256": "01f3244005bfca45e65b4b80dd27c2658c70420724636da33a1661c1efba7882",
+      "observation": "directly observed",
+      "role": "metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "config",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/.hydra/config.yaml",
+      "member_sha256": "256941a57afae885cd649e94d2b9d123155041e7f9e99b4ecf8c169779f33541",
+      "observation": "directly observed",
+      "role": "config",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_diagnosis_llama2/trainer_state.json",
+      "member_sha256": "37d6a17ec008ea4b1e2115580c3a1ef4bab8ae7941477e2c48accc9b1825878d",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    }
+  ],
+  "status_flags": [
+    "verified",
+    "manuscript_transcription_error"
+  ],
+  "trainer_state": {
+    "best_metric": null,
+    "best_model_checkpoint": null,
+    "epoch": 2.7586206896551726,
+    "global_step": 30
+  }
+}

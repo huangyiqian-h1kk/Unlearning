@@ -1,0 +1,43 @@
+[
+  {
+    "configuration_identity": "MistralUniversal_lm0.01_fw0.2_lr1e-05_gm0.5_epochs4",
+    "id": "pmc-conrep-different-config-mmlu",
+    "known_limitation": "This MMLU result is not assignable to the selected lm0, five-epoch ConRep cell.",
+    "mmlu": {
+      "accuracy": 0.2659,
+      "model_block_selector": "peft=model,tokenizer=mistralai/Mistral-7B-Instruct-v0.2,,parallelize=True",
+      "settings": {
+        "batch_size": 32,
+        "evaluation": "zero-shot",
+        "limit": "None",
+        "num_fewshot": "None"
+      },
+      "source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+        "locator": "unique model block followed by aggregate mmlu row",
+        "member": "llm2vec/grid_search/results/MistralUniversal_lm0.01_fw0.2_lr1e-05_gm0.5_epochs4/LMeval_Celeb_diagnosis_Mixtral.o4720066",
+        "member_sha256": "c9f47ba04722cee21c58ae82f0d29e4ece586962176bb0488957f88a58d9444b",
+        "observation": "directly observed",
+        "role": "mmlu_log",
+        "source_type": "archive_member"
+      }
+    },
+    "selected_experiment_id": "b-pmc-mistral-conrep",
+    "sources": [
+      {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+        "locator": "unique model block followed by aggregate mmlu row",
+        "member": "llm2vec/grid_search/results/MistralUniversal_lm0.01_fw0.2_lr1e-05_gm0.5_epochs4/LMeval_Celeb_diagnosis_Mixtral.o4720066",
+        "member_sha256": "c9f47ba04722cee21c58ae82f0d29e4ece586962176bb0488957f88a58d9444b",
+        "observation": "directly observed",
+        "role": "mmlu_log",
+        "source_type": "archive_member"
+      }
+    ],
+    "status_flags": [
+      "unresolved"
+    ]
+  }
+]

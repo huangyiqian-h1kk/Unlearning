@@ -1,0 +1,160 @@
+{
+  "cell_status": {
+    "MMLU": [
+      "missing"
+    ]
+  },
+  "experiment_id": "a-diagnosis-mistral-conrep",
+  "field_evidence": {
+    "job_script": {
+      "active_commands": [
+        "python ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py grid_search_diagnosis/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json"
+      ],
+      "observation": "directly observed; commented commands are not execution evidence",
+      "observed_commands": [
+        "python ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py grid_search_diagnosis/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json"
+      ],
+      "source": {
+        "file_sha256": "11538ecf2621606cee80d52683059c1891ee8b0b5cb06c42854be9123393061f",
+        "git_blob_sha": "581ff21fe69d6604afe1c095f50070752b991176",
+        "locator": "python command line; commented commands are non-execution evidence",
+        "observation": "directly observed",
+        "path": "llm2vec/grid_search_diagnosis/jobs/job_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.sh",
+        "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
+        "role": "job_script",
+        "source_type": "repository_file"
+      }
+    },
+    "trainer_state": {
+      "observation": "directly observed",
+      "observed": {
+        "best_metric": null,
+        "best_model_checkpoint": null,
+        "epoch": 4.0,
+        "global_step": 348
+      },
+      "source": {
+        "archive": "clinicia_provenance_bundle.tar.gz",
+        "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+        "locator": "trainer_state",
+        "member": "llm2vec/grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/model/checkpoint-348/trainer_state.json",
+        "member_sha256": "350524d35b4e335ee053a9fa580e5f7e9e94a7073124cb42a74b46e1de7c4eb2",
+        "observation": "directly observed",
+        "role": "trainer_state",
+        "source_type": "archive_member"
+      }
+    },
+    "training_config": {
+      "observation": "directly observed",
+      "observed": {
+        "forget_weight": 0.45,
+        "gamma": 1,
+        "learning_rate": 7e-06,
+        "lm_weight": 0,
+        "model_name_or_path": "mistralai/Mistral-7B-Instruct-v0.2",
+        "num_train_epochs": 4,
+        "output_dir": "grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/model",
+        "peft_model_name_or_path": "McGill-NLP/LLM2Vec-Mistral-7B-Instruct-v2-mntp"
+      },
+      "selectors": [
+        "model_name_or_path",
+        "peft_model_name_or_path",
+        "learning_rate",
+        "forget_weight",
+        "lm_weight",
+        "gamma",
+        "num_train_epochs",
+        "output_dir"
+      ],
+      "source": {
+        "file_sha256": "ef4841f688c16c744d0341bace8e0117afd9e64993ccdb938930e437fb1861d8",
+        "git_blob_sha": "08734e8a05356e473144a92a5996fa80d42feb09",
+        "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
+        "observation": "directly observed",
+        "path": "llm2vec/grid_search_diagnosis/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
+        "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
+        "role": "training_config",
+        "source_type": "repository_file"
+      }
+    }
+  },
+  "metrics": {
+    "metrics": {
+      "MCQ-llh-mcqs_deaths_att": 0.5833333333333334,
+      "MCQ-llh-mcqs_deaths_id_eq": 0.30701754385964913,
+      "MCQ-llh-mcqs_deaths_id_sim": 0.2982456140350877,
+      "MCQ-llh-mcqs_diagnosis_att": 0.21568627450980393,
+      "MCQ-llh-mcqs_diagnosis_id": 0.28846153846153844,
+      "celebrity_deaths-Greedy-BG-Probe": 0.37719298245614036,
+      "celebrity_deaths-Greedy-Cloze": 0.5964912280701754,
+      "celebrity_deaths-Greedy-QA": 0.5921052631578947,
+      "celebrity_diagnosis-Greedy-BG-Probe": 0.057692307692307696,
+      "celebrity_diagnosis-Greedy-Cloze": 0.038461538461538464,
+      "celebrity_diagnosis-Greedy-QA": 0.0
+    }
+  },
+  "mmlu": null,
+  "normalized_config": {
+    "forget_weight": 0.45,
+    "gamma": 1,
+    "learning_rate": 7e-06,
+    "lm_weight": 0,
+    "model_name_or_path": "mistralai/Mistral-7B-Instruct-v0.2",
+    "num_train_epochs": 4,
+    "output_dir": "grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/model",
+    "peft_model_name_or_path": "McGill-NLP/LLM2Vec-Mistral-7B-Instruct-v2-mntp"
+  },
+  "schema_version": "1.1",
+  "significance": {},
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "metrics",
+      "member": "llm2vec/grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/eval_forget/evaluation_results.json",
+      "member_sha256": "190a4b26016f75b0cdffca824dfb2892a95ef01ac3158eb740d1b29a4394830c",
+      "observation": "directly observed",
+      "role": "metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "trainer_state",
+      "member": "llm2vec/grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/model/checkpoint-348/trainer_state.json",
+      "member_sha256": "350524d35b4e335ee053a9fa580e5f7e9e94a7073124cb42a74b46e1de7c4eb2",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    },
+    {
+      "file_sha256": "ef4841f688c16c744d0341bace8e0117afd9e64993ccdb938930e437fb1861d8",
+      "git_blob_sha": "08734e8a05356e473144a92a5996fa80d42feb09",
+      "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
+      "observation": "directly observed",
+      "path": "llm2vec/grid_search_diagnosis/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
+      "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
+      "role": "training_config",
+      "source_type": "repository_file"
+    },
+    {
+      "file_sha256": "11538ecf2621606cee80d52683059c1891ee8b0b5cb06c42854be9123393061f",
+      "git_blob_sha": "581ff21fe69d6604afe1c095f50070752b991176",
+      "locator": "python command line; commented commands are non-execution evidence",
+      "observation": "directly observed",
+      "path": "llm2vec/grid_search_diagnosis/jobs/job_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.sh",
+      "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
+      "role": "job_script",
+      "source_type": "repository_file"
+    }
+  ],
+  "status_flags": [
+    "verified"
+  ],
+  "trainer_state": {
+    "best_metric": null,
+    "best_model_checkpoint": null,
+    "epoch": 4.0,
+    "global_step": 348
+  }
+}

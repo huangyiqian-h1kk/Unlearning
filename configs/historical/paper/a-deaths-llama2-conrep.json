@@ -1,0 +1,128 @@
+{
+  "archive_evidence_references": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "metrics",
+      "member": "llm2vec/grid_search_death/results/Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3/eval_forget/evaluation_results.json",
+      "member_sha256": "25903b3477b3d8b35a5aaa3d0c3d2e5ec1907fc2325179f5818563348098ab91",
+      "observation": "directly observed",
+      "role": "metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "trainer_state",
+      "member": "llm2vec/grid_search_death/results/Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3/model/checkpoint-390/trainer_state.json",
+      "member_sha256": "f1ed854d3f8a9b51722b7547eb6fe63425c148f038d8c7e1578fa761ecad4aaf",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    },
+    {
+      "file_sha256": "e2d3b569f811c20d4bbaaf13ab97d21c7ffc2b7d4324ca95f093de04c6a6eb19",
+      "git_blob_sha": "63ef71e9f28ada6346b48f43626c267fc45b0a20",
+      "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
+      "observation": "directly observed",
+      "path": "llm2vec/grid_search_death/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.json",
+      "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
+      "role": "training_config",
+      "source_type": "repository_file"
+    },
+    {
+      "file_sha256": "1a1b4018715f2a9ac9c6806d0959b171c869d0801dbe3f5adfbdf4ecb3033cee",
+      "git_blob_sha": "c99b30ec6ffa8bc5b57e4c71eb83845c647eb93f",
+      "locator": "python command line; commented commands are non-execution evidence",
+      "observation": "directly observed",
+      "path": "llm2vec/grid_search_death/jobs/job_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.sh",
+      "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
+      "role": "job_script",
+      "source_type": "repository_file"
+    }
+  ],
+  "backend": "conrep",
+  "cell_status": {
+    "F-ATT": [
+      "verified",
+      "manuscript_transcription_error"
+    ],
+    "F-IDeq": [
+      "verified",
+      "manuscript_transcription_error"
+    ],
+    "MMLU": [
+      "missing"
+    ]
+  },
+  "checkpoint_lineage": {
+    "evidence_status": "resolved",
+    "starting_basis": "meta-llama/Llama-2-7b-chat-hf"
+  },
+  "current_git_legacy_source_references": [],
+  "evaluation_protocol_evidence": {
+    "metric_mapping": {
+      "generation": [
+        "QA",
+        "Cloze",
+        "BG"
+      ],
+      "mcq": [
+        "ATT",
+        "IDeq",
+        "ID"
+      ]
+    },
+    "protocol": "historical_v1",
+    "status": "archived_evidence"
+  },
+  "evidence_notes": [
+    "Fixed configured epochs completed; no reliable automated early-stopping selection.",
+    "Auxiliary LM loss did not contribute because lm_weight=0."
+  ],
+  "experiment_id": "a-deaths-llama2-conrep",
+  "final_epoch": 3.0,
+  "final_step": 390,
+  "historical_path_label": "Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3",
+  "historical_training_entry_point": "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py",
+  "identity_evidence_basis": "resolved configuration or archived evidence; historical labels are non-authoritative",
+  "intended_paper_label": "Deaths Llama-2 ConRep",
+  "knowledge_target": "deaths",
+  "known_limitations": [
+    "Configured epoch completion; not evidence of early stopping."
+  ],
+  "method": "ConRep",
+  "mmlu_evidence": {
+    "settings_status": "missing",
+    "source": null
+  },
+  "record_kind": "historical_experiment",
+  "regime": "A",
+  "reproduction_status": "historical_resolved",
+  "resolved_forget_dataset_target": "deaths",
+  "resolved_hyperparameters": {
+    "forget_weight": 0.45,
+    "gamma": 1,
+    "learning_rate": 2e-05,
+    "lm_weight": 0,
+    "num_train_epochs": 3
+  },
+  "resolved_model_id": "meta-llama/Llama-2-7b-chat-hf",
+  "resolved_retain_dataset_target": "complementary",
+  "run_kind": "unlearn",
+  "schema_version": "1.0",
+  "semantic_dataset_ids": {
+    "forget_dataset_id": "clinicia/celebrity",
+    "forget_target": "deaths",
+    "retain_dataset_id": "clinicia/retain",
+    "retain_target": "complementary"
+  },
+  "starting_checkpoint_id": "meta-llama/Llama-2-7b-chat-hf",
+  "status_flags": [
+    "verified",
+    "label_corrected",
+    "manuscript_transcription_error"
+  ],
+  "training_entry_point_evidence_status": "resolved",
+  "unresolved_fields": []
+}

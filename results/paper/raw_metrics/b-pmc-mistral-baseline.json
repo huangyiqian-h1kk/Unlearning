@@ -1,0 +1,241 @@
+{
+  "cell_status": {},
+  "experiment_id": "b-pmc-mistral-baseline",
+  "field_evidence": {
+    "hydra_config": {
+      "observation": "directly observed",
+      "observed": {
+        "forget_target": "pmc",
+        "learning_rate": 1e-05,
+        "model_name_or_path": "saves/finetune/pmc_full_csv_Mistral-7B-Instruct_epoch10/checkpoint-7500",
+        "num_train_epochs": 10,
+        "task_name": "pmc_full_universal_Mistral-7B_continual"
+      },
+      "source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+        "locator": "config",
+        "member": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/.hydra/config.yaml",
+        "member_sha256": "13416037ddec8610a665669ec027807c52a56af01bcb95379fccf3a9e608a2a9",
+        "observation": "directly observed",
+        "role": "config",
+        "source_type": "archive_member"
+      }
+    },
+    "trainer_state": {
+      "observation": "directly observed",
+      "observed": {
+        "best_metric": null,
+        "best_model_checkpoint": null,
+        "epoch": 10.0,
+        "global_step": 7500
+      },
+      "source": {
+        "archive": "clinicia_provenance_bundle.tar.gz",
+        "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+        "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+        "member": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/trainer_state.json",
+        "member_sha256": "f0810b7e371319560bdd526cd3a707a00784803cf11eb0bb544409371af3d159",
+        "observation": "directly observed",
+        "role": "trainer_state",
+        "source_type": "archive_member"
+      }
+    }
+  },
+  "metrics": {
+    "forget_metrics": {
+      "MCQ-llh-mcqs_PMC_forget_att": 0.32,
+      "MCQ-llh-mcqs_PMC_forget_id_equal": 0.32,
+      "MCQ-llh-mcqs_PMC_forget_id_identical": 0.2826086956521739,
+      "PMC-Greedy-BG-Probe": 0.3,
+      "PMC-Greedy-Cloze": 0.7,
+      "PMC-Greedy-QA": 0.55
+    },
+    "retain_metrics": {
+      "MCQ-llh-mcqs_PMC_retain_att": 0.38,
+      "MCQ-llh-mcqs_PMC_retain_id_equal": 0.32,
+      "MCQ-llh-mcqs_PMC_retain_id_identical": 0.28,
+      "PMC-Greedy-BG-Probe": 0.3277777777777778,
+      "PMC-Greedy-Cloze": 0.7466666666666667,
+      "PMC-Greedy-QA": 0.5688888888888889
+    }
+  },
+  "mmlu": {
+    "accuracy": 0.269,
+    "model_block_selector": "pmc_full_universal_Mistral-7B_continual,parallelize=True",
+    "settings": {
+      "batch_size": 32,
+      "evaluation": "zero-shot",
+      "limit": "None",
+      "num_fewshot": "None"
+    },
+    "source": {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
+      "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral_eval.o4704553",
+      "member_sha256": "80f5fc3cb7103065968ceca58474f530b7abd086b32c555959568914d8ea9990",
+      "observation": "directly observed",
+      "role": "mmlu_log",
+      "source_type": "archive_member"
+    }
+  },
+  "normalized_config": {
+    "forget_target": "pmc",
+    "learning_rate": 1e-05,
+    "model_name_or_path": "saves/finetune/pmc_full_csv_Mistral-7B-Instruct_epoch10/checkpoint-7500",
+    "num_train_epochs": 10,
+    "task_name": "pmc_full_universal_Mistral-7B_continual"
+  },
+  "schema_version": "1.1",
+  "significance": {
+    "pmc:ATT": {
+      "accuracy": 0.36,
+      "datasets": [
+        "llm2vec/UnlearnData/mcqs_PMC_retain_att.jsonl",
+        "llm2vec/UnlearnData/mcqs_PMC_forget_att.jsonl"
+      ],
+      "forget": {
+        "accuracy": 0.32,
+        "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+        "integrality_error": 0.0,
+        "sample_count": 50,
+        "success_count": 16
+      },
+      "pvalue": 0.0017832022913445975,
+      "retain": {
+        "accuracy": 0.38,
+        "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+        "integrality_error": 0.0,
+        "sample_count": 100,
+        "success_count": 38
+      },
+      "sample_count": 150,
+      "significant": true,
+      "success_count": 54,
+      "verification_methods": [
+        "researcher_verified_external_lfs_object",
+        "researcher_verified_external_lfs_object"
+      ]
+    },
+    "pmc:ID": {
+      "accuracy": 0.2808219178082192,
+      "datasets": [
+        "llm2vec/UnlearnData/mcqs_PMC_retain_id_identical.jsonl",
+        "llm2vec/UnlearnData/mcqs_PMC_forget_id_identical.jsonl"
+      ],
+      "forget": {
+        "accuracy": 0.2826086956521739,
+        "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+        "integrality_error": 1.7763568394002505e-15,
+        "sample_count": 46,
+        "success_count": 13
+      },
+      "pvalue": 0.22032852904022862,
+      "retain": {
+        "accuracy": 0.28,
+        "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+        "integrality_error": 3.552713678800501e-15,
+        "sample_count": 100,
+        "success_count": 28
+      },
+      "sample_count": 146,
+      "significant": false,
+      "success_count": 41,
+      "verification_methods": [
+        "researcher_verified_external_lfs_object",
+        "researcher_verified_external_lfs_object"
+      ]
+    },
+    "pmc:IDeq": {
+      "accuracy": 0.32,
+      "datasets": [
+        "llm2vec/UnlearnData/mcqs_PMC_retain_id_equal.jsonl",
+        "llm2vec/UnlearnData/mcqs_PMC_forget_id_equal.jsonl"
+      ],
+      "forget": {
+        "accuracy": 0.32,
+        "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+        "integrality_error": 0.0,
+        "sample_count": 50,
+        "success_count": 16
+      },
+      "pvalue": 0.032081960505484605,
+      "retain": {
+        "accuracy": 0.32,
+        "derivation": "k = archived full-precision accuracy \u00d7 exact dataset record count",
+        "integrality_error": 0.0,
+        "sample_count": 100,
+        "success_count": 32
+      },
+      "sample_count": 150,
+      "significant": true,
+      "success_count": 48,
+      "verification_methods": [
+        "researcher_verified_external_lfs_object",
+        "researcher_verified_external_lfs_object"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "retain_metrics",
+      "member": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/retain_eval/evaluation_results.json",
+      "member_sha256": "b75e23fdc557d62aaf4c960ca509de11418a59a026a8d68293a7461a5355e7f3",
+      "observation": "directly observed",
+      "role": "retain_metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "forget_metrics",
+      "member": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/forget_eval/evaluation_results.json",
+      "member_sha256": "a67a9ac9a3478aa4cc821cf2867665f4a2dd86db2a281354fb9344a205b213e3",
+      "observation": "directly observed",
+      "role": "forget_metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "config",
+      "member": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/.hydra/config.yaml",
+      "member_sha256": "13416037ddec8610a665669ec027807c52a56af01bcb95379fccf3a9e608a2a9",
+      "observation": "directly observed",
+      "role": "config",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
+      "member": "llm2vec/open_unlearning/saves/unlearn/graddiff_PMC_Mixtral_eval.o4704553",
+      "member_sha256": "80f5fc3cb7103065968ceca58474f530b7abd086b32c555959568914d8ea9990",
+      "observation": "directly observed",
+      "role": "mmlu_log",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+      "member": "llm2vec/open_unlearning/saves/finetune/pmc_full_universal_Mistral-7B_continual/trainer_state.json",
+      "member_sha256": "f0810b7e371319560bdd526cd3a707a00784803cf11eb0bb544409371af3d159",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    }
+  ],
+  "status_flags": [
+    "verified"
+  ],
+  "trainer_state": {
+    "best_metric": null,
+    "best_model_checkpoint": null,
+    "epoch": 10.0,
+    "global_step": 7500
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "cell_status": {
+    "MMLU": [
+      "missing"
+    ]
+  },
+  "experiment_id": "a-deaths-mistral-rmu",
+  "field_evidence": {
+    "hydra_config": {
+      "observation": "directly observed",
+      "observed": {
+        "forget_target": "deaths",
+        "learning_rate": 5e-05,
+        "model_name_or_path": "meta-llama/Llama-2-7b-chat-hf",
+        "num_train_epochs": 3,
+        "task_name": "celebrity_rmu_death_Mixtral"
+      },
+      "source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+        "locator": "config",
+        "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_Mixtral/.hydra/config.yaml",
+        "member_sha256": "36a78761dc61bb3001081fe0285e0b59e6651400b21126d6583caf36831a4e62",
+        "observation": "directly observed",
+        "role": "config",
+        "source_type": "archive_member"
+      }
+    },
+    "trainer_state": {
+      "observation": "directly observed",
+      "observed": {
+        "best_metric": null,
+        "best_model_checkpoint": null,
+        "epoch": 2.9473684210526314,
+        "global_step": 126
+      },
+      "source": {
+        "archive": "clinicia_provenance_bundle.tar.gz",
+        "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+        "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+        "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_Mixtral/trainer_state.json",
+        "member_sha256": "9e48513e427260e473c659c4fac3dbd002f827c2e953ef59ed76dd0fd1391a75",
+        "observation": "directly observed",
+        "role": "trainer_state",
+        "source_type": "archive_member"
+      }
+    }
+  },
+  "metrics": {
+    "metrics": {
+      "MCQ-llh-mcqs_deaths_att": 0.2675438596491228,
+      "MCQ-llh-mcqs_deaths_id_eq": 0.2894736842105263,
+      "MCQ-llh-mcqs_deaths_id_sim": 0.24561403508771928,
+      "MCQ-llh-mcqs_diagnosis_att": 0.43137254901960786,
+      "MCQ-llh-mcqs_diagnosis_id": 0.2692307692307692,
+      "celebrity_deaths-Greedy-BG-Probe": 0.18859649122807018,
+      "celebrity_deaths-Greedy-Cloze": 0.12280701754385964,
+      "celebrity_deaths-Greedy-QA": 0.03070175438596491,
+      "celebrity_diagnosis-Greedy-BG-Probe": 0.19230769230769232,
+      "celebrity_diagnosis-Greedy-Cloze": 0.11538461538461539,
+      "celebrity_diagnosis-Greedy-QA": 0.19230769230769232
+    }
+  },
+  "mmlu": null,
+  "normalized_config": {
+    "forget_target": "deaths",
+    "learning_rate": 5e-05,
+    "model_name_or_path": "meta-llama/Llama-2-7b-chat-hf",
+    "num_train_epochs": 3,
+    "task_name": "celebrity_rmu_death_Mixtral"
+  },
+  "schema_version": "1.1",
+  "significance": {},
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "metrics",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_Mixtral/evaluation_results.json",
+      "member_sha256": "120c5a8cd07730350aef545aabf5c4fd24794b644e8ce816848a9c6f128fa7ca",
+      "observation": "directly observed",
+      "role": "metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "config",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_Mixtral/.hydra/config.yaml",
+      "member_sha256": "36a78761dc61bb3001081fe0285e0b59e6651400b21126d6583caf36831a4e62",
+      "observation": "directly observed",
+      "role": "config",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_celebrity_death_Mixtral/trainer_state.json",
+      "member_sha256": "9e48513e427260e473c659c4fac3dbd002f827c2e953ef59ed76dd0fd1391a75",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    }
+  ],
+  "status_flags": [
+    "unresolved"
+  ],
+  "trainer_state": {
+    "best_metric": null,
+    "best_model_checkpoint": null,
+    "epoch": 2.9473684210526314,
+    "global_step": 126
+  }
+}

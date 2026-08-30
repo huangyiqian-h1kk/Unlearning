@@ -1,0 +1,115 @@
+{
+  "cell_status": {
+    "MMLU": [
+      "missing"
+    ]
+  },
+  "experiment_id": "a-deaths-llama2-npo",
+  "field_evidence": {
+    "hydra_config": {
+      "observation": "directly observed",
+      "observed": {
+        "forget_target": "deaths",
+        "learning_rate": 5e-06,
+        "model_name_or_path": "meta-llama/Llama-2-7b-chat-hf",
+        "num_train_epochs": 2,
+        "task_name": "celebrity_npo_death_llama2"
+      },
+      "source": {
+        "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+        "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+        "locator": "config",
+        "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_llama2/.hydra/config.yaml",
+        "member_sha256": "69d77a6948585d2a2ddcfa44ea3090245482d8f1990292d3c8da8bb58c1d2215",
+        "observation": "directly observed",
+        "role": "config",
+        "source_type": "archive_member"
+      }
+    },
+    "trainer_state": {
+      "observation": "directly observed",
+      "observed": {
+        "best_metric": null,
+        "best_model_checkpoint": null,
+        "epoch": 1.9649122807017543,
+        "global_step": 42
+      },
+      "source": {
+        "archive": "clinicia_provenance_bundle.tar.gz",
+        "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+        "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+        "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_llama2/trainer_state.json",
+        "member_sha256": "dae20e757cec9620b88e4ecee1e7734a4983f9f331d57cd61aee15c51c8e4261",
+        "observation": "directly observed",
+        "role": "trainer_state",
+        "source_type": "archive_member"
+      }
+    }
+  },
+  "metrics": {
+    "metrics": {
+      "MCQ-llh-mcqs_deaths_att": 0.3508771929824561,
+      "MCQ-llh-mcqs_deaths_id_eq": 0.3157894736842105,
+      "MCQ-llh-mcqs_deaths_id_sim": 0.3333333333333333,
+      "MCQ-llh-mcqs_diagnosis_att": 0.49019607843137253,
+      "MCQ-llh-mcqs_diagnosis_id": 0.2692307692307692,
+      "celebrity_deaths-Greedy-BG-Probe": 0.17543859649122806,
+      "celebrity_deaths-Greedy-Cloze": 0.35526315789473684,
+      "celebrity_deaths-Greedy-QA": 0.42543859649122806,
+      "celebrity_diagnosis-Greedy-BG-Probe": 0.15384615384615385,
+      "celebrity_diagnosis-Greedy-Cloze": 0.11538461538461539,
+      "celebrity_diagnosis-Greedy-QA": 0.21153846153846154
+    }
+  },
+  "mmlu": null,
+  "normalized_config": {
+    "forget_target": "deaths",
+    "learning_rate": 5e-06,
+    "model_name_or_path": "meta-llama/Llama-2-7b-chat-hf",
+    "num_train_epochs": 2,
+    "task_name": "celebrity_npo_death_llama2"
+  },
+  "schema_version": "1.1",
+  "significance": {},
+  "sources": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "metrics",
+      "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_llama2/evaluation_results.json",
+      "member_sha256": "63d112bae8abd68284207fed7eaa682e9bade176b95ec304226d926130e02b2d",
+      "observation": "directly observed",
+      "role": "metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "config",
+      "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_llama2/.hydra/config.yaml",
+      "member_sha256": "69d77a6948585d2a2ddcfa44ea3090245482d8f1990292d3c8da8bb58c1d2215",
+      "observation": "directly observed",
+      "role": "config",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+      "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_llama2/trainer_state.json",
+      "member_sha256": "dae20e757cec9620b88e4ecee1e7734a4983f9f331d57cd61aee15c51c8e4261",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    }
+  ],
+  "status_flags": [
+    "verified"
+  ],
+  "trainer_state": {
+    "best_metric": null,
+    "best_model_checkpoint": null,
+    "epoch": 1.9649122807017543,
+    "global_step": 42
+  }
+}
