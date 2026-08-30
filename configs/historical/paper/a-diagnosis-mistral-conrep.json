@@ -1,0 +1,118 @@
+{
+  "archive_evidence_references": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "metrics",
+      "member": "llm2vec/grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/eval_forget/evaluation_results.json",
+      "member_sha256": "190a4b26016f75b0cdffca824dfb2892a95ef01ac3158eb740d1b29a4394830c",
+      "observation": "directly observed",
+      "role": "metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "trainer_state",
+      "member": "llm2vec/grid_search_diagnosis/results/Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4/model/checkpoint-348/trainer_state.json",
+      "member_sha256": "350524d35b4e335ee053a9fa580e5f7e9e94a7073124cb42a74b46e1de7c4eb2",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    },
+    {
+      "file_sha256": "ef4841f688c16c744d0341bace8e0117afd9e64993ccdb938930e437fb1861d8",
+      "git_blob_sha": "08734e8a05356e473144a92a5996fa80d42feb09",
+      "locator": "JSON keys: model_name_or_path, peft_model_name_or_path, learning_rate, forget_weight, lm_weight, gamma, num_train_epochs, output_dir",
+      "observation": "directly observed",
+      "path": "llm2vec/grid_search_diagnosis/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
+      "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
+      "role": "training_config",
+      "source_type": "repository_file"
+    },
+    {
+      "file_sha256": "11538ecf2621606cee80d52683059c1891ee8b0b5cb06c42854be9123393061f",
+      "git_blob_sha": "581ff21fe69d6604afe1c095f50070752b991176",
+      "locator": "python command line; commented commands are non-execution evidence",
+      "observation": "directly observed",
+      "path": "llm2vec/grid_search_diagnosis/jobs/job_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.sh",
+      "repository_commit_sha": "b09177e64096e7165004f5666db140f7b94285a9",
+      "role": "job_script",
+      "source_type": "repository_file"
+    }
+  ],
+  "backend": "conrep",
+  "cell_status": {
+    "MMLU": [
+      "missing"
+    ]
+  },
+  "checkpoint_lineage": {
+    "evidence_status": "resolved",
+    "starting_basis": "mistralai/Mistral-7B-Instruct-v0.2"
+  },
+  "current_git_legacy_source_references": [],
+  "evaluation_protocol_evidence": {
+    "metric_mapping": {
+      "generation": [
+        "QA",
+        "Cloze",
+        "BG"
+      ],
+      "mcq": [
+        "ATT",
+        "IDeq",
+        "ID"
+      ]
+    },
+    "protocol": "historical_v1",
+    "status": "archived_evidence"
+  },
+  "evidence_notes": [
+    "Fixed configured epochs completed; no reliable automated early-stopping selection.",
+    "Auxiliary LM loss did not contribute because lm_weight=0."
+  ],
+  "experiment_id": "a-diagnosis-mistral-conrep",
+  "final_epoch": 4.0,
+  "final_step": 348,
+  "historical_path_label": "Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4",
+  "historical_training_entry_point": "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py",
+  "identity_evidence_basis": "resolved configuration or archived evidence; historical labels are non-authoritative",
+  "intended_paper_label": "Diagnosis Mistral ConRep",
+  "knowledge_target": "diagnosis",
+  "known_limitations": [
+    "Configured epoch completion; not evidence of early stopping."
+  ],
+  "method": "ConRep",
+  "mmlu_evidence": {
+    "settings_status": "missing",
+    "source": null
+  },
+  "record_kind": "historical_experiment",
+  "regime": "A",
+  "reproduction_status": "historical_resolved",
+  "resolved_forget_dataset_target": "diagnosis",
+  "resolved_hyperparameters": {
+    "forget_weight": 0.45,
+    "gamma": 1,
+    "learning_rate": 7e-06,
+    "lm_weight": 0,
+    "num_train_epochs": 4
+  },
+  "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+  "resolved_retain_dataset_target": "complementary",
+  "run_kind": "unlearn",
+  "schema_version": "1.0",
+  "semantic_dataset_ids": {
+    "forget_dataset_id": "clinicia/celebrity",
+    "forget_target": "diagnosis",
+    "retain_dataset_id": "clinicia/retain",
+    "retain_target": "complementary"
+  },
+  "starting_checkpoint_id": "mistralai/Mistral-7B-Instruct-v0.2",
+  "status_flags": [
+    "verified"
+  ],
+  "training_entry_point_evidence_status": "resolved",
+  "unresolved_fields": []
+}

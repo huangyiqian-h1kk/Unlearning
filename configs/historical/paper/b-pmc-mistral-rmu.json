@@ -1,0 +1,129 @@
+{
+  "archive_evidence_references": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "retain_metrics",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/retain_eval/evaluation_results.json",
+      "member_sha256": "7131529da913a849543e2b2db70a7b0f6701e2adba5ffb685fadaa4ee701bef7",
+      "observation": "directly observed",
+      "role": "retain_metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "forget_metrics",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/forget_eval/evaluation_results.json",
+      "member_sha256": "c82a689cf131f17481c89dfb2d8dce809ff4c693f18feb2ae40de85c1814d5dc",
+      "observation": "directly observed",
+      "role": "forget_metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "config",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/.hydra/config.yaml",
+      "member_sha256": "0aca73d647feeb4499aabcc2467391e269f671a30248820bcd82c5d2417093fa",
+      "observation": "directly observed",
+      "role": "config",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "expected_accuracy": 0.2722,
+      "locator": "selected hf(pretrained=...) block followed by aggregate |mmlu| row",
+      "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
+      "member_sha256": "4584eef3555cffa941c90f69e7d6154c89b29798cca5724373a54a43014461ec",
+      "model_block_selector": "pretrained=rmu_PMC_Mixtral",
+      "observation": "directly observed",
+      "role": "mmlu_log",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+      "member": "llm2vec/open_unlearning/saves/unlearn/rmu_PMC_Mixtral/trainer_state.json",
+      "member_sha256": "9c9a68c7e008c645c4b3db0cdf84c01b9ff99e9f3fe0e149083d4e1fc1139e2a",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    }
+  ],
+  "backend": "open_unlearning",
+  "cell_status": {},
+  "checkpoint_lineage": {
+    "evidence_status": "resolved",
+    "starting_basis": "pmc_full_universal_Mistral-7B_continual"
+  },
+  "current_git_legacy_source_references": [],
+  "evaluation_protocol_evidence": {
+    "metric_mapping": {
+      "generation": [
+        "QA",
+        "Cloze",
+        "BG"
+      ],
+      "mcq": [
+        "ATT",
+        "IDeq",
+        "ID"
+      ]
+    },
+    "protocol": "historical_v1",
+    "status": "archived_evidence"
+  },
+  "evidence_notes": [],
+  "experiment_id": "b-pmc-mistral-rmu",
+  "final_epoch": 2.88,
+  "final_step": 18,
+  "historical_path_label": "rmu_PMC_Mixtral",
+  "historical_training_entry_point": null,
+  "identity_evidence_basis": "resolved configuration or archived evidence; historical labels are non-authoritative",
+  "intended_paper_label": "PMC Mistral RMU",
+  "knowledge_target": "pmc",
+  "known_limitations": [
+    "Training entry point is not directly recoverable from the declared configuration evidence.",
+    "Configured epoch completion; not evidence of early stopping."
+  ],
+  "method": "RMU",
+  "mmlu_evidence": {
+    "settings_status": "resolved",
+    "source": {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "member": "llm2vec/open_unlearning/saves/unlearn/LMeval_Celeb_diagnosis_Mixtral.o4702016",
+      "model_block_selector": "pretrained=rmu_PMC_Mixtral",
+      "source_type": "archive_member"
+    }
+  },
+  "record_kind": "historical_experiment",
+  "regime": "B",
+  "reproduction_status": "historical_partial",
+  "resolved_forget_dataset_target": "pmc",
+  "resolved_hyperparameters": {
+    "learning_rate": 5e-05,
+    "num_train_epochs": 3
+  },
+  "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+  "resolved_retain_dataset_target": "complementary",
+  "run_kind": "unlearn",
+  "schema_version": "1.0",
+  "semantic_dataset_ids": {
+    "forget_dataset_id": "clinicia/pmc",
+    "forget_target": "pmc",
+    "retain_dataset_id": "clinicia/retain",
+    "retain_target": "complementary"
+  },
+  "starting_checkpoint_id": "pmc_full_universal_Mistral-7B_continual",
+  "status_flags": [
+    "verified",
+    "label_corrected"
+  ],
+  "training_entry_point_evidence_status": "unresolved",
+  "unresolved_fields": [
+    "historical_training_entry_point"
+  ]
+}
