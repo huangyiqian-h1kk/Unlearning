@@ -3,3 +3,26 @@ llm2vec/UnlearnData/*.csv filter=lfs diff=lfs merge=lfs -text
 llm2vec/cache/echo-data/*.jsonl filter=lfs diff=lfs merge=lfs -text
 llm2vec/cache/echo-data/*.txt filter=lfs diff=lfs merge=lfs -text
 llm2vec/cache/wiki1m_for_simcse.txt filter=lfs diff=lfs merge=lfs -text
+
+# Phase 3: suppress textual rendering of bulk historical/generated artifacts.
+llm2vec/grid_search/** -diff
+llm2vec/grid_search_diagnosis/** -diff
+llm2vec/grid_search_death/** -diff
+llm2vec/grid_search_epoch4/** -diff
+llm2vec/output/** -diff
+llm2vec/output_PMC/** -diff
+llm2vec/output_easyQA_death/** -diff
+llm2vec/output_easyQA_diagnosis/** -diff
+llm2vec/output_local/** -diff
+llm2vec/output_bio_cyber_wiki_double/** -diff
+llm2vec/open_unlearning/save/** -diff
+llm2vec/open_unlearning/outputs/** -diff
+llm2vec/open_unlearning/**/checkpoint-*/** -diff
+llm2vec/open_unlearning/**/*.o[0-9]* -diff
+llm2vec/open_unlearning/**/*.e[0-9]* -diff
+llm2vec/**/__pycache__/** -diff
+llm2vec/**/.cache/** -diff
+llm2vec/**/detailed_generations/** -diff
+llm2vec/unlearn_eval/eval_logs/** -diff
+llm2vec/unlearn_eval/output_easyQA_death/** -diff
+llm2vec/unlearn_eval/output_easyQA_diagnosis/** -diff

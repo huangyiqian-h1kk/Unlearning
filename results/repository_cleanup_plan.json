@@ -1,0 +1,524 @@
+{
+  "cleanup_batches": [
+    {
+      "batch_id": "phase3b-qwen-train",
+      "deleted_from_index_count": 1776,
+      "remaining_qwen_tracked_counts": {
+        "forget_configs": 1776,
+        "job_scripts": 1776,
+        "retain_configs": 1776,
+        "train_configs": 0
+      },
+      "scientific_or_phase2_files_changed": false,
+      "sorted_target_path_list_sha256": "12738813406fb1bb29bc7de7b82053895b81b04dfa236072442c5f3efac647e5",
+      "starting_commit": "a2b93b803de728da18f7551a49e5295807b12453",
+      "status": "complete",
+      "target_blob_bytes": 2266096,
+      "target_pattern": "llm2vec/grid_search/configs/train_Qwen_*.json",
+      "tracked_file_count_after_batch": 28571,
+      "working_tree_copies_remained_present": true
+    },
+    {
+      "batch_id": "phase3b-qwen-retain",
+      "remaining_qwen_tracked_counts": {
+        "forget_configs": 1776,
+        "job_scripts": 1776,
+        "retain_configs": 0,
+        "train_configs": 0
+      },
+      "removed_from_index_count": 1776,
+      "scientific_or_phase2_files_changed": false,
+      "sorted_target_path_list_sha256": "455519d41ae9800551fd76dfd80c4b3fd5ca5cc63999f9c28a7f05eee8a3eeb4",
+      "starting_commit": "a99bbd5b8b4380f3adac2b57aaa607af19401466",
+      "status": "complete",
+      "target_blob_bytes": 1686118,
+      "target_pattern": "llm2vec/grid_search/configs/retain_Qwen_*.json",
+      "test_suite_integrity": {
+        "discovered_modules": [
+          "results.test_manifest",
+          "results.test_table_formulas",
+          "test_repository_cleanup"
+        ],
+        "errors": 0,
+        "executed": 42,
+        "explanation": "The five-test report covered only tests.test_repository_cleanup; full discovery finds the unchanged Phase 2 modules and executes 42 tests.",
+        "failures": 0,
+        "skipped": 0,
+        "status": "passed"
+      },
+      "tracked_file_count_after_batch": 26795,
+      "working_tree_copies_remained_present": true
+    },
+    {
+      "batch_id": "phase3b-qwen-forget",
+      "remaining_qwen_tracked_counts": {
+        "forget_configs": 0,
+        "job_scripts": 1776,
+        "retain_configs": 0,
+        "train_configs": 0
+      },
+      "removed_from_index_count": 1776,
+      "scientific_or_phase2_files_changed": false,
+      "sorted_target_path_list_sha256": "d23ab7d727235e000dc5971246e5bb46ce9f2a02f2997a87576f3cdd29485a52",
+      "starting_commit": "6ecaf8d34b6ad00cc287199fa6c531634f6dd502",
+      "status": "complete",
+      "target_blob_bytes": 1686118,
+      "target_pattern": "llm2vec/grid_search/configs/forget_Qwen_*.json",
+      "test_suite_integrity": {
+        "discovered_modules": [
+          "results.test_manifest",
+          "results.test_table_formulas",
+          "test_repository_cleanup"
+        ],
+        "errors": 0,
+        "executed": 42,
+        "failures": 0,
+        "skipped": 0,
+        "status": "passed"
+      },
+      "tracked_file_count_after_batch": 25019,
+      "working_tree_copies_remained_present": true
+    },
+    {
+      "basename_prefix": "job_Qwen_",
+      "batch_id": "phase3b-qwen-jobs",
+      "file_extension": ".sh",
+      "no_scheduler_stdout_stderr_included": true,
+      "remaining_qwen_tracked_counts": {
+        "forget_configs": 0,
+        "grid_search_total": 0,
+        "job_scripts": 0,
+        "retain_configs": 0,
+        "train_configs": 0
+      },
+      "removed_from_index_count": 1776,
+      "scientific_or_phase2_files_changed": false,
+      "sorted_target_path_list_sha256": "9c610e14e95fa504e6362ed411722dab66926dfea05de64574ad398f0a4efd4a",
+      "starting_commit": "3305c98b429dd77a5a1d3ba3e59783399219a632",
+      "status": "complete",
+      "target_blob_bytes": 1940636,
+      "target_pattern": "llm2vec/grid_search/jobs/job_Qwen_*.sh",
+      "test_suite_integrity": {
+        "discovered_modules": [
+          "results.test_manifest",
+          "results.test_table_formulas",
+          "test_repository_cleanup"
+        ],
+        "errors": 0,
+        "executed": 42,
+        "failures": 0,
+        "skipped": 0,
+        "status": "passed"
+      },
+      "tracked_file_count_after_batch": 23243,
+      "working_tree_copies_remained_present": true
+    },
+    {
+      "batch_id": "phase3b-llama3",
+      "combined_logical_blob_bytes": 7614488,
+      "combined_removal_count": 7104,
+      "combined_sorted_target_path_list_sha256": "443da7e339deea9fe85a72ca8d9fa4d1dbcfe39a9218cc021a8c81ad5b86d4b9",
+      "components": {
+        "forget_configs": {
+          "logical_blob_bytes": 1693222,
+          "removed_from_index_count": 1776,
+          "sorted_path_list_sha256": "6e7a51c75d1952eab26b0b5a7e2f829c36b50c35e742eaa8c93e6196d2def63a"
+        },
+        "job_scripts": {
+          "logical_blob_bytes": 1954844,
+          "removed_from_index_count": 1776,
+          "sorted_path_list_sha256": "b80a188e3e95e80b449ff53e23e158d680553abca9a68688ac86ad49e08fd611"
+        },
+        "retain_configs": {
+          "logical_blob_bytes": 1693222,
+          "removed_from_index_count": 1776,
+          "sorted_path_list_sha256": "5e794c81b91e05de7d1e9ec420cbff53813d6abaaa757c831bb7dd262cadd88b"
+        },
+        "train_configs": {
+          "logical_blob_bytes": 2273200,
+          "removed_from_index_count": 1776,
+          "sorted_path_list_sha256": "6541dd5fbd8092fc2c2954e8cc5f0133a5b3cdc76d3ee0ba6835df11b60ea7d3"
+        }
+      },
+      "no_scheduler_stdout_stderr_included": true,
+      "remaining_exact_mistral_grid_search_total": 7104,
+      "remaining_llama3_tracked_counts": {
+        "forget_configs": 0,
+        "grid_search_total": 0,
+        "job_scripts": 0,
+        "retain_configs": 0,
+        "train_configs": 0
+      },
+      "remaining_mistral_universal_grid_search_total": 7118,
+      "remaining_qwen_grid_search_total": 0,
+      "scientific_or_phase2_files_changed": false,
+      "starting_commit": "539ca5ab2f48d3dd274dcb0febc4c4a76e5d46ab",
+      "status": "complete",
+      "target_patterns": [
+        "llm2vec/grid_search/configs/train_Llama3_*.json",
+        "llm2vec/grid_search/configs/retain_Llama3_*.json",
+        "llm2vec/grid_search/configs/forget_Llama3_*.json",
+        "llm2vec/grid_search/jobs/job_Llama3_*.sh"
+      ],
+      "test_suite_integrity": {
+        "discovered_modules": [
+          "results.test_manifest",
+          "results.test_table_formulas",
+          "test_repository_cleanup"
+        ],
+        "errors": 0,
+        "executed": 42,
+        "failures": 0,
+        "skipped": 0,
+        "status": "passed"
+      },
+      "tracked_file_count_after_batch": 16139,
+      "tracked_file_count_before_batch": 23243,
+      "verified_naming_conventions": {
+        "forget_configs": {
+          "basename_prefix": "forget_Llama3_",
+          "file_extension": ".json"
+        },
+        "job_scripts": {
+          "basename_prefix": "job_Llama3_",
+          "file_extension": ".sh"
+        },
+        "retain_configs": {
+          "basename_prefix": "retain_Llama3_",
+          "file_extension": ".json"
+        },
+        "train_configs": {
+          "basename_prefix": "train_Llama3_",
+          "file_extension": ".json"
+        }
+      },
+      "working_tree_copies_remained_present_and_ignored": true
+    },
+    {
+      "batch_id": "phase3b-mistral-family",
+      "components": {
+        "forget_configs": {
+          "logical_blob_bytes": 1696774,
+          "removed_from_index_count": 1776,
+          "target_pattern": "llm2vec/grid_search/configs/forget_Mistral_*.json"
+        },
+        "job_scripts": {
+          "logical_blob_bytes": 1961948,
+          "removed_from_index_count": 1776,
+          "target_pattern": "llm2vec/grid_search/jobs/job_Mistral_*.sh"
+        },
+        "retain_configs": {
+          "logical_blob_bytes": 1696774,
+          "removed_from_index_count": 1776,
+          "target_pattern": "llm2vec/grid_search/configs/retain_Mistral_*.json"
+        },
+        "train_configs": {
+          "logical_blob_bytes": 2298064,
+          "removed_from_index_count": 1776,
+          "target_pattern": "llm2vec/grid_search/configs/train_Mistral_*.json"
+        }
+      },
+      "index_only_untracking": true,
+      "remaining_exact_mistral_tracked_count": 0,
+      "remaining_llama3_grid_search_total": 0,
+      "remaining_mistral_universal_tracked_count": 7118,
+      "remaining_qwen_grid_search_total": 0,
+      "resulting_tracked_file_count": 9035,
+      "scientific_or_provenance_files_changed": false,
+      "sorted_target_path_list_sha256": "159f5c88b9093cab8f08dc887fb4dbc03206389f1ac46f9df0ee3fc89fa9ee00",
+      "starting_commit": "9b9cca3aa0a2378f3c8fdb0409a7bd503456cf12",
+      "status": "complete",
+      "target_patterns": [
+        "llm2vec/grid_search/configs/train_Mistral_*.json",
+        "llm2vec/grid_search/configs/retain_Mistral_*.json",
+        "llm2vec/grid_search/configs/forget_Mistral_*.json",
+        "llm2vec/grid_search/jobs/job_Mistral_*.sh"
+      ],
+      "total_target_blob_bytes": 7653560,
+      "total_target_count": 7104,
+      "working_tree_copies_remained_present_and_ignored": true
+    },
+    {
+      "batch_id": "phase3c-mistral-universal-family",
+      "combined_sorted_target_path_list_sha256": "5a2eebb3449e7d23fa1b2d5038c17e8ac9f2d70b5030cdb5903bca52810f39d4",
+      "generated_family_blob_bytes": 7797320,
+      "generated_family_components": {
+        "forget_configs": {
+          "blob_bytes": 1728742,
+          "count": 1776,
+          "pattern": "llm2vec/grid_search/configs/forget_MistralUniversal_*.json"
+        },
+        "job_scripts": {
+          "blob_bytes": 2027564,
+          "count": 1776,
+          "pattern": "llm2vec/grid_search/jobs/job_MistralUniversal_*.sh"
+        },
+        "retain_configs": {
+          "blob_bytes": 1728742,
+          "count": 1776,
+          "pattern": "llm2vec/grid_search/configs/retain_MistralUniversal_*.json"
+        },
+        "train_configs": {
+          "blob_bytes": 2312272,
+          "count": 1776,
+          "pattern": "llm2vec/grid_search/configs/train_MistralUniversal_*.json"
+        }
+      },
+      "generated_family_count": 7104,
+      "generated_sorted_path_list_sha256": "c26ec0b8b86a5a2b3a2d710176171477322ff5ad82dcac36dfb44a3472489dd0",
+      "index_operation": "index-only untracking",
+      "previously_cleaned_families_remain_untracked": [
+        "Qwen",
+        "Llama3",
+        "Exact Mistral"
+      ],
+      "protected_mistral_universal_results_remained_tracked_and_unchanged": true,
+      "remaining_tracked_mistral_universal_cleanup_target_count": 0,
+      "resulting_tracked_file_count": 1917,
+      "scheduler_output_blob_bytes": 4935,
+      "scheduler_output_count": 14,
+      "scheduler_output_files": [
+        {
+          "blob_bytes": 555,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm1_epochs6.e4720510",
+          "sha256": "03e6c19f050fad251020d10cff8b883b6b63204a5ea1c98ba31baa0f448080bb"
+        },
+        {
+          "blob_bytes": 150,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm1_epochs6.o4720510",
+          "sha256": "eb5a3aba93b8d8543eaa7d51d91f083803c4dd86f4bb67ddcd239291fdc28d96"
+        },
+        {
+          "blob_bytes": 705,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm2_epochs4.e4720514",
+          "sha256": "2ded53d1c446dab663ec8ed4ebdaf9ea2f7bcc6044dcb2e88d1dc2eaf9934855"
+        },
+        {
+          "blob_bytes": 0,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm2_epochs4.o4720514",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "blob_bytes": 555,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm2_epochs5.e4720513",
+          "sha256": "03e6c19f050fad251020d10cff8b883b6b63204a5ea1c98ba31baa0f448080bb"
+        },
+        {
+          "blob_bytes": 150,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr7e-06_gm2_epochs5.o4720513",
+          "sha256": "eb5a3aba93b8d8543eaa7d51d91f083803c4dd86f4bb67ddcd239291fdc28d96"
+        },
+        {
+          "blob_bytes": 555,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm1_epochs4.e4720512",
+          "sha256": "03e6c19f050fad251020d10cff8b883b6b63204a5ea1c98ba31baa0f448080bb"
+        },
+        {
+          "blob_bytes": 150,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm1_epochs4.o4720512",
+          "sha256": "eb5a3aba93b8d8543eaa7d51d91f083803c4dd86f4bb67ddcd239291fdc28d96"
+        },
+        {
+          "blob_bytes": 705,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm1_epochs5.e4720511",
+          "sha256": "2ded53d1c446dab663ec8ed4ebdaf9ea2f7bcc6044dcb2e88d1dc2eaf9934855"
+        },
+        {
+          "blob_bytes": 0,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm1_epochs5.o4720511",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "blob_bytes": 555,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm2_epochs4.e4720515",
+          "sha256": "03e6c19f050fad251020d10cff8b883b6b63204a5ea1c98ba31baa0f448080bb"
+        },
+        {
+          "blob_bytes": 150,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm2_epochs4.o4720515",
+          "sha256": "eb5a3aba93b8d8543eaa7d51d91f083803c4dd86f4bb67ddcd239291fdc28d96"
+        },
+        {
+          "blob_bytes": 555,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm2_epochs5.e4720516",
+          "sha256": "03e6c19f050fad251020d10cff8b883b6b63204a5ea1c98ba31baa0f448080bb"
+        },
+        {
+          "blob_bytes": 150,
+          "path": "llm2vec/grid_search/jobs/gs_MistralUniversal_lm0.01_fw0.2_lr8e-06_gm2_epochs5.o4720516",
+          "sha256": "eb5a3aba93b8d8543eaa7d51d91f083803c4dd86f4bb67ddcd239291fdc28d96"
+        }
+      ],
+      "scheduler_sorted_path_list_sha256": "709a84818de21c7177c935ebfbbe63bfd1c37c0003e4c20638838d619ac0aae1",
+      "scientific_and_provenance_files_changed": false,
+      "starting_commit": "1873472bd2bc56e2f9a506442d1fc50fd514edf4",
+      "status": "complete",
+      "total_target_blob_bytes": 7802255,
+      "total_target_count": 7118,
+      "working_tree_copies_remained_present_and_ignored": true
+    }
+  ],
+  "execution_constraints": {
+    "oversize_family_fallback": [
+      "train configs",
+      "retain configs",
+      "forget configs",
+      "jobs and logs"
+    ],
+    "sequencing": "Each task begins from the published branch state of its predecessor."
+  },
+  "grid_search_model_families": {
+    "Llama3": {
+      "forget_configs": 1776,
+      "job_scripts": 1776,
+      "retain_configs": 1776,
+      "scheduler_stdout_stderr": 0,
+      "total_files": 7104,
+      "train_configs": 1776
+    },
+    "Mistral": {
+      "forget_configs": 1776,
+      "job_scripts": 1776,
+      "retain_configs": 1776,
+      "scheduler_stdout_stderr": 0,
+      "total_files": 7104,
+      "train_configs": 1776
+    },
+    "MistralUniversal": {
+      "forget_configs": 1776,
+      "job_scripts": 1776,
+      "retain_configs": 1776,
+      "scheduler_stdout_stderr": 14,
+      "total_files": 7118,
+      "train_configs": 1776
+    },
+    "Qwen": {
+      "forget_configs": 1776,
+      "job_scripts": 1776,
+      "retain_configs": 1776,
+      "scheduler_stdout_stderr": 0,
+      "total_files": 7104,
+      "train_configs": 1776
+    }
+  },
+  "historical_categories": {
+    "caches": {
+      "bytes": 134,
+      "files": 1
+    },
+    "checkpoints": {
+      "bytes": 133242672,
+      "files": 445
+    },
+    "generated_evaluation_outputs": {
+      "bytes": 5487535,
+      "files": 15
+    },
+    "llm2vec/grid_search/configs/": {
+      "bytes": 22759344,
+      "files": 21312
+    },
+    "llm2vec/grid_search/jobs/": {
+      "bytes": 7889927,
+      "files": 7118
+    },
+    "llm2vec/grid_search_death/": {
+      "bytes": 239870,
+      "files": 216
+    },
+    "llm2vec/grid_search_diagnosis/": {
+      "bytes": 474072,
+      "files": 420
+    },
+    "llm2vec/grid_search_epoch4/": {
+      "bytes": 14824,
+      "files": 16
+    },
+    "llm2vec/output/": {
+      "bytes": 18417328,
+      "files": 62
+    },
+    "llm2vec/output_PMC/": {
+      "bytes": 3520777,
+      "files": 8
+    },
+    "llm2vec/output_bio_cyber_wiki_double/": {
+      "bytes": 53451225,
+      "files": 223
+    },
+    "llm2vec/output_easyQA_death/": {
+      "bytes": 14757742,
+      "files": 32
+    },
+    "llm2vec/output_easyQA_diagnosis/": {
+      "bytes": 7043535,
+      "files": 16
+    },
+    "llm2vec/output_local/": {
+      "bytes": 36240732,
+      "files": 140
+    },
+    "open_unlearning_save_output": {
+      "bytes": 0,
+      "files": 0
+    },
+    "scheduler_logs": {
+      "bytes": 6286974,
+      "files": 124
+    }
+  },
+  "incremental_cleanup_order": [
+    {
+      "scope": "Qwen grid-search configs and jobs only",
+      "task": "Phase 3B-Qwen"
+    },
+    {
+      "scope": "Llama3 grid-search configs and jobs only",
+      "task": "Phase 3B-Llama3"
+    },
+    {
+      "scope": "Exact Mistral configs and jobs; explicitly excludes MistralUniversal",
+      "task": "Phase 3B-Mistral"
+    },
+    {
+      "scope": "MistralUniversal configs, jobs, scheduler stdout and stderr",
+      "task": "Phase 3B-MistralUniversal"
+    },
+    {
+      "scope": "Remaining Diagnosis, Deaths, epoch4, output, checkpoint and generated-result cleanup",
+      "task": "Phase 3C"
+    },
+    {
+      "scope": "Canonical source-code, configuration, data, archive and README reorganization",
+      "task": "Phase 3D"
+    },
+    {
+      "scope": "Final structure validation and reconciliation",
+      "task": "Phase 3E"
+    }
+  ],
+  "known_limitations": [
+    "Categories are path-pattern inventories and may overlap; they must not be summed.",
+    "Byte totals are logical blob sizes per tracked path, not Git packfile or LFS payload sizes.",
+    "Only the starting commit tree is measured; untracked SQUID files and future artifacts are unknowable.",
+    "OpenUnlearning generated directories are identified conservatively so source, configs, and retained inputs are excluded.",
+    "The complete tracked-path list is represented only by its SHA-256 digest."
+  ],
+  "retain_or_migrate_before_cleanup": [
+    "results/paper/",
+    "llm2vec/open_unlearning/configs/",
+    "llm2vec/open_unlearning/src/",
+    "llm2vec/unlearn_eval/data/",
+    "llm2vec/UnlearnData/",
+    "clinicia_provenance_bundle.tar.gz",
+    "clinicia_configs_mmlu_bundle.tar.gz"
+  ],
+  "schema_version": "1.0.0",
+  "starting_commit": "e695674ccea9d8cd6ebddb9fc31c58b1d8d3dfa9",
+  "tracked_tree": {
+    "path_hash_encoding": "UTF-8 paths, bytewise Git order after Python Unicode sorting, LF after every path",
+    "sorted_path_list_sha256": "2e446f635a443ce0cb6cb8ada15a6aaa91d9856b95a28c580044ed3c711cbd4d",
+    "total_files": 30342,
+    "total_ordinary_blob_bytes": 222166841
+  }
+}

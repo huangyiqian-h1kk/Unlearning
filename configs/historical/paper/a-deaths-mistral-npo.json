@@ -1,0 +1,105 @@
+{
+  "archive_evidence_references": [
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "metrics",
+      "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_Mixtral/evaluation_results.json",
+      "member_sha256": "e2565ef16cd2f391286719b6fc55afce8c5aaf9b3510a70a3b8dbd03aaaa58e6",
+      "observation": "directly observed",
+      "role": "metrics",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_configs_mmlu_bundle.tar.gz",
+      "archive_sha256": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
+      "locator": "config",
+      "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_Mixtral/.hydra/config.yaml",
+      "member_sha256": "8939e96fa14a0da47a0868d7e67fcd84532c373444c1d44bf3dd7398a789c78b",
+      "observation": "directly observed",
+      "role": "config",
+      "source_type": "archive_member"
+    },
+    {
+      "archive": "clinicia_provenance_bundle.tar.gz",
+      "archive_sha256": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
+      "locator": "global_step, epoch, best_model_checkpoint, best_metric",
+      "member": "llm2vec/open_unlearning/saves/unlearn/npo_celebrity_death_Mixtral/trainer_state.json",
+      "member_sha256": "6de381022529977c4fac51e66ed62eea8416b42399c3245b47e74a376e9813e1",
+      "observation": "directly observed",
+      "role": "trainer_state",
+      "source_type": "archive_member"
+    }
+  ],
+  "backend": "open_unlearning",
+  "cell_status": {
+    "MMLU": [
+      "missing"
+    ]
+  },
+  "checkpoint_lineage": {
+    "evidence_status": "resolved",
+    "starting_basis": "mistralai/Mistral-7B-Instruct-v0.2"
+  },
+  "current_git_legacy_source_references": [],
+  "evaluation_protocol_evidence": {
+    "metric_mapping": {
+      "generation": [
+        "QA",
+        "Cloze",
+        "BG"
+      ],
+      "mcq": [
+        "ATT",
+        "IDeq",
+        "ID"
+      ]
+    },
+    "protocol": "historical_v1",
+    "status": "archived_evidence"
+  },
+  "evidence_notes": [],
+  "experiment_id": "a-deaths-mistral-npo",
+  "final_epoch": 1.9649122807017543,
+  "final_step": 42,
+  "historical_path_label": "npo_celebrity_death_Mixtral",
+  "historical_training_entry_point": null,
+  "identity_evidence_basis": "resolved configuration or archived evidence; historical labels are non-authoritative",
+  "intended_paper_label": "Deaths Mistral NPO",
+  "knowledge_target": "deaths",
+  "known_limitations": [
+    "Training entry point is not directly recoverable from the declared configuration evidence.",
+    "Configured epoch completion; not evidence of early stopping."
+  ],
+  "method": "NPO",
+  "mmlu_evidence": {
+    "settings_status": "missing",
+    "source": null
+  },
+  "record_kind": "historical_experiment",
+  "regime": "A",
+  "reproduction_status": "historical_partial",
+  "resolved_forget_dataset_target": "deaths",
+  "resolved_hyperparameters": {
+    "learning_rate": 5e-06,
+    "num_train_epochs": 2
+  },
+  "resolved_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+  "resolved_retain_dataset_target": "complementary",
+  "run_kind": "unlearn",
+  "schema_version": "1.0",
+  "semantic_dataset_ids": {
+    "forget_dataset_id": "clinicia/celebrity",
+    "forget_target": "deaths",
+    "retain_dataset_id": "clinicia/retain",
+    "retain_target": "complementary"
+  },
+  "starting_checkpoint_id": "mistralai/Mistral-7B-Instruct-v0.2",
+  "status_flags": [
+    "verified"
+  ],
+  "training_entry_point_evidence_status": "unresolved",
+  "unresolved_fields": [
+    "historical_training_entry_point"
+  ]
+}

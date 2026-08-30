@@ -1,0 +1,106 @@
+{
+  "experiments": [
+    {
+      "experiment_id": "a-deaths-llama2-baseline",
+      "path": "a-deaths-llama2-baseline.json"
+    },
+    {
+      "experiment_id": "a-deaths-llama2-conrep",
+      "path": "a-deaths-llama2-conrep.json"
+    },
+    {
+      "experiment_id": "a-deaths-llama2-graddiff",
+      "path": "a-deaths-llama2-graddiff.json"
+    },
+    {
+      "experiment_id": "a-deaths-llama2-npo",
+      "path": "a-deaths-llama2-npo.json"
+    },
+    {
+      "experiment_id": "a-deaths-llama2-rmu",
+      "path": "a-deaths-llama2-rmu.json"
+    },
+    {
+      "experiment_id": "a-deaths-mistral-baseline",
+      "path": "a-deaths-mistral-baseline.json"
+    },
+    {
+      "experiment_id": "a-deaths-mistral-conrep",
+      "path": "a-deaths-mistral-conrep.json"
+    },
+    {
+      "experiment_id": "a-deaths-mistral-graddiff",
+      "path": "a-deaths-mistral-graddiff.json"
+    },
+    {
+      "experiment_id": "a-deaths-mistral-npo",
+      "path": "a-deaths-mistral-npo.json"
+    },
+    {
+      "experiment_id": "a-deaths-mistral-rmu",
+      "path": "a-deaths-mistral-rmu.json"
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-baseline",
+      "path": "a-diagnosis-llama2-baseline.json"
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-conrep",
+      "path": "a-diagnosis-llama2-conrep.json"
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-graddiff",
+      "path": "a-diagnosis-llama2-graddiff.json"
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-npo",
+      "path": "a-diagnosis-llama2-npo.json"
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-rmu",
+      "path": "a-diagnosis-llama2-rmu.json"
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-baseline",
+      "path": "a-diagnosis-mistral-baseline.json"
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-conrep",
+      "path": "a-diagnosis-mistral-conrep.json"
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-graddiff",
+      "path": "a-diagnosis-mistral-graddiff.json"
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-npo",
+      "path": "a-diagnosis-mistral-npo.json"
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-rmu",
+      "path": "a-diagnosis-mistral-rmu.json"
+    },
+    {
+      "experiment_id": "b-pmc-mistral-baseline",
+      "path": "b-pmc-mistral-baseline.json"
+    },
+    {
+      "experiment_id": "b-pmc-mistral-conrep",
+      "path": "b-pmc-mistral-conrep.json"
+    },
+    {
+      "experiment_id": "b-pmc-mistral-graddiff",
+      "path": "b-pmc-mistral-graddiff.json"
+    },
+    {
+      "experiment_id": "b-pmc-mistral-npo",
+      "path": "b-pmc-mistral-npo.json"
+    },
+    {
+      "experiment_id": "b-pmc-mistral-rmu",
+      "path": "b-pmc-mistral-rmu.json"
+    }
+  ],
+  "record_kind": "historical_experiment_index",
+  "schema_version": "1.0"
+}
