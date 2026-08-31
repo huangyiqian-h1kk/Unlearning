@@ -96,6 +96,25 @@ __pycache__/
 /llm2vec/unlearn_eval/output_easyQA_death/
 /llm2vec/unlearn_eval/output_easyQA_diagnosis/
 
+# Phase 3C-1 declared historical evaluation artifacts.
+/llm2vec/unlearn_eval/PMC/
+/llm2vec/unlearn_eval/Qwen/
+/llm2vec/unlearn_eval/qwen/
+/llm2vec/unlearn_eval/eval_mistralai/
+
+# Phase 3C-1 scheduler output only in these three immediate directories.
+/llm2vec/*.o[0-9]*
+/llm2vec/*.e[0-9]*
+/llm2vec/open_unlearning/*.o[0-9]*
+/llm2vec/open_unlearning/*.e[0-9]*
+/llm2vec/unlearn_eval/*.o[0-9]*
+/llm2vec/unlearn_eval/*.e[0-9]*
+
+# Phase 3C-1 declared editor swap artifacts (not their real YAML/JSON peers).
+/llm2vec/open_unlearning/configs/experiment/unlearn/PMC_rmu/.default.yaml.swp
+/llm2vec/train_configs/simcse/.Contrast_Unlearn_Mistral_LMloss_only_diagnosis.json.swp
+/llm2vec/train_configs/simcse/.Contrast_Unlearn_Mistral_LMloss_zero_diagnosis.json.swp
+
 # Published provenance and the cleanup inventory remain visible.
 !/results/
 /results/*
