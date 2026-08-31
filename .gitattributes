@@ -26,3 +26,22 @@ llm2vec/**/detailed_generations/** -diff
 llm2vec/unlearn_eval/eval_logs/** -diff
 llm2vec/unlearn_eval/output_easyQA_death/** -diff
 llm2vec/unlearn_eval/output_easyQA_diagnosis/** -diff
+
+# Phase 3C-1: declared historical evaluation artifacts.
+llm2vec/unlearn_eval/PMC/** -diff
+llm2vec/unlearn_eval/Qwen/** -diff
+llm2vec/unlearn_eval/qwen/** -diff
+llm2vec/unlearn_eval/eval_mistralai/** -diff
+
+# Phase 3C-1: scheduler output only in these three immediate directories.
+llm2vec/*.o[0-9]* -diff
+llm2vec/*.e[0-9]* -diff
+llm2vec/open_unlearning/*.o[0-9]* -diff
+llm2vec/open_unlearning/*.e[0-9]* -diff
+llm2vec/unlearn_eval/*.o[0-9]* -diff
+llm2vec/unlearn_eval/*.e[0-9]* -diff
+
+# Phase 3C-1: the three declared editor swap artifacts.
+llm2vec/open_unlearning/configs/experiment/unlearn/PMC_rmu/.default.yaml.swp -diff
+llm2vec/train_configs/simcse/.Contrast_Unlearn_Mistral_LMloss_only_diagnosis.json.swp -diff
+llm2vec/train_configs/simcse/.Contrast_Unlearn_Mistral_LMloss_zero_diagnosis.json.swp -diff
