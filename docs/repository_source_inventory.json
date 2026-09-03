@@ -1,0 +1,683 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "phase3d0_source_migration_baseline",
+  "baseline": {
+    "repository": "huangyiqian-h1kk/Unlearning",
+    "commit": "9e843af06e9f5dcf6e69c14e6500ca0c812c84fc",
+    "tree": "db501bce7d205a3de9f3ef75a1fe6855aadf0d08",
+    "path_count": 632,
+    "ordinary_blob_bytes": 5998289,
+    "sorted_path_list_sha256": "f49a7475d81169fdf316fbdc9a8e64976d1b9a0e17e4476c71da4f97af3e3b4c",
+    "sorted_identity_list_sha256": "6c93262d459d88737c10b1a592ef9556f60ee14726194ce8cc29ae33efec7d7e"
+  },
+  "phase_scope": {
+    "phase": "3D-0",
+    "status": "audit_baseline",
+    "source_movement_performed": false,
+    "dependency_consolidation_performed": false,
+    "duplicate_package_removed": false,
+    "root_readme_replaced": false,
+    "scientific_or_provenance_content_changed": false,
+    "allowed_additive_paths": [
+      "docs/repository_source_inventory.json",
+      "docs/source_ownership_audit.md",
+      "docs/upstream_snapshots/llm2vec-312adcf.json",
+      "docs/upstream_snapshots/open-unlearning-d33c476.json",
+      "scripts/repository/validate_source_inventory.py",
+      "tests/test_source_inventory.py"
+    ],
+    "allowed_modified_paths": [
+      "tests/test_repository_cleanup.py"
+    ]
+  },
+  "hash_conventions": {
+    "path_list": "repository-relative UTF-8 paths, Python Unicode sort, one LF after every path including the final path",
+    "identity_list": "path, NUL, mode, NUL, Git blob SHA, NUL, decimal ordinary blob size, LF; Python Unicode path sort"
+  },
+  "top_level_census": [
+    {
+      "name": ".gitattributes",
+      "path_count": 1,
+      "ordinary_blob_bytes": 2021,
+      "sorted_path_list_sha256": "c897936f5ea7ea10d8ff410df59d263e98b67d3c2ac3b7a78f0ebdfa16e7abc3",
+      "sorted_identity_list_sha256": "002b7ee4a50be2ecc2bd1947dc877ad75f6664b126ad2212e040b778a98631fc"
+    },
+    {
+      "name": ".gitignore",
+      "path_count": 1,
+      "ordinary_blob_bytes": 3627,
+      "sorted_path_list_sha256": "7dd6f04c468c1701cd5e43018fd32ab81c86ddddf90cd038651d4e405df715a4",
+      "sorted_identity_list_sha256": "940f7ad7648d985cfd4381a7ddcd9a607d9f588da426870230501188b83c86d5"
+    },
+    {
+      "name": "clinicia_configs_mmlu_bundle.tar.gz",
+      "path_count": 1,
+      "ordinary_blob_bytes": 497759,
+      "sorted_path_list_sha256": "83f84eb7334a9f9946e4e8bd9bfe699250f074b830664ddbd0febce9ddf42178",
+      "sorted_identity_list_sha256": "b882e160e98fd390869b03165333c98b982ebdbacf9e94d71dfa8bbed66dc7d4"
+    },
+    {
+      "name": "clinicia_provenance_bundle.tar.gz",
+      "path_count": 1,
+      "ordinary_blob_bytes": 1783900,
+      "sorted_path_list_sha256": "6c8ac41b0b595a8bdd5aa255957de3d1ce11fa3ff1aace35ed24b1029f1927b2",
+      "sorted_identity_list_sha256": "509afec9caf6fa782e00fd981aa139e20ab028c739685379d29be588129d9357"
+    },
+    {
+      "name": "configs",
+      "path_count": 29,
+      "ordinary_blob_bytes": 107420,
+      "sorted_path_list_sha256": "18056e8435f72f2506b09d623320756963f3f41d09cd55ad2cbfb366767586e5",
+      "sorted_identity_list_sha256": "45e0b44a6dcda3ab3d8538504489a61792152c6a455ff534014b8c389a6fd02c"
+    },
+    {
+      "name": "docs",
+      "path_count": 6,
+      "ordinary_blob_bytes": 16721,
+      "sorted_path_list_sha256": "7b80b84208204e478a9d409e36b5b25efb3c2c2bf12faf860f2af0e7edfd26f3",
+      "sorted_identity_list_sha256": "aeb07ce6a0a353b434b6c40dfc4b2a77acb52530fbb7a1ed124e7c0d7c228496"
+    },
+    {
+      "name": "llm2vec",
+      "path_count": 540,
+      "ordinary_blob_bytes": 2967842,
+      "sorted_path_list_sha256": "4fc9ffc39fe6aafb4a56eed89cafa64a0e16e70e92bcd2a869f139436fedfc39",
+      "sorted_identity_list_sha256": "b47da99306103b269c1cbe786c5a5b9d29f8a7b7ba51ba011137ce561f2c610d"
+    },
+    {
+      "name": "results",
+      "path_count": 42,
+      "ordinary_blob_bytes": 539837,
+      "sorted_path_list_sha256": "197b9201058802074fc0787a812f32cc1be43f9aed57a0bcd925dbf011fda5e6",
+      "sorted_identity_list_sha256": "b0480ca8856bb09aa318b1b1949f6b62bbd864508c1a02f8176780835b8a6d64"
+    },
+    {
+      "name": "scripts",
+      "path_count": 5,
+      "ordinary_blob_bytes": 41365,
+      "sorted_path_list_sha256": "82c62a9a4b8d199c015bbdb05c8d37dc1881b76b57f65045a3cf854f3f2c0f11",
+      "sorted_identity_list_sha256": "033736d238a6ce49be4e6ce2da6a30ff0b7ec6b24a59571f4bf1aa632deb8d0d"
+    },
+    {
+      "name": "tests",
+      "path_count": 6,
+      "ordinary_blob_bytes": 37797,
+      "sorted_path_list_sha256": "848b9d1d7b00224bbb99bcb25a7c2714fd922ec3d6cc6e1636955360ae7170af",
+      "sorted_identity_list_sha256": "c9740f795d4476217ca83d77e1916f9c9b1b5c2d352bc88458c17a5a1382f155"
+    }
+  ],
+  "file_surface_census": {
+    "suffixes": [
+      {
+        "suffix": ".py",
+        "path_count": 149,
+        "sorted_path_list_sha256": "eb8e83ae7eb72cf18d9b3aee34cb75dddfb785f66bd8f12bf75f887032f1a603"
+      },
+      {
+        "suffix": ".sh",
+        "path_count": 41,
+        "sorted_path_list_sha256": "912a30845caba8cd62a1a2f826bdfab2ecc9fdf9f0839f650c6c2981760b9789"
+      },
+      {
+        "suffix": ".json",
+        "path_count": 141,
+        "sorted_path_list_sha256": "6b380fd0ce35a1dbc9040ae7abcf97df46484f795131fd7699aa961558ccedae"
+      },
+      {
+        "suffix": ".yaml",
+        "path_count": 186,
+        "sorted_path_list_sha256": "f63228f892433fc69bd56a3f114dba1d6a17aaba722120c6578a4c14fc49576e"
+      },
+      {
+        "suffix": ".yml",
+        "path_count": 3,
+        "sorted_path_list_sha256": "8ff7fae0be08fd8e2a802ee0fb06801c0ff842fd632457911365f5fd001e4b07"
+      },
+      {
+        "suffix": ".md",
+        "path_count": 39,
+        "sorted_path_list_sha256": "bd11eff7157ab4363cd5dc0ba17a0ca26dc86d27824e791d81f03fe9c4a0a4ce"
+      },
+      {
+        "suffix": ".csv",
+        "path_count": 17,
+        "sorted_path_list_sha256": "df555e8c165653384ea3e69f787eee54356fa60215e553def87450c6ba27f01d"
+      },
+      {
+        "suffix": ".jsonl",
+        "path_count": 18,
+        "sorted_path_list_sha256": "1d68127bb7e721752c9197c3743d56ae93654496ac4b735b5e3205d3e6181aa8"
+      },
+      {
+        "suffix": ".txt",
+        "path_count": 2,
+        "sorted_path_list_sha256": "17007ce2e0b3854991d0093fa12581b3566d8ef80a4f0b00c55aaf909cc88711"
+      }
+    ],
+    "python_main_guard_paths": {
+      "path_count": 45,
+      "sorted_path_list_sha256": "06f469370ecd1ad9712f9849d6d9f7db3bcc4ed8af6dac82323308c844e3e363"
+    },
+    "hydra_main_paths": {
+      "path_count": 3,
+      "sorted_path_list_sha256": "0317f5236f117d3387fd613a05252e662309851dfbba82b762e1a77571204926"
+    },
+    "executable_mode_paths": {
+      "path_count": 4,
+      "sorted_path_list_sha256": "9d1bf2587630080f183770808657d5c0b52fd543c672ca0e20ccaf10f9a083a9"
+    },
+    "git_lfs_pointer_paths": {
+      "path_count": 25,
+      "sorted_path_list_sha256": "9259e44771d8020ae218ae7aa5be75a6c1c6e5efe4af222f484149f4d2ce93f7"
+    }
+  },
+  "upstream_comparisons": [
+    {
+      "component": "LLM2Vec",
+      "local_prefix": "llm2vec/",
+      "excluded_prefixes": [
+        "llm2vec/open_unlearning/"
+      ],
+      "upstream_repository": "McGill-NLP/llm2vec",
+      "upstream_commit": "312adcfb578b4023bfc9d3bcc83b6b87448ab059",
+      "upstream_tree": "0bf0b8f4960e4c65f6995b16756ac147a30fa000",
+      "snapshot_path": "docs/upstream_snapshots/llm2vec-312adcf.json",
+      "comparison_kind": "content-tree inference; not Git ancestry proof",
+      "local": {
+        "path_count": 251,
+        "sorted_path_list_sha256": "c11f43865d9f7116ec9e3346fb8c262b6268ba9c1ee43e7fe53e960e9ab066da"
+      },
+      "upstream": {
+        "path_count": 105,
+        "sorted_path_list_sha256": "dfbbf5bd8d38233394a5e28195a6641a0764b7842103525dcf0165d3a34e3efd"
+      },
+      "common": {
+        "path_count": 104,
+        "sorted_path_list_sha256": "06db0bff8574b0521499d4814e3329a3dc80c910d725dfca405ceb6e2e3f1ac5"
+      },
+      "identical": {
+        "path_count": 99,
+        "sorted_path_list_sha256": "357a74b0d98fdc8db1ae5f33abd1ac09fd0f09b7336f19cc63cc802d4ef71fa6"
+      },
+      "modified": {
+        "path_count": 5,
+        "sorted_path_list_sha256": "fb7eb69dc0d9e2653dda2b05c85a1537583d761e697ed91b89fb993074c661c9"
+      },
+      "local_only": {
+        "path_count": 147,
+        "sorted_path_list_sha256": "26eab01e0a8e0759a3797c044556b0d9b7c82e307dfbc80b9cac00d4de3ab01c"
+      },
+      "upstream_only": {
+        "path_count": 1,
+        "sorted_path_list_sha256": "7dd6f04c468c1701cd5e43018fd32ab81c86ddddf90cd038651d4e405df715a4"
+      },
+      "modified_paths": [
+        {
+          "path": "experiments/run_simcse.py",
+          "upstream_blob_sha": "c1ac288ce4e2dcde9e24ad6cf94d0a944fc86cae",
+          "local_blob_sha": "37d52ce475870f5bb415336319c5e28da78f4633"
+        },
+        {
+          "path": "llm2vec/loss/HardNegativeNLLLoss.py",
+          "upstream_blob_sha": "cff59e63bd1a3c31444c9922dfb23127ffd7adb2",
+          "local_blob_sha": "43d756931e00b1703b2ce14364b6cec37e31a654"
+        },
+        {
+          "path": "llm2vec/loss/__init__.py",
+          "upstream_blob_sha": "46aa2fdcf7db129ef0f4ae696a14f8e9efc67323",
+          "local_blob_sha": "60830ac5c6544963ec89aa255e4b573aebe5e38e"
+        },
+        {
+          "path": "llm2vec/loss/utils.py",
+          "upstream_blob_sha": "0418eb14d2dbcc2297579439e2d52dd747ff264c",
+          "local_blob_sha": "04072532c8dacfbe63358d1350957f71ef1b456b"
+        },
+        {
+          "path": "train_configs/simcse/Mistral.json",
+          "upstream_blob_sha": "7fc4caf4f55fd2aa70f3212b57fc35da21bf2faf",
+          "local_blob_sha": "eee5888ae7b6a8aea0745349575913d3818aa3d1"
+        }
+      ],
+      "upstream_only_paths": [
+        ".gitignore"
+      ]
+    },
+    {
+      "component": "OpenUnlearning",
+      "local_prefix": "llm2vec/open_unlearning/",
+      "excluded_prefixes": [],
+      "upstream_repository": "locuslab/open-unlearning",
+      "upstream_commit": "d33c4762941731cb397494f605f71528d8ce9dce",
+      "upstream_tree": "22cf1a2efd0dd194dfbdd0be3d4d3723a4936888",
+      "snapshot_path": "docs/upstream_snapshots/open-unlearning-d33c476.json",
+      "comparison_kind": "content-tree inference; not Git ancestry proof",
+      "local": {
+        "path_count": 289,
+        "sorted_path_list_sha256": "9020255b647c6828dfb53db2dc3d4674570725cbb21e03b5ebc7cacc534eccbc"
+      },
+      "upstream": {
+        "path_count": 204,
+        "sorted_path_list_sha256": "1941a8dbc7659e50c94018ef018cf41eec66bae2da283c011403421e52f911ef"
+      },
+      "common": {
+        "path_count": 204,
+        "sorted_path_list_sha256": "1941a8dbc7659e50c94018ef018cf41eec66bae2da283c011403421e52f911ef"
+      },
+      "identical": {
+        "path_count": 199,
+        "sorted_path_list_sha256": "16ed42b0efd8de34ec7a100b247cc72bac7ada90620e2c00c470f9d4285898b2"
+      },
+      "modified": {
+        "path_count": 5,
+        "sorted_path_list_sha256": "dc69edd3a572a58e453f4c7f78293d9f86f2cf0eab94e999a1a34604a0834d5d"
+      },
+      "local_only": {
+        "path_count": 85,
+        "sorted_path_list_sha256": "0e35e796fcd6a3dc45274e38fc8f6c6da9436f9fb072bb6bbcd03896f872443b"
+      },
+      "upstream_only": {
+        "path_count": 0,
+        "sorted_path_list_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "modified_paths": [
+        {
+          "path": "configs/eval/tofu.yaml",
+          "upstream_blob_sha": "5a895d1922db054013f908d39a8d767d013c68b3",
+          "local_blob_sha": "cf94167235cd961937b47f5a7c6c76e8bacfd04d"
+        },
+        {
+          "path": "configs/experiment/finetune/tofu/default.yaml",
+          "upstream_blob_sha": "ce4d62bfd9c01a73cfe3ba0b347c1de3f00086a2",
+          "local_blob_sha": "31871d9dc66dd51f74115766f3ef7e3e5d64d254"
+        },
+        {
+          "path": "configs/trainer/finetune.yaml",
+          "upstream_blob_sha": "e4b787b98024a9052c53791870c028e5164be512",
+          "local_blob_sha": "2af875de9fbd7fbe3ed6f7d32c45c97536414d6e"
+        },
+        {
+          "path": "src/data/__init__.py",
+          "upstream_blob_sha": "c24b0b03d7281a37409e7c35c7f48b80fec9bc9f",
+          "local_blob_sha": "792cb2433a3905a863dc18c3c8b52c33cc53af3c"
+        },
+        {
+          "path": "src/trainer/unlearn/npo.py",
+          "upstream_blob_sha": "7c782d968819c0cfd5e5d4a2d141f3402af1dfc2",
+          "local_blob_sha": "698669bf0dc98eaa54f7c4f917161d2409e9b5c1"
+        }
+      ],
+      "upstream_only_paths": []
+    }
+  ],
+  "ownership_boundaries": [
+    {
+      "component": "ConRep",
+      "intended_owner": "project",
+      "current_scope": "root llm2vec/ContrastiveUnlearning*.py",
+      "current_status": "mixed legacy layout; move not started",
+      "path_count": 12,
+      "sorted_path_list_sha256": "5d678bbfcb179a0d1148448bb370aa7f36d54e87728eb5f91dba62d22f279980"
+    },
+    {
+      "component": "ClinicIA",
+      "intended_owner": "project",
+      "current_scope": "llm2vec/unlearn_eval/",
+      "current_status": "evaluation code, configs, data, and launchers remain mixed",
+      "path_count": 49,
+      "sorted_path_list_sha256": "c83731b53b9be0bedba9d070cd19765eaa73d8500fe931a6f02d40d0b4138e3d"
+    },
+    {
+      "component": "LLM2Vec",
+      "intended_owner": "third_party_with_project_modifications",
+      "current_scope": "llm2vec/ excluding nested open_unlearning",
+      "current_status": "pinned comparison recorded; local-only files remain unclassified",
+      "path_count": 251,
+      "sorted_path_list_sha256": "6b01621e78f9a127383e1944956fa578d21387ee0421d7dffbf16c3570c82c12"
+    },
+    {
+      "component": "OpenUnlearning",
+      "intended_owner": "third_party_with_project_adapters_and_configs",
+      "current_scope": "llm2vec/open_unlearning/",
+      "current_status": "pinned comparison recorded; local-only files remain unclassified",
+      "path_count": 289,
+      "sorted_path_list_sha256": "7e337cd2dd69ffab01daa9909e792baa2f3ddb7bec7abe7da516d7237784f82b"
+    },
+    {
+      "component": "legacy_datasets",
+      "intended_owner": "dataset-specific; redistribution unresolved",
+      "current_scope": "llm2vec/UnlearnData/",
+      "current_status": "24 LFS pointers plus one JSON metadata file and one misplaced Python source",
+      "path_count": 26,
+      "sorted_path_list_sha256": "d15a6330c5c32339c04a567f660665d6db5d9f01c50443550a17b862287e24a2"
+    },
+    {
+      "component": "historical_v1_and_paper_provenance",
+      "intended_owner": "project_protected",
+      "current_scope": "configs/historical/, results/paper/, root archives, and deterministic release tooling",
+      "current_status": "must remain unchanged by source migration"
+    }
+  ],
+  "critical_entrypoints": [
+    {
+      "id": "conrep_historical_training",
+      "path": "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py",
+      "role": "historical_v1 ConRep training",
+      "ownership_status": "project_owned",
+      "evidence_status": "resolved for all five selected historical ConRep records",
+      "git_blob_sha": "adbbcab5e9316d6b1b9dea1521a4c54c0a63b1ef",
+      "mode": "100644",
+      "lightweight_execution_allowed_in_repository_audit": false
+    },
+    {
+      "id": "llm2vec_simcse_runner",
+      "path": "llm2vec/experiments/run_simcse.py",
+      "role": "LLM2Vec training runner",
+      "ownership_status": "upstream_modified",
+      "evidence_status": "tree comparison against pinned LLM2Vec snapshot",
+      "git_blob_sha": "37d52ce475870f5bb415336319c5e28da78f4633",
+      "mode": "100644",
+      "lightweight_execution_allowed_in_repository_audit": false
+    },
+    {
+      "id": "legacy_simcse_copy",
+      "path": "llm2vec/run_simcse.py",
+      "role": "legacy local training runner",
+      "ownership_status": "unresolved_local_copy",
+      "evidence_status": "local-only relative to pinned LLM2Vec snapshot",
+      "git_blob_sha": "e638bd390650336efb5288189195c1b58a57efff",
+      "mode": "100644",
+      "lightweight_execution_allowed_in_repository_audit": false
+    },
+    {
+      "id": "open_unlearning_train",
+      "path": "llm2vec/open_unlearning/src/train.py",
+      "role": "OpenUnlearning training",
+      "ownership_status": "third_party_upstream_identical",
+      "evidence_status": "tree comparison against pinned OpenUnlearning snapshot",
+      "git_blob_sha": "a2f81c8d4f9d97e5c4fac67264fdd44392c5411a",
+      "mode": "100644",
+      "lightweight_execution_allowed_in_repository_audit": false
+    },
+    {
+      "id": "open_unlearning_eval",
+      "path": "llm2vec/open_unlearning/src/eval.py",
+      "role": "OpenUnlearning evaluation",
+      "ownership_status": "third_party_upstream_identical",
+      "evidence_status": "tree comparison against pinned OpenUnlearning snapshot",
+      "git_blob_sha": "066c8dad8eba98d1c792bd052df1b423be82b4c8",
+      "mode": "100644",
+      "lightweight_execution_allowed_in_repository_audit": false
+    },
+    {
+      "id": "clinicia_main_eval",
+      "path": "llm2vec/unlearn_eval/main_eval.py",
+      "role": "legacy ClinicIA evaluation orchestration",
+      "ownership_status": "project_owned_candidate",
+      "evidence_status": "local-only relative to pinned LLM2Vec snapshot",
+      "git_blob_sha": "1aaa991f4740ebb777054a1c7ad4643077ae18e9",
+      "mode": "100644",
+      "lightweight_execution_allowed_in_repository_audit": false
+    },
+    {
+      "id": "clinicia_generation_eval",
+      "path": "llm2vec/unlearn_eval/batchedEval.py",
+      "role": "legacy ClinicIA generation evaluation",
+      "ownership_status": "project_owned_candidate",
+      "evidence_status": "local-only relative to pinned LLM2Vec snapshot",
+      "git_blob_sha": "0f4caa4b0ad2fe2685ab0420f5fb7e88d44396d4",
+      "mode": "100644",
+      "lightweight_execution_allowed_in_repository_audit": false
+    },
+    {
+      "id": "clinicia_mcq_eval",
+      "path": "llm2vec/unlearn_eval/batchedEval_loglikelihood.py",
+      "role": "legacy ClinicIA likelihood/MCQ evaluation",
+      "ownership_status": "project_owned_candidate",
+      "evidence_status": "local-only relative to pinned LLM2Vec snapshot",
+      "git_blob_sha": "f0e8ddb11ea309d71ee670d403dc514352b29987",
+      "mode": "100644",
+      "lightweight_execution_allowed_in_repository_audit": false
+    },
+    {
+      "id": "historical_config_validator",
+      "path": "scripts/configs/validate_historical_experiments.py",
+      "role": "historical metadata validation",
+      "ownership_status": "project_owned",
+      "evidence_status": "current paper-artifact release tooling",
+      "git_blob_sha": "a29b1df143582cb2027456d599407826cdb9d5c3",
+      "mode": "100755",
+      "lightweight_execution_allowed_in_repository_audit": true
+    },
+    {
+      "id": "archived_metric_extractor",
+      "path": "scripts/results/extract_archived_metrics.py",
+      "role": "archive-to-compact-metric extraction",
+      "ownership_status": "project_owned",
+      "evidence_status": "current paper-artifact release tooling",
+      "git_blob_sha": "175aa2a2b4ac5e2a4ef53427576f24a7e782d475",
+      "mode": "100644",
+      "lightweight_execution_allowed_in_repository_audit": true
+    },
+    {
+      "id": "paper_table_builder",
+      "path": "scripts/results/build_tables.py",
+      "role": "deterministic paper-table construction",
+      "ownership_status": "project_owned",
+      "evidence_status": "current paper-artifact release tooling",
+      "git_blob_sha": "a5d56f7354e7ecfb60aa89609797b1610742128a",
+      "mode": "100644",
+      "lightweight_execution_allowed_in_repository_audit": true
+    }
+  ],
+  "duplicate_packages": {
+    "canonical_prefix": "llm2vec/llm2vec/",
+    "derivative_prefix": "llm2vec/llm22vec/",
+    "canonical": {
+      "path_count": 20,
+      "sorted_path_list_sha256": "af14b393eeef2c3940294f58cfbd8ab5e280439ee74bf171e901fbdb5f5ca62f"
+    },
+    "derivative": {
+      "path_count": 21,
+      "sorted_path_list_sha256": "18fd56fec92cd2f2d9d811ddbe1789fc24011f5d03e902c6d572d6dd032b2c80"
+    },
+    "same_named_common": {
+      "path_count": 19,
+      "sorted_path_list_sha256": "fcaa46babcffb10cf64e9f9183d3dbc4ccf7203a7af8d31ae8a474de2ef13069"
+    },
+    "same_named_identical": {
+      "path_count": 18,
+      "sorted_path_list_sha256": "dffa547fd39ecb2959e2e898338cdd1ccfd976407bc54fa5b6b767379e429d83"
+    },
+    "same_named_modified_paths": [
+      "__init__.py"
+    ],
+    "canonical_only_paths": [
+      "llm2vec.py"
+    ],
+    "derivative_only_paths": [
+      "llm22vec.py",
+      "openunlearn_wrapper.py"
+    ],
+    "implementation_pair": [
+      {
+        "path": "llm2vec/llm2vec/llm2vec.py",
+        "git_blob_sha": "60ec7c93f971ed67f2fe2e0251c0ff20bc359b01"
+      },
+      {
+        "path": "llm2vec/llm22vec/llm22vec.py",
+        "git_blob_sha": "53e3735ba11b49bebb2139e1a988ad52ecbf4931"
+      }
+    ],
+    "equivalence_status": "not_validated",
+    "removal_allowed": false,
+    "gate": "adapter/import/forward behavior equivalence tests are required before deduplication"
+  },
+  "dependency_surfaces": {
+    "root_environment_status": "absent",
+    "absent_root_paths": [
+      "pyproject.toml",
+      "requirements.txt",
+      "environment.yml",
+      "setup.py"
+    ],
+    "surfaces": [
+      {
+        "path": "llm2vec/setup.py",
+        "git_blob_sha": "be5bc44bd9c39238a6ed3783ac859dfe109c8595",
+        "python_requires": ">=3.8",
+        "transformers_constraint": ">=4.43.1,<=4.44.2"
+      },
+      {
+        "path": "llm2vec/open_unlearning/setup.py",
+        "git_blob_sha": "6a5c99c7e23dd73efdb5ba500a8b5c4daa0b7cf7",
+        "python_requires": ">=3.11",
+        "optional_lm_eval_constraint": "==0.4.8"
+      },
+      {
+        "path": "llm2vec/open_unlearning/requirements.txt",
+        "git_blob_sha": "2f39c76e295613b2fed157c9f7baea8cd9522d76",
+        "transformers_constraint": "==4.45.1",
+        "torch_constraint": "==2.4.1"
+      }
+    ],
+    "known_conflicts": [
+      {
+        "package": "transformers",
+        "status": "unresolved_version_mismatch_between_nested_projects"
+      }
+    ],
+    "validated_reproduction_environment_available": false
+  },
+  "license_status": {
+    "root_project_license": "absent_and_requires_researcher_choice",
+    "third_party_licenses": [
+      {
+        "component": "LLM2Vec",
+        "path": "llm2vec/LICENSE",
+        "git_blob_sha": "3963f35c44922d45047f1cd3c69f92cd9a75472f",
+        "sha256": "e69268828e67ffd1d3393a2d3530f97df6deaa0b961039fc971abea28cec8715",
+        "license": "MIT"
+      },
+      {
+        "component": "OpenUnlearning",
+        "path": "llm2vec/open_unlearning/LICENSE",
+        "git_blob_sha": "c197ebd940f422f0762219f87a69aa2acf9d9a97",
+        "sha256": "2f6df7a76faaefa1a6b50bdcf4191c1c2fcb72454964266f0210c2f452291dea",
+        "license": "MIT"
+      }
+    ],
+    "project_owned_code_license_status": "unresolved"
+  },
+  "portability_and_privacy_scan": {
+    "baseline_only": true,
+    "absolute_path_pattern": "/(gs|apps|groups|home|Users|scratch|gpfs|lustre|mnt|workspace)/",
+    "absolute_path_matches": {
+      "path_count": 108,
+      "sorted_path_list_sha256": "fbd33654d9de6a278d07da6b8bcacc15e420d534d5a4310f04773e6aeba60e49"
+    },
+    "validator_or_test_match_paths": [
+      "scripts/configs/validate_historical_experiments.py",
+      "tests/configs/test_historical_experiments.py"
+    ],
+    "legacy_absolute_path_matches": {
+      "path_count": 106,
+      "sorted_path_list_sha256": "24f06a137dc59be9d56f9cb146ca4fad49b3983fc0265093a99dcb2ebf6f7fd5"
+    },
+    "cluster_or_account_marker_pattern": "h1kkk|tga-TDSAI|ur03151|huangyiqian|gcg51557|abci",
+    "cluster_or_account_marker_matches": {
+      "path_count": 106,
+      "sorted_path_list_sha256": "ac8921104233e4412dd6a39a4fa319955cb33eedfb7fd3d2c4167973a5ffd591"
+    },
+    "legacy_absolute_or_identity_matches": {
+      "path_count": 107,
+      "sorted_path_list_sha256": "1e9349f04b299eec6370f08968983ae0dcbbdcba1b6e4ff46a69c2d96c670633"
+    },
+    "credential_pattern": "hf_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|BEGIN (RSA |OPENSSH )?PRIVATE KEY",
+    "credential_pattern_matches": {
+      "path_count": 0,
+      "sorted_path_list_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "remediation_status": "not_started; historical files were not rewritten in Phase 3D-0"
+  },
+  "recorded_anomalies": [
+    {
+      "path": "llm2vec/]",
+      "finding": "stray filename containing a legacy evaluation JSON document",
+      "status": "preserve pending provenance classification"
+    },
+    {
+      "path": "llm2vec/train_configs/simcse/Contrasn",
+      "finding": "truncated-looking configuration filename",
+      "status": "preserve pending configuration classification"
+    },
+    {
+      "path": "llm2vec/unlearn_eval/tryEval_Mistral_PMC.sh2RR0",
+      "finding": "scheduler script with a temporary-looking suffix",
+      "status": "preserve pending provenance classification"
+    },
+    {
+      "path": "llm2vec/UnlearnData/ContrastiveUnlearning.py",
+      "finding": "Python training source is mixed into a data directory",
+      "status": "preserve pending ownership/move decision"
+    },
+    {
+      "path": "llm2vec/experiments/run_simcse.py",
+      "finding": "imports llm2vec.LOSS.utils although only lowercase llm2vec/loss is tracked",
+      "status": "record only; no runtime repair in Phase 3D-0"
+    }
+  ],
+  "release_surface_gaps": {
+    "root_readme": false,
+    "root_license": false,
+    "root_packaging_or_environment": false,
+    "readme_draft_path": "docs/README_DRAFT.md",
+    "status": "do not promote until layout, attribution, licensing, and runnable scope are settled"
+  },
+  "migration_gates": [
+    {
+      "id": "upstream_tree_metadata",
+      "status": "satisfied",
+      "requirement": "offline snapshots and exact local comparison invariants"
+    },
+    {
+      "id": "historical_v1_protection",
+      "status": "satisfied_for_baseline",
+      "requirement": "critical entrypoints and protected provenance remain blob-anchored"
+    },
+    {
+      "id": "llm22vec_equivalence",
+      "status": "blocked",
+      "requirement": "adapter/import/forward behavior tests before deduplication"
+    },
+    {
+      "id": "dependency_environment",
+      "status": "blocked",
+      "requirement": "resolve Python and Transformers constraints without claiming historical rerun support"
+    },
+    {
+      "id": "project_license",
+      "status": "blocked",
+      "requirement": "researcher selects project license and third-party notices are retained"
+    },
+    {
+      "id": "portable_reproduction_configs",
+      "status": "blocked",
+      "requirement": "replace private cluster literals only in new validated reproduction layer"
+    },
+    {
+      "id": "dataset_redistribution",
+      "status": "blocked",
+      "requirement": "license and availability review for each dataset/LFS object"
+    },
+    {
+      "id": "source_movement",
+      "status": "blocked",
+      "requirement": "complete contract/equivalence tests in a separate reviewed batch"
+    },
+    {
+      "id": "root_readme_promotion",
+      "status": "blocked",
+      "requirement": "wait until canonical layout and supported reproduction surface are accurate"
+    }
+  ]
+}
