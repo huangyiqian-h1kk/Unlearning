@@ -50,10 +50,13 @@ class CleanupPreparationTests(unittest.TestCase):
    result=subprocess.run([ROOT/'scripts/repository/restore_after_cleanup.sh',backup],cwd=ROOT,text=True,capture_output=True)
    self.assertNotEqual(result.returncode,0); self.assertIn('unsafe manifest path',result.stderr)
 
-class Phase3C1A0Tests(unittest.TestCase):
+class Phase3C1A1Tests(unittest.TestCase):
  START='544367d956c6cf1bcffa77add2683ed26118e674'
  TREE='204fcfaa10ff75e22f33dd409e42aa302d48c24b'
- ALLOWED={'.gitattributes','.gitignore','tests/test_repository_cleanup.py'}
+ BASE='1b51643414c7790c4860401f7a879c4a18e0b408'
+ BASE_TREE='50f242d7fc92807b1a446e301b89b07954a62f61'
+ ALLOWED={'.gitattributes','.gitignore','results/repository_cleanup_plan.json','tests/test_repository_cleanup.py'}
+ A1_MANAGEMENT={'results/repository_cleanup_plan.json','tests/test_repository_cleanup.py'}
  GROUP_PREFIXES=(
   ('llm2vec/grid_search_diagnosis/','llm2vec/grid_search_death/','llm2vec/grid_search_epoch4/'),
   ('llm2vec/output/','llm2vec/output_PMC/','llm2vec/output_bio_cyber_wiki_double/','llm2vec/output_easyQA_death/','llm2vec/output_easyQA_diagnosis/','llm2vec/output_local/'),
@@ -76,8 +79,16 @@ class Phase3C1A0Tests(unittest.TestCase):
  @classmethod
  def summary(cls,paths):
   return len(paths),sum(cls.rows[p][3] for p in paths if cls.rows[p][1]=='blob'),hashlib.sha256(''.join(p+'\n' for p in sorted(paths)).encode()).hexdigest()
+ @classmethod
+ def index_rows(cls):
+  rows={}
+  for rec in subprocess.check_output(['git','ls-files','-s','-z'],cwd=ROOT).split(b'\0'):
+   if rec:
+    meta,path=rec.split(b'\t',1); mode,oid,stage=meta.split(); rows[path.decode()]=(mode.decode(),oid.decode(),stage.decode())
+  return rows
  def test_starting_tree_and_target_census(self):
   self.assertEqual(git('rev-parse',self.START+'^{tree}').stdout.strip(),self.TREE)
+  self.assertEqual(git('rev-parse',self.BASE+'^{tree}').stdout.strip(),self.BASE_TREE)
   self.assertEqual(len(self.rows),1951)
   for group,expected in zip(self.groups,self.EXPECTED): self.assertEqual(self.summary(group),expected)
   self.assertEqual(sum(map(len,self.groups)),1319); self.assertEqual(len(self.targets),1319)
@@ -86,11 +97,18 @@ class Phase3C1A0Tests(unittest.TestCase):
   self.assertEqual(self.summary(self.batch_a),(679,94849293,'78432f869b09aafa43807e6b07539dbd2b66ef37a0c3fa2459b4e995c585acd8'))
   self.assertEqual(self.summary(self.batch_b),(640,90844714,'91f70a94bdc294508c8d87d16170d4881e133e713e258847fb842539591d2bdf'))
   self.assertFalse(self.batch_a&self.batch_b); self.assertEqual(self.batch_a|self.batch_b,self.targets)
- def test_a0_retains_starting_tree_and_only_changes_allowed_files(self):
-  tracked=set(git('ls-files').stdout.splitlines())
-  self.assertEqual(tracked,set(self.rows)); self.assertTrue(self.targets<=tracked)
-  changed=set(git('diff','--name-only',self.START,'--').stdout.splitlines())
-  self.assertTrue(changed); self.assertEqual(changed,self.ALLOWED)
+ def test_a1_exact_tracked_set(self):
+  tracked=set(self.index_rows())
+  self.assertEqual(tracked,set(self.rows)-self.batch_a); self.assertEqual(len(tracked),1272)
+  self.assertFalse(tracked&self.batch_a); self.assertTrue(self.batch_b<=tracked)
+ def test_exact_base_diff(self):
+  deleted=set(git('diff','--name-only','--diff-filter=D',self.BASE,'--').stdout.splitlines())
+  modified=set(git('diff','--name-only','--diff-filter=M',self.BASE,'--').stdout.splitlines())
+  self.assertEqual(deleted,self.batch_a); self.assertEqual(modified,self.A1_MANAGEMENT)
+ def test_non_batch_a_blob_identities_are_preserved(self):
+  current=self.index_rows()
+  for path in set(self.rows)-self.batch_a-self.ALLOWED:
+   self.assertEqual(current[path][:2],(self.rows[path][0],self.rows[path][2]),path)
  def test_targets_are_ignored_and_have_diff_unset(self):
   data='\0'.join(sorted(self.targets))+'\0'
   ignored=subprocess.run(['git','check-ignore','--no-index','-z','--stdin'],cwd=ROOT,input=data.encode(),capture_output=True,check=True).stdout
@@ -98,11 +116,37 @@ class Phase3C1A0Tests(unittest.TestCase):
   attrs=subprocess.run(['git','check-attr','-z','--stdin','diff'],cwd=ROOT,input=data.encode(),capture_output=True,check=True).stdout.split(b'\0')
   self.assertEqual(len(attrs),3*len(self.targets)+1)
   self.assertTrue(all(attrs[i+2]==b'unset' for i in range(0,len(attrs)-1,3)))
- def test_protected_non_targets_are_unchanged_and_uncovered(self):
-  protected={p for p in self.rows if p not in self.targets and (p.startswith(('configs/historical/','results/paper/','docs/')) or p in {'clinicia_provenance_bundle.tar.gz','clinicia_configs_mmlu_bundle.tar.gz','llm2vec/open_unlearning/configs/experiment/unlearn/PMC_rmu/default.yaml','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_only_diagnosis.json','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_zero_diagnosis.json'})}
-  self.assertTrue(protected)
-  self.assertFalse(set(git('diff','--name-only',self.START,'--',*sorted(protected)).stdout.splitlines()))
-  for path in sorted(protected):
+ def test_batch_b_swaps_remain_tracked_and_ignored(self):
+  tracked=set(self.index_rows())
+  self.assertTrue(self.SWAPS<=self.batch_b); self.assertTrue(self.SWAPS<=tracked)
+  for path in self.SWAPS: self.assertEqual(git('check-ignore','--no-index','--',path,check=False).returncode,0,path)
+ def test_real_swap_peers_remain_protected(self):
+  peers={'llm2vec/open_unlearning/configs/experiment/unlearn/PMC_rmu/default.yaml','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_only_diagnosis.json','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_zero_diagnosis.json'}
+  current=self.index_rows(); self.assertFalse(peers&self.targets)
+  for path in peers:
+   self.assertEqual(current[path][:2],(self.rows[path][0],self.rows[path][2]),path)
    self.assertNotEqual(git('check-ignore','--no-index','--',path,check=False).returncode,0,path)
    self.assertEqual(git('check-attr','diff','--',path).stdout.strip().rsplit(': ',1)[-1],'unspecified',path)
+ def test_root_archives_remain_tracked_and_unchanged(self):
+  expected={'clinicia_provenance_bundle.tar.gz':'6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7','clinicia_configs_mmlu_bundle.tar.gz':'a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8'}
+  current=self.index_rows()
+  for path,digest in expected.items():
+   self.assertEqual(current[path][:2],(self.rows[path][0],self.rows[path][2]),path)
+   self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),digest,path)
+ def test_protected_non_targets_are_unchanged_and_uncovered(self):
+  protected={p for p in self.rows if p not in self.targets and (p.startswith(('configs/historical/','results/paper/','docs/')) or p in {'clinicia_provenance_bundle.tar.gz','clinicia_configs_mmlu_bundle.tar.gz','llm2vec/open_unlearning/configs/experiment/unlearn/PMC_rmu/default.yaml','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_only_diagnosis.json','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_zero_diagnosis.json'})}
+  current=self.index_rows(); self.assertTrue(protected); self.assertTrue(protected<=set(current))
+  self.assertFalse(set(git('diff','--name-only',self.START,'--',*sorted(protected)).stdout.splitlines()))
+  for path in sorted(protected):
+   self.assertEqual(current[path][:2],(self.rows[path][0],self.rows[path][2]),path)
+   self.assertNotEqual(git('check-ignore','--no-index','--',path,check=False).returncode,0,path)
+   self.assertEqual(git('check-attr','diff','--',path).stdout.strip().rsplit(': ',1)[-1],'unspecified',path)
+ def test_a0_control_files_are_unchanged_from_base(self):
+  self.assertEqual(git('diff','--quiet',self.BASE,'--','.gitattributes','.gitignore',check=False).returncode,0)
+ def test_cleanup_plan_records_only_batch_a_complete(self):
+  plan=json.loads((ROOT/'results/repository_cleanup_plan.json').read_text())
+  records=[x for x in plan['cleanup_batches'] if x.get('batch_id')=='phase3c1-batch-a']; self.assertEqual(len(records),1)
+  record=records[0]
+  expected={'status':'complete','task_base_commit':self.BASE,'immutable_census_source_commit':self.START,'index_only_untracking':True,'removed_from_index_count':679,'target_ordinary_blob_bytes':94849293,'sorted_target_path_list_sha256':'78432f869b09aafa43807e6b07539dbd2b66ef37a0c3fa2459b4e995c585acd8','tracked_path_count_before':1951,'tracked_path_count_after':1272,'batch_b_remaining_tracked_count':640,'working_tree_copies_remained_present_and_ignored':True,'scientific_or_provenance_files_changed':False,'validation_status':'passed','batch_b_status':'pending','full_phase3c1_complete':False}
+  for key,value in expected.items(): self.assertEqual(record.get(key),value,key)
 if __name__=='__main__': unittest.main()
