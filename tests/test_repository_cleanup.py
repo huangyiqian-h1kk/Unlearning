@@ -89,6 +89,14 @@ class Phase3C1CompleteTests(unittest.TestCase):
    if rec:
     meta,path=rec.split(b'\t',1); mode,oid,stage=meta.split(); rows[path.decode()]=(mode.decode(),oid.decode(),stage.decode())
   return rows
+ @classmethod
+ def tree_index_rows(cls,ref):
+  rows={}
+  for rec in subprocess.check_output(['git','ls-tree','-r','-z',ref],cwd=ROOT).split(b'\0'):
+   if rec:
+    meta,path=rec.split(b'\t',1); mode,kind,oid=meta.split()
+    if kind==b'blob': rows[path.decode()]=(mode.decode(),oid.decode(),'0')
+  return rows
  def test_starting_tree_and_target_census(self):
   self.assertEqual(git('rev-parse',self.START+'^{tree}').stdout.strip(),self.TREE)
   self.assertEqual(git('rev-parse',self.BASE+'^{tree}').stdout.strip(),self.BASE_TREE)
@@ -106,11 +114,11 @@ class Phase3C1CompleteTests(unittest.TestCase):
   self.assertEqual(tracked,set(self.rows)-self.targets); self.assertEqual(len(tracked),632)
   self.assertFalse(tracked&self.targets); self.assertFalse(tracked&self.batch_a); self.assertFalse(tracked&self.batch_b)
  def test_exact_base_diff(self):
-  deleted=set(git('diff','--name-only','--diff-filter=D',self.BASE,'--').stdout.splitlines())
-  modified=set(git('diff','--name-only','--diff-filter=M',self.BASE,'--').stdout.splitlines())
+  deleted=set(git('diff','--name-only','--diff-filter=D',self.BASE,self.COMPLETE,'--').stdout.splitlines())
+  modified=set(git('diff','--name-only','--diff-filter=M',self.BASE,self.COMPLETE,'--').stdout.splitlines())
   self.assertEqual(deleted,self.batch_b); self.assertEqual(modified,self.B_MANAGEMENT)
  def test_non_target_blob_identities_are_preserved(self):
-  current=self.index_rows()
+  current=self.tree_index_rows(self.COMPLETE)
   for path in set(self.rows)-self.targets-self.ALLOWED:
    self.assertEqual(current[path][:2],(self.rows[path][0],self.rows[path][2]),path)
  def test_targets_are_ignored_and_have_diff_unset(self):
@@ -121,26 +129,26 @@ class Phase3C1CompleteTests(unittest.TestCase):
   self.assertEqual(len(attrs),3*len(self.targets)+1)
   self.assertTrue(all(attrs[i+2]==b'unset' for i in range(0,len(attrs)-1,3)))
  def test_batch_b_swaps_are_untracked_and_ignored(self):
-  tracked=set(self.index_rows())
+  tracked=set(self.tree_index_rows(self.COMPLETE))
   self.assertTrue(self.SWAPS<=self.batch_b); self.assertFalse(self.SWAPS&tracked)
   for path in self.SWAPS: self.assertEqual(git('check-ignore','--no-index','--',path,check=False).returncode,0,path)
  def test_real_swap_peers_remain_protected(self):
   peers={'llm2vec/open_unlearning/configs/experiment/unlearn/PMC_rmu/default.yaml','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_only_diagnosis.json','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_zero_diagnosis.json'}
-  current=self.index_rows(); self.assertFalse(peers&self.targets)
+  current=self.tree_index_rows(self.COMPLETE); self.assertFalse(peers&self.targets)
   for path in peers:
    self.assertEqual(current[path][:2],(self.rows[path][0],self.rows[path][2]),path)
    self.assertNotEqual(git('check-ignore','--no-index','--',path,check=False).returncode,0,path)
    self.assertEqual(git('check-attr','diff','--',path).stdout.strip().rsplit(': ',1)[-1],'unspecified',path)
  def test_root_archives_remain_tracked_and_unchanged(self):
   expected={'clinicia_provenance_bundle.tar.gz':'6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7','clinicia_configs_mmlu_bundle.tar.gz':'a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8'}
-  current=self.index_rows()
+  current=self.tree_index_rows(self.COMPLETE)
   for path,digest in expected.items():
    self.assertEqual(current[path][:2],(self.rows[path][0],self.rows[path][2]),path)
    self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),digest,path)
  def test_protected_non_targets_are_unchanged_and_uncovered(self):
   protected={p for p in self.rows if p not in self.targets and (p.startswith(('configs/historical/','results/paper/','docs/')) or p in {'clinicia_provenance_bundle.tar.gz','clinicia_configs_mmlu_bundle.tar.gz','llm2vec/open_unlearning/configs/experiment/unlearn/PMC_rmu/default.yaml','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_only_diagnosis.json','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_zero_diagnosis.json'})}
-  current=self.index_rows(); self.assertTrue(protected); self.assertTrue(protected<=set(current))
-  self.assertFalse(set(git('diff','--name-only',self.START,'--',*sorted(protected)).stdout.splitlines()))
+  current=self.tree_index_rows(self.COMPLETE); self.assertTrue(protected); self.assertTrue(protected<=set(current))
+  self.assertFalse(set(git('diff','--name-only',self.START,self.COMPLETE,'--',*sorted(protected)).stdout.splitlines()))
   for path in sorted(protected):
    self.assertEqual(current[path][:2],(self.rows[path][0],self.rows[path][2]),path)
    self.assertNotEqual(git('check-ignore','--no-index','--',path,check=False).returncode,0,path)

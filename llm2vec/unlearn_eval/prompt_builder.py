@@ -1,18 +1,12 @@
-DOM_BG = {
-    "celebrity_deaths":     "short intro",
-    "celebrity_diagnosis":  "archive_wiout_ans"
-}
+"""Compatibility launcher for ClinicIA source moved under ``src/clinicia``.
 
-class PromptBuilder:
-    def __init__(self): pass
+The legacy path remains executable and importable while callers migrate to the
+versioned ClinicIA registry and stable entry point.
+"""
 
-    # ---- Greedy – QA / Cloze / BG ----
-    def greedy_prompts(self,row):
-        dom = row["__domain"]; bg = row.get(DOM_BG[dom], "")
-        qv, ak, av = row["question value"], row["answer key"], row["answer value"]
-        return {
-            f"{dom}__qa"   : f"What is the {ak} of {qv}?",
-            f"{dom}__cloze": f"{qv}'s {ak} is",
-            f"{dom}__bg"   : f"Let's discuss {qv}. {bg}\nCould you tell me the {ak}?"
-        }
+from pathlib import Path as _Path
 
+
+_ROOT = _Path(__file__).resolve().parents[2]
+_SOURCE = _ROOT / "src" / "clinicia" / "legacy" / _Path(__file__).name
+exec(compile(_SOURCE.read_bytes(), str(_SOURCE), "exec"), globals(), globals())
