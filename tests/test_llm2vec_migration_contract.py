@@ -17,6 +17,8 @@ import numpy as np
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CONTRACT_PATH = ROOT / "docs" / "llm2vec_migration_contract.json"
+COMPLETION_COMMIT = "2ca1a47ff87fa0376725618a39d092a868b0bfa5"
+COMPLETION_TREE = "2ba2f20310c8ae5028f704e58620cf8af95baac9"
 MISSING = object()
 
 
@@ -62,8 +64,9 @@ def method_ast_hash(path, class_name, method_name):
     return hashlib.sha256(ast.dump(method, include_attributes=False).encode("utf-8")).hexdigest()
 
 
-def absolute_imports(path):
-    text = (ROOT / path).read_text(encoding="utf-8")
+def absolute_imports(path, text=None):
+    if text is None:
+        text = (ROOT / path).read_text(encoding="utf-8")
     try:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", SyntaxWarning)
@@ -398,8 +401,14 @@ class Phase3D1LLM2VecMigrationContractTests(unittest.TestCase):
         expected_modified = {"tests/test_source_inventory.py"}
         self.assertEqual(set(self.phase["allowed_additive_paths"]), expected_added)
         self.assertEqual(set(self.phase["allowed_modified_paths"]), expected_modified)
+        self.assertEqual(
+            git("rev-parse", COMPLETION_COMMIT + "^{tree}").decode().strip(),
+            COMPLETION_TREE,
+        )
         changed = {}
-        for line in git("diff", "--name-status", self.phase["base_commit"], "--").decode().splitlines():
+        for line in git(
+            "diff", "--name-status", self.phase["base_commit"], COMPLETION_COMMIT, "--"
+        ).decode().splitlines():
             status, path = line.split("\t", 1)
             changed[path] = status
         expected = {path: "A" for path in expected_added}
@@ -410,12 +419,12 @@ class Phase3D1LLM2VecMigrationContractTests(unittest.TestCase):
             path: (entry["mode"], entry["blob_sha"])
             for path, entry in self._tree_entries(self.phase["base_commit"]).items()
         }
-        current = index_entries()
-        self.assertEqual(set(current), set(base) | expected_added)
-        self.assertEqual(len(current), 641)
+        completed = self._tree_entries(COMPLETION_COMMIT)
+        self.assertEqual(set(completed), set(base) | expected_added)
+        self.assertEqual(len(completed), 641)
         for path, identity in base.items():
             if path not in expected_modified:
-                self.assertEqual((current[path]["mode"], current[path]["blob_sha"]), identity, path)
+                self.assertEqual((completed[path]["mode"], completed[path]["blob_sha"]), identity, path)
 
     @staticmethod
     def _tree_entries(commit):
@@ -434,11 +443,12 @@ class Phase3D1LLM2VecMigrationContractTests(unittest.TestCase):
         return result
 
     def test_source_anchors_are_unchanged(self):
+        completed = self._tree_entries(COMPLETION_COMMIT)
         for anchor in self.contract["source_anchors"]:
             path = anchor["path"]
-            self.assertEqual(git("hash-object", "--", path).decode().strip(), anchor["git_blob_sha"], path)
-            self.assertEqual((ROOT / path).stat().st_size, anchor["ordinary_blob_bytes"], path)
-            self.assertEqual(index_entries()[path]["mode"], anchor["mode"], path)
+            self.assertEqual(completed[path]["blob_sha"], anchor["git_blob_sha"], path)
+            self.assertEqual(completed[path]["size"], anchor["ordinary_blob_bytes"], path)
+            self.assertEqual(completed[path]["mode"], anchor["mode"], path)
 
     def test_direct_import_consumers_are_exact(self):
         actual = {key: set() for key in self.contract["import_consumers"]}
@@ -448,11 +458,12 @@ class Phase3D1LLM2VecMigrationContractTests(unittest.TestCase):
         }
         paths = [
             path
-            for path in git("ls-files").decode().splitlines()
+            for path in self._tree_entries(COMPLETION_COMMIT)
             if path.startswith("llm2vec/") and path.endswith(".py")
         ]
         for path in paths:
-            for module, symbol in absolute_imports(path):
+            text = git("show", f"{COMPLETION_COMMIT}:{path}").decode("utf-8")
+            for module, symbol in absolute_imports(path, text=text):
                 key = mapping.get((module, symbol))
                 if key is not None:
                     actual[key].add(path)
@@ -463,13 +474,14 @@ class Phase3D1LLM2VecMigrationContractTests(unittest.TestCase):
 
     def test_exact_source_parse_finding_is_preserved(self):
         actual = []
-        for path in git("ls-files").decode().splitlines():
+        for path in self._tree_entries(COMPLETION_COMMIT):
             if not path.startswith("llm2vec/") or not path.endswith(".py"):
                 continue
             try:
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore", SyntaxWarning)
-                    ast.parse((ROOT / path).read_text(encoding="utf-8"), filename=path)
+                    text = git("show", f"{COMPLETION_COMMIT}:{path}").decode("utf-8")
+                    ast.parse(text, filename=path)
             except SyntaxError as exc:
                 actual.append({"path": path, "line": exc.lineno})
         expected = [
@@ -699,7 +711,8 @@ class Phase3D1LLM2VecMigrationContractTests(unittest.TestCase):
 
     def test_historical_entrypoint_keeps_explicit_causal_contract(self):
         entry = self.contract["historical_entrypoint_contract"]
-        tree = ast.parse((ROOT / entry["path"]).read_text(encoding="utf-8"), filename=entry["path"])
+        text = git("show", f"{COMPLETION_COMMIT}:{entry['path']}").decode("utf-8")
+        tree = ast.parse(text, filename=entry["path"])
         imports = [
             node
             for node in ast.walk(tree)

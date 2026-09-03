@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "phase3d2_canonical_source_migration",
+  "phase_scope": {
+    "phase": "3D-2",
+    "base_commit": "2ca1a47ff87fa0376725618a39d092a868b0bfa5",
+    "base_tree": "2ba2f20310c8ae5028f704e58620cf8af95baac9",
+    "source_movement_performed": true,
+    "source_contents_modified": false,
+    "legacy_compatibility_paths_retained": true,
+    "dependency_consolidation_performed": false,
+    "duplicate_package_removed": false,
+    "historical_configuration_changed": false,
+    "scientific_or_provenance_content_changed": false,
+    "model_execution_performed": false,
+    "dependency_download_performed": false
+  },
+  "migrations": {
+    "conrep": {
+      "ownership": "project",
+      "legacy_prefix": "llm2vec/",
+      "canonical_prefix": "src/conrep/legacy/",
+      "path_count": 12,
+      "files": [
+        {"filename": "ContrastiveUnlearning.py", "git_blob_sha": "c0a8ae795b6fbb4b942ec692ce25be085a8bf584"},
+        {"filename": "ContrastiveUnlearning_Adaptive_RandomToken_LMloss.py", "git_blob_sha": "1c194631e58a30d773f99da0e11c5e404fb0b0d1"},
+        {"filename": "ContrastiveUnlearning_Adaptive_RandomToken_LMloss_EpochEval.py", "git_blob_sha": "14625bc3023c933a51382f26eba4a9ec8a0bed6b"},
+        {"filename": "ContrastiveUnlearning_Adaptive_RandomToken_LMloss_check.py", "git_blob_sha": "7792926d189e3c9768690c7d4013588b7f33f69a"},
+        {"filename": "ContrastiveUnlearning_Adaptive_RandomToken_LMloss_eval.py", "git_blob_sha": "6f7c33e9d10d2a03b805cf77fe47e2bebe349f9f"},
+        {"filename": "ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py", "git_blob_sha": "adbbcab5e9316d6b1b9dea1521a4c54c0a63b1ef"},
+        {"filename": "ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin_progressive.py", "git_blob_sha": "84465d271a694fe14ce02626a34c54e911b1695d"},
+        {"filename": "ContrastiveUnlearning_Adaptive_RandomToken_LMloss_only.py", "git_blob_sha": "3b6509df8b03857e14d8a7c156a6ba0b61161139"},
+        {"filename": "ContrastiveUnlearning_Adaptive_RandomToken_LMloss_zero.py", "git_blob_sha": "fb8466745df64b8257144e549b9fe0dd88567f08"},
+        {"filename": "ContrastiveUnlearning_L2Distance_RandomToken_LMloss.py", "git_blob_sha": "f4d822e796f848e81027e6e4c5a9621747977aca"},
+        {"filename": "ContrastiveUnlearning_RandomToken_LMloss.py", "git_blob_sha": "9f41456075a54821bd4fcbeb22ec628f8dde04d1"},
+        {"filename": "ContrastiveUnlearning_RandomToken_zeroLMloss.py", "git_blob_sha": "bafcf4e7f5127b68bdbcb54cd8ee40cdc3aaa078"}
+      ]
+    },
+    "clinicia": {
+      "ownership": "project",
+      "legacy_prefix": "llm2vec/unlearn_eval/",
+      "canonical_prefix": "src/clinicia/legacy/",
+      "path_count": 11,
+      "files": [
+        {"filename": "EvalPMC.py", "git_blob_sha": "cb27065c3c8184a3e1cc110c4e60b4d1015a0d7f"},
+        {"filename": "batchedEval.py", "git_blob_sha": "0f4caa4b0ad2fe2685ab0420f5fb7e88d44396d4"},
+        {"filename": "batchedEval_loglikelihood.py", "git_blob_sha": "f0e8ddb11ea309d71ee670d403dc514352b29987"},
+        {"filename": "evaluator.py", "git_blob_sha": "a79f9f0eee59a4b561083811c09e2d82da2af337"},
+        {"filename": "main_eval.py", "git_blob_sha": "1aaa991f4740ebb777054a1c7ad4643077ae18e9"},
+        {"filename": "mcq_loader.py", "git_blob_sha": "e9893ddb863b8b8b95145b2b9eb08b45a55b6f42"},
+        {"filename": "metrics.py", "git_blob_sha": "ec70a31334107a2dfa3e0b6c1bd902ba60c1034a"},
+        {"filename": "model_loader.py", "git_blob_sha": "1fd06efd2cecd703cd9210342ebe6ae19fe5cf8d"},
+        {"filename": "probabilistic_extraction.py", "git_blob_sha": "ef75bf5fd01d506987b4b7090c14b13832fa3474"},
+        {"filename": "prompt_builder.py", "git_blob_sha": "983844d0b3b651d8a69f10ea5007a9156ad3af22"},
+        {"filename": "utils.py", "git_blob_sha": "9f28c2cbbeee1268d237d11153bb30b69c60f91a"}
+      ]
+    }
+  },
+  "compatibility": {
+    "strategy": "legacy path compiles and executes the canonical blob in the existing namespace",
+    "historical_conrep_entrypoint": "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py",
+    "canonical_conrep_source": "src/conrep/legacy/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py",
+    "known_parse_finding": {
+      "canonical_path": "src/conrep/legacy/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_EpochEval.py",
+      "line": 581,
+      "status": "preserved"
+    }
+  },
+  "stable_entrypoints": {
+    "conrep": "scripts/train_conrep.py",
+    "clinicia": "scripts/evaluate_clinicia.py"
+  },
+  "clinicia_contract": {
+    "registry_source": "results/paper/mcq_dataset_inventory.json",
+    "registered_dataset_count": 11,
+    "protocols": ["historical_v1", "validated_v2"],
+    "historical_results_namespace": "results/paper",
+    "validated_results_namespace": "results/validated_v2",
+    "validated_v2_runnable": false,
+    "automatic_lfs_download": false
+  },
+  "protected_scopes": [
+    "configs/historical/",
+    "results/paper/",
+    "clinicia_provenance_bundle.tar.gz",
+    "clinicia_configs_mmlu_bundle.tar.gz",
+    "llm2vec/llm2vec/",
+    "llm2vec/llm22vec/",
+    "llm2vec/open_unlearning/"
+  ],
+  "deferred_to_phase3d3": [
+    "llm22vec consolidation",
+    "dependency reconciliation and pinning",
+    "portable reproduction configurations",
+    "legacy launcher and configuration organization",
+    "dataset redistribution and project-license decisions",
+    "root release documentation"
+  ]
+}

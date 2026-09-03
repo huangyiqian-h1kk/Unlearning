@@ -1,11 +1,12 @@
-import re
-from utils import answer_present
+"""Compatibility launcher for ClinicIA source moved under ``src/clinicia``.
 
-def greedy_hit(generated, ans): return int(answer_present(generated, ans))
+The legacy path remains executable and importable while callers migrate to the
+versioned ClinicIA registry and stable entry point.
+"""
 
-def parse_letter(text):
-    m=re.search(r"\b([A-Z])\b",text); 
-    return m.group(1) if m else None
+from pathlib import Path as _Path
 
-def mcq_hit(output, correct_letter): return int(parse_letter(output)==correct_letter)
 
+_ROOT = _Path(__file__).resolve().parents[2]
+_SOURCE = _ROOT / "src" / "clinicia" / "legacy" / _Path(__file__).name
+exec(compile(_SOURCE.read_bytes(), str(_SOURCE), "exec"), globals(), globals())
