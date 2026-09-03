@@ -50,13 +50,14 @@ class CleanupPreparationTests(unittest.TestCase):
    result=subprocess.run([ROOT/'scripts/repository/restore_after_cleanup.sh',backup],cwd=ROOT,text=True,capture_output=True)
    self.assertNotEqual(result.returncode,0); self.assertIn('unsafe manifest path',result.stderr)
 
-class Phase3C1A1Tests(unittest.TestCase):
+class Phase3C1CompleteTests(unittest.TestCase):
  START='544367d956c6cf1bcffa77add2683ed26118e674'
  TREE='204fcfaa10ff75e22f33dd409e42aa302d48c24b'
- BASE='1b51643414c7790c4860401f7a879c4a18e0b408'
- BASE_TREE='50f242d7fc92807b1a446e301b89b07954a62f61'
+ A1_BASE='1b51643414c7790c4860401f7a879c4a18e0b408'
+ BASE='0ecac2dd29617d4156cdef82217fdcd2980f2157'
+ BASE_TREE='e6d229c3d177e2abcfeaaaf4e4c2a458477a84a7'
  ALLOWED={'.gitattributes','.gitignore','results/repository_cleanup_plan.json','tests/test_repository_cleanup.py'}
- A1_MANAGEMENT={'results/repository_cleanup_plan.json','tests/test_repository_cleanup.py'}
+ B_MANAGEMENT={'results/repository_cleanup_plan.json','tests/test_repository_cleanup.py'}
  GROUP_PREFIXES=(
   ('llm2vec/grid_search_diagnosis/','llm2vec/grid_search_death/','llm2vec/grid_search_epoch4/'),
   ('llm2vec/output/','llm2vec/output_PMC/','llm2vec/output_bio_cyber_wiki_double/','llm2vec/output_easyQA_death/','llm2vec/output_easyQA_diagnosis/','llm2vec/output_local/'),
@@ -97,17 +98,17 @@ class Phase3C1A1Tests(unittest.TestCase):
   self.assertEqual(self.summary(self.batch_a),(679,94849293,'78432f869b09aafa43807e6b07539dbd2b66ef37a0c3fa2459b4e995c585acd8'))
   self.assertEqual(self.summary(self.batch_b),(640,90844714,'91f70a94bdc294508c8d87d16170d4881e133e713e258847fb842539591d2bdf'))
   self.assertFalse(self.batch_a&self.batch_b); self.assertEqual(self.batch_a|self.batch_b,self.targets)
- def test_a1_exact_tracked_set(self):
+ def test_phase3c1_exact_final_tracked_set(self):
   tracked=set(self.index_rows())
-  self.assertEqual(tracked,set(self.rows)-self.batch_a); self.assertEqual(len(tracked),1272)
-  self.assertFalse(tracked&self.batch_a); self.assertTrue(self.batch_b<=tracked)
+  self.assertEqual(tracked,set(self.rows)-self.targets); self.assertEqual(len(tracked),632)
+  self.assertFalse(tracked&self.targets); self.assertFalse(tracked&self.batch_a); self.assertFalse(tracked&self.batch_b)
  def test_exact_base_diff(self):
   deleted=set(git('diff','--name-only','--diff-filter=D',self.BASE,'--').stdout.splitlines())
   modified=set(git('diff','--name-only','--diff-filter=M',self.BASE,'--').stdout.splitlines())
-  self.assertEqual(deleted,self.batch_a); self.assertEqual(modified,self.A1_MANAGEMENT)
- def test_non_batch_a_blob_identities_are_preserved(self):
+  self.assertEqual(deleted,self.batch_b); self.assertEqual(modified,self.B_MANAGEMENT)
+ def test_non_target_blob_identities_are_preserved(self):
   current=self.index_rows()
-  for path in set(self.rows)-self.batch_a-self.ALLOWED:
+  for path in set(self.rows)-self.targets-self.ALLOWED:
    self.assertEqual(current[path][:2],(self.rows[path][0],self.rows[path][2]),path)
  def test_targets_are_ignored_and_have_diff_unset(self):
   data='\0'.join(sorted(self.targets))+'\0'
@@ -116,9 +117,9 @@ class Phase3C1A1Tests(unittest.TestCase):
   attrs=subprocess.run(['git','check-attr','-z','--stdin','diff'],cwd=ROOT,input=data.encode(),capture_output=True,check=True).stdout.split(b'\0')
   self.assertEqual(len(attrs),3*len(self.targets)+1)
   self.assertTrue(all(attrs[i+2]==b'unset' for i in range(0,len(attrs)-1,3)))
- def test_batch_b_swaps_remain_tracked_and_ignored(self):
+ def test_batch_b_swaps_are_untracked_and_ignored(self):
   tracked=set(self.index_rows())
-  self.assertTrue(self.SWAPS<=self.batch_b); self.assertTrue(self.SWAPS<=tracked)
+  self.assertTrue(self.SWAPS<=self.batch_b); self.assertFalse(self.SWAPS&tracked)
   for path in self.SWAPS: self.assertEqual(git('check-ignore','--no-index','--',path,check=False).returncode,0,path)
  def test_real_swap_peers_remain_protected(self):
   peers={'llm2vec/open_unlearning/configs/experiment/unlearn/PMC_rmu/default.yaml','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_only_diagnosis.json','llm2vec/train_configs/simcse/Contrast_Unlearn_Mistral_LMloss_zero_diagnosis.json'}
@@ -143,10 +144,11 @@ class Phase3C1A1Tests(unittest.TestCase):
    self.assertEqual(git('check-attr','diff','--',path).stdout.strip().rsplit(': ',1)[-1],'unspecified',path)
  def test_a0_control_files_are_unchanged_from_base(self):
   self.assertEqual(git('diff','--quiet',self.BASE,'--','.gitattributes','.gitignore',check=False).returncode,0)
- def test_cleanup_plan_records_only_batch_a_complete(self):
+ def test_cleanup_plan_records_both_batches_and_full_phase_complete(self):
   plan=json.loads((ROOT/'results/repository_cleanup_plan.json').read_text())
-  records=[x for x in plan['cleanup_batches'] if x.get('batch_id')=='phase3c1-batch-a']; self.assertEqual(len(records),1)
-  record=records[0]
-  expected={'status':'complete','task_base_commit':self.BASE,'immutable_census_source_commit':self.START,'index_only_untracking':True,'removed_from_index_count':679,'target_ordinary_blob_bytes':94849293,'sorted_target_path_list_sha256':'78432f869b09aafa43807e6b07539dbd2b66ef37a0c3fa2459b4e995c585acd8','tracked_path_count_before':1951,'tracked_path_count_after':1272,'batch_b_remaining_tracked_count':640,'working_tree_copies_remained_present_and_ignored':True,'scientific_or_provenance_files_changed':False,'validation_status':'passed','batch_b_status':'pending','full_phase3c1_complete':False}
-  for key,value in expected.items(): self.assertEqual(record.get(key),value,key)
+  a=[x for x in plan['cleanup_batches'] if x.get('batch_id')=='phase3c1-batch-a']; b=[x for x in plan['cleanup_batches'] if x.get('batch_id')=='phase3c1-batch-b']; self.assertEqual((len(a),len(b)),(1,1))
+  a_expected={'status':'complete','task_base_commit':self.A1_BASE,'immutable_census_source_commit':self.START,'index_only_untracking':True,'removed_from_index_count':679,'target_ordinary_blob_bytes':94849293,'sorted_target_path_list_sha256':'78432f869b09aafa43807e6b07539dbd2b66ef37a0c3fa2459b4e995c585acd8','tracked_path_count_before':1951,'tracked_path_count_after':1272,'batch_b_remaining_tracked_count':640,'working_tree_copies_remained_present_and_ignored':True,'scientific_or_provenance_files_changed':False,'validation_status':'passed','batch_b_status':'pending','full_phase3c1_complete':False}
+  b_expected={'status':'complete','task_base_commit':self.BASE,'immutable_census_source_commit':self.START,'index_only_untracking':True,'removed_from_index_count':640,'target_ordinary_blob_bytes':90844714,'sorted_target_path_list_sha256':'91f70a94bdc294508c8d87d16170d4881e133e713e258847fb842539591d2bdf','tracked_path_count_before':1272,'tracked_path_count_after':632,'batch_a_previously_removed_count':679,'batch_a_status':'complete','remaining_phase3c1_tracked_count':0,'full_phase3c1_complete':True,'full_phase3c1_removed_from_index_count':1319,'full_phase3c1_ordinary_blob_bytes':185694007,'full_phase3c1_sorted_path_list_sha256':'0d1306fb8c9e2399ed3f3a062b3d120fd1123836e065abefc767b656e076f378','working_tree_copies_remained_present_and_ignored':True,'scientific_or_provenance_files_changed':False,'validation_status':'passed'}
+  for record,expected in ((a[0],a_expected),(b[0],b_expected)):
+   for key,value in expected.items(): self.assertEqual(record.get(key),value,key)
 if __name__=='__main__': unittest.main()
