@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "reproduction_component_registry",
+  "component_kind": "protocols",
+  "protocols": {
+    "historical_v1": {
+      "status": "archived_compatibility",
+      "runnable": false,
+      "result_namespace": "results/paper",
+      "may_modify_archived_paper_results": false
+    },
+    "validated_v2": {
+      "status": "contract_defined_not_yet_runnable",
+      "runnable": false,
+      "result_namespace": "results/validated_v2",
+      "may_modify_archived_paper_results": false
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "reproduction_component_registry",
+  "component_kind": "models",
+  "models": {
+    "llama2-7b-chat": {
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "source": "external_registry",
+      "terms_status": "upstream_terms_apply",
+      "local_checkpoint_required": false
+    },
+    "mistral-7b-instruct-v0.2": {
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "source": "external_registry",
+      "terms_status": "upstream_terms_apply",
+      "local_checkpoint_required": false
+    }
+  }
+}

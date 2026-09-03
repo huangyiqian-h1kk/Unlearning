@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "reproduction_component_registry",
+  "component_kind": "methods",
+  "methods": {
+    "baseline": {
+      "paper_label": "Baseline",
+      "owner": "project_protocol",
+      "backend": "none",
+      "entrypoint": null
+    },
+    "conrep": {
+      "paper_label": "ConRep",
+      "owner": "project",
+      "backend": "conrep",
+      "entrypoint": "scripts/train_conrep.py"
+    },
+    "graddiff": {
+      "paper_label": "GradDiff",
+      "owner": "open_unlearning_derived",
+      "backend": "open_unlearning",
+      "entrypoint": "llm2vec/open_unlearning/src/train.py"
+    },
+    "npo": {
+      "paper_label": "NPO",
+      "owner": "open_unlearning_derived",
+      "backend": "open_unlearning",
+      "entrypoint": "llm2vec/open_unlearning/src/train.py"
+    },
+    "rmu": {
+      "paper_label": "RMU",
+      "owner": "open_unlearning_derived",
+      "backend": "open_unlearning",
+      "entrypoint": "llm2vec/open_unlearning/src/train.py"
+    }
+  }
+}

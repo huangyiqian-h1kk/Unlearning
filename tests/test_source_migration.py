@@ -14,6 +14,8 @@ from unittest import mock
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 BASE_COMMIT = "2ca1a47ff87fa0376725618a39d092a868b0bfa5"
 BASE_TREE = "2ba2f20310c8ae5028f704e58620cf8af95baac9"
+COMPLETION_COMMIT = "39b4824640236c33a74ec5d297d834976e2bd388"
+COMPLETION_TREE = "97fd3c030cb36374c1d5bf8059bad213a263ac1e"
 MANIFEST_PATH = ROOT / "docs" / "source_migration_manifest.json"
 
 
@@ -64,7 +66,7 @@ class Phase3D2SourceMigrationTests(unittest.TestCase):
         cls.manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
         cls.phase = cls.manifest["phase_scope"]
         cls.base = tree_entries(BASE_COMMIT)
-        cls.current = index_entries()
+        cls.current = tree_entries(COMPLETION_COMMIT)
         sys.path.insert(0, str(ROOT / "src"))
         cls.conrep = importlib.import_module("conrep")
         cls.conrep_entrypoints = importlib.import_module("conrep.entrypoints")
@@ -97,6 +99,10 @@ class Phase3D2SourceMigrationTests(unittest.TestCase):
         self.assertEqual(self.phase["base_commit"], BASE_COMMIT)
         self.assertEqual(self.phase["base_tree"], BASE_TREE)
         self.assertEqual(git("rev-parse", BASE_COMMIT + "^{tree}").decode().strip(), BASE_TREE)
+        self.assertEqual(
+            git("rev-parse", COMPLETION_COMMIT + "^{tree}").decode().strip(),
+            COMPLETION_TREE,
+        )
         self.assertTrue(self.phase["source_movement_performed"])
         self.assertTrue(self.phase["legacy_compatibility_paths_retained"])
         for key in (
