@@ -356,6 +356,24 @@
       "total_target_blob_bytes": 7802255,
       "total_target_count": 7118,
       "working_tree_copies_remained_present_and_ignored": true
+    },
+    {
+      "batch_b_remaining_tracked_count": 640,
+      "batch_b_status": "pending",
+      "batch_id": "phase3c1-batch-a",
+      "full_phase3c1_complete": false,
+      "immutable_census_source_commit": "544367d956c6cf1bcffa77add2683ed26118e674",
+      "index_only_untracking": true,
+      "removed_from_index_count": 679,
+      "scientific_or_provenance_files_changed": false,
+      "sorted_target_path_list_sha256": "78432f869b09aafa43807e6b07539dbd2b66ef37a0c3fa2459b4e995c585acd8",
+      "status": "complete",
+      "target_ordinary_blob_bytes": 94849293,
+      "task_base_commit": "1b51643414c7790c4860401f7a879c4a18e0b408",
+      "tracked_path_count_after": 1272,
+      "tracked_path_count_before": 1951,
+      "validation_status": "passed",
+      "working_tree_copies_remained_present_and_ignored": true
     }
   ],
   "execution_constraints": {
