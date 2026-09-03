@@ -1,0 +1,256 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "phase3d1_llm2vec_migration_contract",
+  "phase_scope": {
+    "phase": "3D-1",
+    "status": "contract_baseline",
+    "base_commit": "cb1d9c926dd1985b3a1ac58041cd605f4b63e60a",
+    "base_tree": "6f413f9e2863e0412ced99c83b6cf381c04d6aa2",
+    "source_movement_performed": false,
+    "source_files_modified": false,
+    "duplicate_package_removed": false,
+    "dependency_consolidation_performed": false,
+    "real_model_execution_performed": false,
+    "dependency_download_performed": false,
+    "scientific_or_provenance_content_changed": false,
+    "allowed_additive_paths": [
+      "docs/llm2vec_migration_contract.json",
+      "docs/llm2vec_migration_contract.md",
+      "tests/test_llm2vec_migration_contract.py"
+    ],
+    "allowed_modified_paths": [
+      "tests/test_source_inventory.py"
+    ]
+  },
+  "source_anchors": [
+    {
+      "path": "llm2vec/llm2vec/__init__.py",
+      "mode": "100644",
+      "git_blob_sha": "3c631c429f5083bd99c58e5b63c6dc267c28f223",
+      "ordinary_blob_bytes": 29,
+      "role": "canonical public package export"
+    },
+    {
+      "path": "llm2vec/llm2vec/llm2vec.py",
+      "mode": "100644",
+      "git_blob_sha": "60ec7c93f971ed67f2fe2e0251c0ff20bc359b01",
+      "ordinary_blob_bytes": 18444,
+      "role": "canonical upstream-derived LLM2Vec implementation"
+    },
+    {
+      "path": "llm2vec/llm22vec/__init__.py",
+      "mode": "100644",
+      "git_blob_sha": "d50029b9af0ead0203c356054596511c73787c14",
+      "ordinary_blob_bytes": 30,
+      "role": "causal derivative public package export"
+    },
+    {
+      "path": "llm2vec/llm22vec/llm22vec.py",
+      "mode": "100644",
+      "git_blob_sha": "53e3735ba11b49bebb2139e1a988ad52ecbf4931",
+      "ordinary_blob_bytes": 18629,
+      "role": "project-modified causal LLM2Vec derivative"
+    },
+    {
+      "path": "llm2vec/llm22vec/openunlearn_wrapper.py",
+      "mode": "100644",
+      "git_blob_sha": "1ef0de0cc1650cf9bfe8268b11cfe0ece581cd77",
+      "ordinary_blob_bytes": 901,
+      "role": "OpenUnlearning causal-LM adapter"
+    },
+    {
+      "path": "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py",
+      "mode": "100644",
+      "git_blob_sha": "adbbcab5e9316d6b1b9dea1521a4c54c0a63b1ef",
+      "ordinary_blob_bytes": 27492,
+      "role": "historical_v1 ConRep entrypoint"
+    }
+  ],
+  "package_exports": {
+    "canonical": {
+      "import_name": "llm2vec",
+      "class_name": "LLM2Vec",
+      "implementation_module": "llm2vec.llm2vec"
+    },
+    "causal_derivative": {
+      "import_name": "llm22vec",
+      "class_name": "LLM2Vec",
+      "implementation_module": "llm22vec.llm22vec"
+    },
+    "openunlearning_adapter": {
+      "import_name": "llm22vec.openunlearn_wrapper",
+      "class_name": "LLM2Vec2CausalLM",
+      "implementation_module": "llm22vec.openunlearn_wrapper"
+    }
+  },
+  "import_consumers": {
+    "canonical": {
+      "module": "llm2vec",
+      "symbol": "LLM2Vec",
+      "path_count": 13,
+      "sorted_path_list_sha256": "2e36fcfa005ad6fb4d1966b7b89e583e12000e45fcfab772067310e1a96536f3",
+      "paths": [
+        "llm2vec/ContrastiveUnlearning.py",
+        "llm2vec/UnlearnData/ContrastiveUnlearning.py",
+        "llm2vec/examples/classification.py",
+        "llm2vec/examples/clustering.py",
+        "llm2vec/examples/retrieval.py",
+        "llm2vec/examples/sts.py",
+        "llm2vec/experiments/mteb_eval_custom.py",
+        "llm2vec/experiments/mteb_eval_unlearn_cyber_wiki.py",
+        "llm2vec/experiments/run_simcse.py",
+        "llm2vec/experiments/run_supervised.py",
+        "llm2vec/experiments/run_word_task.py",
+        "llm2vec/experiments/test_word_task.py",
+        "llm2vec/run_simcse.py"
+      ]
+    },
+    "causal_derivative": {
+      "module": "llm22vec",
+      "symbol": "LLM2Vec",
+      "path_count": 11,
+      "sorted_path_list_sha256": "b893d31ffa53f531545142e73db4689abb4f7c5922d1fe3dfbbe990cfbc6add6",
+      "paths": [
+        "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss.py",
+        "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_EpochEval.py",
+        "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_check.py",
+        "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_eval.py",
+        "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py",
+        "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin_progressive.py",
+        "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_only.py",
+        "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_zero.py",
+        "llm2vec/ContrastiveUnlearning_L2Distance_RandomToken_LMloss.py",
+        "llm2vec/ContrastiveUnlearning_RandomToken_LMloss.py",
+        "llm2vec/ContrastiveUnlearning_RandomToken_zeroLMloss.py"
+      ]
+    },
+    "openunlearning_adapter": {
+      "module": "llm22vec.openunlearn_wrapper",
+      "symbol": "LLM2Vec2CausalLM",
+      "path_count": 1,
+      "sorted_path_list_sha256": "f70b543f80627674cdffd3bed050718a959c73e26d60c6e0013f88cd3bd080f2",
+      "paths": [
+        "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_eval.py"
+      ]
+    }
+  },
+  "behavior_contracts": {
+    "shared_constructor_defaults": {
+      "pooling_mode": "mean",
+      "max_length": 512,
+      "doc_max_length": 400,
+      "skip_instruction": true
+    },
+    "from_pretrained_bidirectional_default": {
+      "canonical": true,
+      "causal_derivative": false
+    },
+    "non_bidirectional_model_class": {
+      "canonical": "AutoModel",
+      "causal_derivative": "AutoModelForCausalLM"
+    },
+    "bidirectional_model_classes": {
+      "MistralConfig": "MistralBiModel",
+      "LlamaConfig": "LlamaBiModel",
+      "GemmaConfig": "GemmaBiModel",
+      "Qwen2Config": "Qwen2BiModel"
+    },
+    "loader_token_keyword": {
+      "canonical": "absent",
+      "causal_derivative": "present_with_empty_string"
+    },
+    "forward": {
+      "canonical_model_keyword": "output_hidden_states absent",
+      "canonical_representation": "reps.last_hidden_state",
+      "causal_derivative_model_keyword": "output_hidden_states=True",
+      "causal_derivative_representation": "reps.hidden_states[-1]",
+      "embed_mask_removed_before_model_call": true,
+      "embed_mask_restored_before_pooling": true
+    },
+    "pooling": {
+      "padding_side": "left",
+      "supported_modes": [
+        "mean",
+        "weighted_mean",
+        "eos_token",
+        "last_token",
+        "bos_token"
+      ],
+      "canonical_ast_sha256": "0830c809ef375a45c92fa288163c05fd74ba7e2e6267a0280f7f048363d0d93b",
+      "causal_derivative_ast_sha256": "0830c809ef375a45c92fa288163c05fd74ba7e2e6267a0280f7f048363d0d93b",
+      "implementations_ast_identical": true,
+      "mean_uses_rightmost_attention_length": true,
+      "weighted_mean_uses_one_through_sequence_length": true,
+      "eos_and_last_use_final_position": true,
+      "bos_uses_token_id_mask": true
+    }
+  },
+  "method_ast_anchors": {
+    "canonical": {
+      "init": "6552a8bbe58e5187b8af7e4d8c75fa8961eedb2c8ed6c361a6dcab148282c4db",
+      "model_class_selection": "0ece755492069c0d15dc088acf161099917ec54655e3704e1568bc80b5934a53",
+      "from_pretrained": "4c3da94c602431ce374956cb20113f523775e217a1755d4f72fd000de40120e0",
+      "forward": "9e625ffabea21e2712ebf7853a86ed8ccb550447210c7df1527dc407a205db53"
+    },
+    "causal_derivative": {
+      "init": "6552a8bbe58e5187b8af7e4d8c75fa8961eedb2c8ed6c361a6dcab148282c4db",
+      "model_class_selection": "00bebd80ec3ce21044dbff491711c848fc0ee500f84d41355ef198d1aeedf5df",
+      "from_pretrained": "fd426dfc6411fcf352342d6a204ec7d91c96d0484b9412020fa6f4f865758de0",
+      "forward": "41aa3401e5a2f0509793e7a4eda5c699dfdc901a3bc4dbaccb9ca1842d40ab1e"
+    },
+    "openunlearning_adapter": {
+      "init": "fd9b0826b53771bd53bfbb28512703194bfaca7cbf286a523868a22d7040d371",
+      "generate": "fb49ec2431487dbbf198ca9029db24e5fb2e784d49c0cd70587692012eb0f5df",
+      "forward": "cf8e1fdb9514ffac941c00dc56a0c34d71c7b2bbd4893c18c2a3b60b4ef3fb3d"
+    }
+  },
+  "historical_entrypoint_contract": {
+    "path": "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py",
+    "imports_module": "llm22vec",
+    "imports_symbol": "LLM2Vec",
+    "model_arguments_bidirectional_default": false,
+    "from_pretrained_passes_enable_bidirectional_explicitly": true
+  },
+  "source_parse_findings": [
+    {
+      "path": "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_EpochEval.py",
+      "status": "syntax_error_preserved",
+      "line": 581,
+      "finding": "adjacent duplicate json_file keyword assignments are missing a separator",
+      "repair_performed": false
+    }
+  ],
+  "openunlearning_adapter_contract": {
+    "wrapped_class": "LLM2Vec2CausalLM",
+    "inner_model_path": "llm2vec_model.model",
+    "tokenizer_path": "llm2vec_model.tokenizer",
+    "config_path": "llm2vec_model.model.config",
+    "generate_delegates_all_args_and_kwargs": true,
+    "forward_passes": [
+      "input_ids",
+      "attention_mask",
+      "labels",
+      "return_dict=True"
+    ],
+    "forward_extra_kwargs_behavior": "accepted_but_not_forwarded",
+    "output_type": "CausalLMOutputWithPast",
+    "output_fields_copied": [
+      "loss",
+      "logits"
+    ]
+  },
+  "validation_tiers": {
+    "static_git_and_ast_contracts": "implemented",
+    "dependency_stubbed_import_constructor_forward_and_pooling_contracts": "implemented",
+    "real_dependency_import": "not_run",
+    "real_model_initialization": "not_run",
+    "real_model_forward_or_numerical_equivalence": "not_run"
+  },
+  "migration_gates": {
+    "contract_baseline_available": true,
+    "real_model_numerical_equivalence": "not_validated",
+    "llm22vec_removal_allowed": false,
+    "source_movement_allowed": false,
+    "next_requirement": "introduce a project-owned adapter boundary in a separate batch while preserving these imports and behaviors"
+  }
+}
