@@ -41,6 +41,9 @@ def index_entries():
 
 
 class Phase3D0SourceInventoryTests(unittest.TestCase):
+    COMPLETION_COMMIT = "cb1d9c926dd1985b3a1ac58041cd605f4b63e60a"
+    COMPLETION_TREE = "6f413f9e2863e0412ced99c83b6cf381c04d6aa2"
+
     @classmethod
     def setUpClass(cls):
         cls.inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
@@ -48,6 +51,7 @@ class Phase3D0SourceInventoryTests(unittest.TestCase):
         cls.allowed = set(cls.inventory["phase_scope"]["allowed_additive_paths"])
         cls.allowed_modified = set(cls.inventory["phase_scope"]["allowed_modified_paths"])
         cls.base_entries = VALIDATOR.tree_entries(cls.baseline["commit"])
+        cls.completed_entries = VALIDATOR.tree_entries(cls.COMPLETION_COMMIT)
 
     def test_offline_inventory_validator(self):
         self.assertEqual(
@@ -74,24 +78,30 @@ class Phase3D0SourceInventoryTests(unittest.TestCase):
         }
         self.assertEqual(self.allowed, expected)
         self.assertEqual(self.allowed_modified, {"tests/test_repository_cleanup.py"})
+        self.assertEqual(
+            git("rev-parse", self.COMPLETION_COMMIT + "^{tree}").decode().strip(),
+            self.COMPLETION_TREE,
+        )
         changed = {}
-        for line in git("diff", "--name-status", self.baseline["commit"], "--").decode().splitlines():
+        for line in git(
+            "diff", "--name-status", self.baseline["commit"], self.COMPLETION_COMMIT, "--"
+        ).decode().splitlines():
             status, path = line.split("\t", 1)
             changed[path] = status
         expected_changes = {path: "A" for path in expected}
         expected_changes["tests/test_repository_cleanup.py"] = "M"
         self.assertEqual(changed, expected_changes)
 
-    def test_baseline_paths_keep_exact_index_identities(self):
-        current = index_entries()
-        self.assertEqual(set(current), set(self.base_entries) | self.allowed)
-        self.assertEqual(len(current), 638)
+    def test_baseline_paths_keep_exact_completion_identities(self):
+        self.assertEqual(set(self.completed_entries), set(self.base_entries) | self.allowed)
+        self.assertEqual(len(self.completed_entries), 638)
         for path, expected in self.base_entries.items():
-            self.assertEqual(current[path]["stage"], "0", path)
             if path in self.allowed_modified:
+                self.assertEqual(self.completed_entries[path]["mode"], expected["mode"], path)
+                self.assertNotEqual(self.completed_entries[path]["blob_sha"], expected["blob_sha"], path)
                 continue
             self.assertEqual(
-                (current[path]["mode"], current[path]["blob_sha"]),
+                (self.completed_entries[path]["mode"], self.completed_entries[path]["blob_sha"]),
                 (expected["mode"], expected["blob_sha"]),
                 path,
             )
@@ -207,7 +217,14 @@ class Phase3D0SourceInventoryTests(unittest.TestCase):
         ]
         self.assertTrue(protected)
         self.assertEqual(
-            git("diff", "--name-only", self.baseline["commit"], "--", *protected),
+            git(
+                "diff",
+                "--name-only",
+                self.baseline["commit"],
+                self.COMPLETION_COMMIT,
+                "--",
+                *protected,
+            ),
             b"",
         )
 
