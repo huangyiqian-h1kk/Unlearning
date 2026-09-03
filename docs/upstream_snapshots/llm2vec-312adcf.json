@@ -1,0 +1,644 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "upstream_git_tree_snapshot",
+  "repository": "McGill-NLP/llm2vec",
+  "repository_url": "https://github.com/McGill-NLP/llm2vec",
+  "commit": "312adcfb578b4023bfc9d3bcc83b6b87448ab059",
+  "tree": "0bf0b8f4960e4c65f6995b16756ac147a30fa000",
+  "entry_count": 105,
+  "ordinary_blob_bytes": 1510022,
+  "sorted_path_list_sha256": "dfbbf5bd8d38233394a5e28195a6641a0764b7842103525dcf0165d3a34e3efd",
+  "sorted_identity_list_sha256": "cc6f316e7c9c516acb99fe0281aa269c29fd41d36746d9ab85419d8adb86c2cb",
+  "entries": [
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "blob_sha": "3ffa0446b67578556269debb2420d280a44f75bc",
+      "size": 110
+    },
+    {
+      "path": "LICENSE",
+      "mode": "100644",
+      "blob_sha": "3963f35c44922d45047f1cd3c69f92cd9a75472f",
+      "size": 1067
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "blob_sha": "62c2d25eb52c7588d6adc5df1d8cc9d02db844df",
+      "size": 15669
+    },
+    {
+      "path": "docs/.gitignore",
+      "mode": "100644",
+      "blob_sha": "31d98e8031aa8a4a01df91a980b8cf4e5cefdf1e",
+      "size": 83
+    },
+    {
+      "path": "docs/Gemfile",
+      "mode": "100644",
+      "blob_sha": "ed975929f85e407430eabd3b99e6f1ebf87686ad",
+      "size": 376
+    },
+    {
+      "path": "docs/README.md",
+      "mode": "100644",
+      "blob_sha": "616af1ff39f12f0af9f15f2b71002f59472b1941",
+      "size": 5855
+    },
+    {
+      "path": "docs/_config.yml",
+      "mode": "100644",
+      "blob_sha": "fa4f194d305e7eec28c1e3abf833e43b35063621",
+      "size": 3002
+    },
+    {
+      "path": "docs/_data/navigation.yml",
+      "mode": "100644",
+      "blob_sha": "4e0de6dc0d45f0ca5b8aa763f91eb961cc055e45",
+      "size": 336
+    },
+    {
+      "path": "docs/_docs/README.md",
+      "mode": "100644",
+      "blob_sha": "73542f3ce56ad4f37f3a48597a68254e8ef2ab8b",
+      "size": 2189
+    },
+    {
+      "path": "docs/_docs/api.md",
+      "mode": "100644",
+      "blob_sha": "3ee191f47aa4a44499f23170476cf1c0e937f06b",
+      "size": 389
+    },
+    {
+      "path": "docs/_docs/home.md",
+      "mode": "100644",
+      "blob_sha": "6d45ef9cd356c35fe8c283501554203153bbcf54",
+      "size": 649
+    },
+    {
+      "path": "docs/_docs/training.md",
+      "mode": "100644",
+      "blob_sha": "ee12daeb9dd572466b9017d35f2e6b984efe0dc1",
+      "size": 726
+    },
+    {
+      "path": "docs/_includes/head/custom.html",
+      "mode": "100644",
+      "blob_sha": "14f6bafbf7edd23d9172ea124e5bca5099e8dc80",
+      "size": 1550
+    },
+    {
+      "path": "docs/_includes/masthead.html",
+      "mode": "100644",
+      "blob_sha": "1c686db85591a8d8c9d842efe2d17b8774fcfc47",
+      "size": 2001
+    },
+    {
+      "path": "docs/_includes/page__hero.html",
+      "mode": "100644",
+      "blob_sha": "d8165acb1eb04523d18606c1f23518db1188cc56",
+      "size": 3311
+    },
+    {
+      "path": "docs/_pages/404.md",
+      "mode": "100644",
+      "blob_sha": "b3025a6053b51eee474d7b6c1c2b58357024042c",
+      "size": 191
+    },
+    {
+      "path": "docs/_pages/contact.md",
+      "mode": "100644",
+      "blob_sha": "e9b3bc40eb59e3d397624af7405e39da719c1bfa",
+      "size": 259
+    },
+    {
+      "path": "docs/_pages/home.md",
+      "mode": "100644",
+      "blob_sha": "6ddf72fbe540603955ccc0ba8150be586f012f8d",
+      "size": 771
+    },
+    {
+      "path": "docs/_pages/leaderboard.md",
+      "mode": "100644",
+      "blob_sha": "ee56eaeb0a626a37f3d2a7a568e9db89113fb168",
+      "size": 104
+    },
+    {
+      "path": "docs/_sass/custom/header-footer.scss",
+      "mode": "100644",
+      "blob_sha": "e4b87b28c7eebf4b3b185b778e2c58241791d17e",
+      "size": 333
+    },
+    {
+      "path": "docs/_sass/custom/no-sidebar.scss",
+      "mode": "100644",
+      "blob_sha": "534ba84d6da25d4305e8669342e8c7684f4675b0",
+      "size": 123
+    },
+    {
+      "path": "docs/_sass/custom/splash.scss",
+      "mode": "100644",
+      "blob_sha": "134e8b528087f3eb3623be5f6eed5de2c16ce848",
+      "size": 138
+    },
+    {
+      "path": "docs/_sass/minimal-mistakes.scss",
+      "mode": "100644",
+      "blob_sha": "75bb2ac69d5398ed2ead9f7eb25719890f268f10",
+      "size": 1408
+    },
+    {
+      "path": "docs/_sass/skins/dark.scss",
+      "mode": "100644",
+      "blob_sha": "f07f99be7b3cc5a26e1447e28b43b8b2253ae142",
+      "size": 1249
+    },
+    {
+      "path": "docs/_sass/skins/light.scss",
+      "mode": "100644",
+      "blob_sha": "ffda0c0742b357abd6767b3651707fbc334fd4db",
+      "size": 499
+    },
+    {
+      "path": "docs/assets/css/main-dark.scss",
+      "mode": "100644",
+      "blob_sha": "be26913ce2597c47e8a10a7dbcb8c1bc892e1971",
+      "size": 374
+    },
+    {
+      "path": "docs/assets/images/logo/favicon.png",
+      "mode": "100644",
+      "blob_sha": "97f3d0bd673993f43cd32e5e5824d6223e74b359",
+      "size": 7971
+    },
+    {
+      "path": "docs/assets/images/logo/logo.png",
+      "mode": "100644",
+      "blob_sha": "755f0f684a069bec43516348378e2f69df40a4c0",
+      "size": 22952
+    },
+    {
+      "path": "docs/assets/images/logo/logo.svg",
+      "mode": "100644",
+      "blob_sha": "5dfec1aa513dab1369e1deba6dcce4f37738e34b",
+      "size": 134213
+    },
+    {
+      "path": "examples/classification.py",
+      "mode": "100644",
+      "blob_sha": "95a00799dd6d8286c4583f02051ee993db6827b9",
+      "size": 1899
+    },
+    {
+      "path": "examples/clustering.py",
+      "mode": "100644",
+      "blob_sha": "0a8c804c957d3f93302808a9494c42aca0e49eb2",
+      "size": 1687
+    },
+    {
+      "path": "examples/retrieval.py",
+      "mode": "100644",
+      "blob_sha": "9906e8ecaf05bdebaea866e0923270256841e352",
+      "size": 5522
+    },
+    {
+      "path": "examples/sts.py",
+      "mode": "100644",
+      "blob_sha": "78af02cfa6628593b645fb54ad1b26818a545d4a",
+      "size": 1717
+    },
+    {
+      "path": "experiments/mteb_eval.py",
+      "mode": "100644",
+      "blob_sha": "faa19aa55ea56d3d57cc1df7b566de9a267f0078",
+      "size": 1041
+    },
+    {
+      "path": "experiments/mteb_eval_custom.py",
+      "mode": "100644",
+      "blob_sha": "3779bd6cd79cf3b6ef8bc91b2d1d3d621c7ca93c",
+      "size": 3173
+    },
+    {
+      "path": "experiments/run_mntp.py",
+      "mode": "100644",
+      "blob_sha": "f9ef67fb125855e30d15be181b4f69f2ea4ce0ce",
+      "size": 38393
+    },
+    {
+      "path": "experiments/run_simcse.py",
+      "mode": "100644",
+      "blob_sha": "c1ac288ce4e2dcde9e24ad6cf94d0a944fc86cae",
+      "size": 11602
+    },
+    {
+      "path": "experiments/run_supervised.py",
+      "mode": "100644",
+      "blob_sha": "925f9771d1d12f94d06d0fea8ea0a8a9332389f1",
+      "size": 15462
+    },
+    {
+      "path": "experiments/run_word_task.py",
+      "mode": "100644",
+      "blob_sha": "bec311d8e00e42c5ee26fd4464786a0e36ae062d",
+      "size": 32128
+    },
+    {
+      "path": "experiments/test_word_task.py",
+      "mode": "100644",
+      "blob_sha": "2590c0417fee2e5a79cf5eac9b04cc67758e5273",
+      "size": 12630
+    },
+    {
+      "path": "images/overview.png",
+      "mode": "100644",
+      "blob_sha": "4b2b5a9eeec5f7cca65de565428d630fbcb31b07",
+      "size": 197681
+    },
+    {
+      "path": "images/sample_efficient.png",
+      "mode": "100644",
+      "blob_sha": "1642e9d06b642d1b3124c26af88d67e0e0b6f872",
+      "size": 99517
+    },
+    {
+      "path": "images/supervised.png",
+      "mode": "100644",
+      "blob_sha": "5ead2c3a88afedabe0101971e379015520851cbf",
+      "size": 386728
+    },
+    {
+      "path": "images/unsupervised.png",
+      "mode": "100644",
+      "blob_sha": "08dd86bc80583a0803869cb1af58dca94ebcc4fc",
+      "size": 383894
+    },
+    {
+      "path": "llm2vec/__init__.py",
+      "mode": "100644",
+      "blob_sha": "3c631c429f5083bd99c58e5b63c6dc267c28f223",
+      "size": 29
+    },
+    {
+      "path": "llm2vec/dataset/E5Data.py",
+      "mode": "100644",
+      "blob_sha": "cfe33cdec9ce26a94dd211418a8755e61af620a2",
+      "size": 6148
+    },
+    {
+      "path": "llm2vec/dataset/Wiki1M.py",
+      "mode": "100644",
+      "blob_sha": "98677e65656340f517fff5d36fd0709e650d3961",
+      "size": 1339
+    },
+    {
+      "path": "llm2vec/dataset/__init__.py",
+      "mode": "100644",
+      "blob_sha": "c248cdc7389da713739b93486ad363eea69ae287",
+      "size": 54
+    },
+    {
+      "path": "llm2vec/dataset/dataset.py",
+      "mode": "100644",
+      "blob_sha": "335230babe674c0a819e2e0da783035905618938",
+      "size": 1175
+    },
+    {
+      "path": "llm2vec/dataset/utils.py",
+      "mode": "100644",
+      "blob_sha": "34c6299c7cca3352d688e39fea6278b05436227e",
+      "size": 764
+    },
+    {
+      "path": "llm2vec/experiment_utils.py",
+      "mode": "100644",
+      "blob_sha": "a819537d71a3417b9f221d65caa8b31751eac9bf",
+      "size": 2418
+    },
+    {
+      "path": "llm2vec/llm2vec.py",
+      "mode": "100644",
+      "blob_sha": "60ec7c93f971ed67f2fe2e0251c0ff20bc359b01",
+      "size": 18444
+    },
+    {
+      "path": "llm2vec/loss/HardNegativeNLLLoss.py",
+      "mode": "100644",
+      "blob_sha": "cff59e63bd1a3c31444c9922dfb23127ffd7adb2",
+      "size": 1435
+    },
+    {
+      "path": "llm2vec/loss/__init__.py",
+      "mode": "100644",
+      "blob_sha": "46aa2fdcf7db129ef0f4ae696a14f8e9efc67323",
+      "size": 53
+    },
+    {
+      "path": "llm2vec/loss/loss_utils.py",
+      "mode": "100644",
+      "blob_sha": "540e8e8850c90f9d2c428a8b52f2286588ce7e38",
+      "size": 3345
+    },
+    {
+      "path": "llm2vec/loss/utils.py",
+      "mode": "100644",
+      "blob_sha": "0418eb14d2dbcc2297579439e2d52dd747ff264c",
+      "size": 290
+    },
+    {
+      "path": "llm2vec/models/__init__.py",
+      "mode": "100644",
+      "blob_sha": "59e9784a770c06b255dd8e52e4538c7a93b38b49",
+      "size": 254
+    },
+    {
+      "path": "llm2vec/models/attn_mask_utils.py",
+      "mode": "100644",
+      "blob_sha": "3c74570b0f6fceb1a12c6fb1750fc4e61c01d0fb",
+      "size": 7620
+    },
+    {
+      "path": "llm2vec/models/bidirectional_gemma.py",
+      "mode": "100644",
+      "blob_sha": "99bc1a0c7a5323bce8e9298d0d9662a47742109c",
+      "size": 7771
+    },
+    {
+      "path": "llm2vec/models/bidirectional_llama.py",
+      "mode": "100644",
+      "blob_sha": "a11e6ebee667dd98d5e57fc69e61706545da5d99",
+      "size": 7873
+    },
+    {
+      "path": "llm2vec/models/bidirectional_mistral.py",
+      "mode": "100644",
+      "blob_sha": "d3f2b9e83459327de3f233f48fe786a9eb5aa60c",
+      "size": 9208
+    },
+    {
+      "path": "llm2vec/models/bidirectional_qwen2.py",
+      "mode": "100644",
+      "blob_sha": "f5d5546dee38fec26c88af1050afe8be444f0d26",
+      "size": 3497
+    },
+    {
+      "path": "llm2vec/models/utils.py",
+      "mode": "100644",
+      "blob_sha": "edd62c93f76aaa3e974a624289a848e579846ac6",
+      "size": 358
+    },
+    {
+      "path": "llm2vec/version.py",
+      "mode": "100644",
+      "blob_sha": "d31c31eaeb0ef12d7e45a4f738d5029b6d95d135",
+      "size": 22
+    },
+    {
+      "path": "setup.cfg",
+      "mode": "100644",
+      "blob_sha": "9d5f797981b69a755547e7cf592e33a87675ad45",
+      "size": 61
+    },
+    {
+      "path": "setup.py",
+      "mode": "100644",
+      "blob_sha": "be5bc44bd9c39238a6ed3783ac859dfe109c8595",
+      "size": 1167
+    },
+    {
+      "path": "test_configs/mteb/task_to_instructions.json",
+      "mode": "100644",
+      "blob_sha": "27c963f1dd81d75c5c62adc33a729bfda4d8c90e",
+      "size": 7041
+    },
+    {
+      "path": "test_configs/word-task/Llama2-bi-mntp-simcse.json",
+      "mode": "100644",
+      "blob_sha": "7341fbf749b7520960d2e1b3736c503071d07227",
+      "size": 638
+    },
+    {
+      "path": "test_configs/word-task/Llama2-bi-mntp.json",
+      "mode": "100644",
+      "blob_sha": "f8435fae467fc671e1d884c01887bfe552112ef7",
+      "size": 605
+    },
+    {
+      "path": "test_configs/word-task/Llama2-bi.json",
+      "mode": "100644",
+      "blob_sha": "60b4484ebcb20fdc8c8c0aa842b28668f661057d",
+      "size": 532
+    },
+    {
+      "path": "test_configs/word-task/Llama2-uni.json",
+      "mode": "100644",
+      "blob_sha": "9cffe6c505475b452e403cfa7e0155081e852a5d",
+      "size": 535
+    },
+    {
+      "path": "test_configs/word-task/Mistral-bi-mntp-simcse.json",
+      "mode": "100644",
+      "blob_sha": "6f992f79b7be873bea7f7b85875e038252610376",
+      "size": 655
+    },
+    {
+      "path": "test_configs/word-task/Mistral-bi-mntp.json",
+      "mode": "100644",
+      "blob_sha": "c5d9a4633ac3e1642fac27d4d4f6631ce9d23c30",
+      "size": 616
+    },
+    {
+      "path": "test_configs/word-task/Mistral-bi.json",
+      "mode": "100644",
+      "blob_sha": "6168ca74b26aa799cb1cd09de3e1baafc04592cf",
+      "size": 539
+    },
+    {
+      "path": "test_configs/word-task/Mistral-uni.json",
+      "mode": "100644",
+      "blob_sha": "27fe022bac016060209b40a2de28a27a478af9e6",
+      "size": 542
+    },
+    {
+      "path": "test_configs/word-task/ShearedLlama-bi-mntp-simcse.json",
+      "mode": "100644",
+      "blob_sha": "e7c56762edd4e466e02855977ac5de473b3e2015",
+      "size": 647
+    },
+    {
+      "path": "test_configs/word-task/ShearedLlama-bi-mntp.json",
+      "mode": "100644",
+      "blob_sha": "b346938010ffd4593e71b4f7a3f02b8b0a70f17e",
+      "size": 615
+    },
+    {
+      "path": "test_configs/word-task/ShearedLlama-bi.json",
+      "mode": "100644",
+      "blob_sha": "e8a9950281dcd37672592b75bff39d45c2e428b0",
+      "size": 547
+    },
+    {
+      "path": "test_configs/word-task/ShearedLlama-uni.json",
+      "mode": "100644",
+      "blob_sha": "10609b31fabd21950d9db4753208ea47bd1c6bf6",
+      "size": 550
+    },
+    {
+      "path": "train_configs/mntp/Llama2.json",
+      "mode": "100644",
+      "blob_sha": "2b2fe8cb4ef1dfdd03014498a91f5da416baabf1",
+      "size": 758
+    },
+    {
+      "path": "train_configs/mntp/MetaLlama3.1.json",
+      "mode": "100644",
+      "blob_sha": "8842c3939799fd448e029327ef47ebaec1189eea",
+      "size": 774
+    },
+    {
+      "path": "train_configs/mntp/MetaLlama3.json",
+      "mode": "100644",
+      "blob_sha": "f2d960776ef3372826d6c39dbe7d47c84e67b413",
+      "size": 770
+    },
+    {
+      "path": "train_configs/mntp/Mistral.json",
+      "mode": "100644",
+      "blob_sha": "76906ee4888807eee4e2aaed7966f2384ce06d9f",
+      "size": 770
+    },
+    {
+      "path": "train_configs/mntp/Sheared-Llama.json",
+      "mode": "100644",
+      "blob_sha": "cfd57c186764e7ded57a3f3a3f4644285459befd",
+      "size": 761
+    },
+    {
+      "path": "train_configs/simcse/Llama2.json",
+      "mode": "100644",
+      "blob_sha": "f3b7273226b7c27d5f38fe4f3dba6924b17ed6c1",
+      "size": 896
+    },
+    {
+      "path": "train_configs/simcse/MetaLlama3.json",
+      "mode": "100644",
+      "blob_sha": "33de9ba526090e3b9efa40fb519cc4c15b8e6a5f",
+      "size": 914
+    },
+    {
+      "path": "train_configs/simcse/Mistral.json",
+      "mode": "100644",
+      "blob_sha": "7fc4caf4f55fd2aa70f3212b57fc35da21bf2faf",
+      "size": 911
+    },
+    {
+      "path": "train_configs/simcse/Sheared-Llama.json",
+      "mode": "100644",
+      "blob_sha": "0272584861dc72a4c667c2a96de009f201b4d729",
+      "size": 894
+    },
+    {
+      "path": "train_configs/supervised/Llama2.json",
+      "mode": "100644",
+      "blob_sha": "c47ea9780515835aafa5de0addc99600c82d0a59",
+      "size": 924
+    },
+    {
+      "path": "train_configs/supervised/MetaLlama3.1.json",
+      "mode": "100644",
+      "blob_sha": "2394807e4b271d2a31653d24ef96f906fd13bc40",
+      "size": 974
+    },
+    {
+      "path": "train_configs/supervised/MetaLlama3.json",
+      "mode": "100644",
+      "blob_sha": "2608e63bdcf44cc4fbd6636555d770819fb91adf",
+      "size": 942
+    },
+    {
+      "path": "train_configs/supervised/Mistral.json",
+      "mode": "100644",
+      "blob_sha": "0a2f85a5b02484e19a472c04f0ce74d5695a5cb5",
+      "size": 939
+    },
+    {
+      "path": "train_configs/supervised/Sheared-Llama.json",
+      "mode": "100644",
+      "blob_sha": "347d7a4c7b7fd1e022d704c2314e759da60b3048",
+      "size": 922
+    },
+    {
+      "path": "train_configs/word-task/Llama2-bi-mntp-simcse.json",
+      "mode": "100644",
+      "blob_sha": "1172f68af2c4715e5cc5f301e96b9f3818980727",
+      "size": 847
+    },
+    {
+      "path": "train_configs/word-task/Llama2-bi-mntp.json",
+      "mode": "100644",
+      "blob_sha": "e7e36ae1105060b7d833654a58ce03b99baff1dd",
+      "size": 814
+    },
+    {
+      "path": "train_configs/word-task/Llama2-bi.json",
+      "mode": "100644",
+      "blob_sha": "273492fb3f19817579eb440a5df5121ab1392968",
+      "size": 746
+    },
+    {
+      "path": "train_configs/word-task/Llama2-uni.json",
+      "mode": "100644",
+      "blob_sha": "82ec58d3e5f3e2c95162221a6003ce2578114345",
+      "size": 748
+    },
+    {
+      "path": "train_configs/word-task/Mistral-bi-mntp-simcse.json",
+      "mode": "100644",
+      "blob_sha": "dd37ca25086df50d7adb07346d0b80e2df7abd9d",
+      "size": 856
+    },
+    {
+      "path": "train_configs/word-task/Mistral-bi-mntp.json",
+      "mode": "100644",
+      "blob_sha": "336b9acf4d65a894c0028277583a31fc4d4caa4a",
+      "size": 824
+    },
+    {
+      "path": "train_configs/word-task/Mistral-bi.json",
+      "mode": "100644",
+      "blob_sha": "eedf3fd37b18f8c3070d75318de0c7753590026b",
+      "size": 752
+    },
+    {
+      "path": "train_configs/word-task/Mistral-uni.json",
+      "mode": "100644",
+      "blob_sha": "9dcfcf45f3bcc081b65e0b13a47bd0f74b0b0337",
+      "size": 754
+    },
+    {
+      "path": "train_configs/word-task/ShearedLlama-bi-mntp-simcse.json",
+      "mode": "100644",
+      "blob_sha": "f67fc14335f21c20c7664b3707680d08441a3a31",
+      "size": 843
+    },
+    {
+      "path": "train_configs/word-task/ShearedLlama-bi-mntp.json",
+      "mode": "100644",
+      "blob_sha": "cb732673204346f801d67c229f8742bba9308a76",
+      "size": 818
+    },
+    {
+      "path": "train_configs/word-task/ShearedLlama-bi.json",
+      "mode": "100644",
+      "blob_sha": "2ba828f4f3b9ebafb4e6fcaaa1e0631991fa90cc",
+      "size": 755
+    },
+    {
+      "path": "train_configs/word-task/ShearedLlama-uni.json",
+      "mode": "100644",
+      "blob_sha": "72dc8dee0ac95f48bfa42ac233ba4bf892fa44e8",
+      "size": 757
+    }
+  ]
+}

@@ -1,0 +1,1238 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "upstream_git_tree_snapshot",
+  "repository": "locuslab/open-unlearning",
+  "repository_url": "https://github.com/locuslab/open-unlearning",
+  "commit": "d33c4762941731cb397494f605f71528d8ce9dce",
+  "tree": "22cf1a2efd0dd194dfbdd0be3d4d3723a4936888",
+  "entry_count": 204,
+  "ordinary_blob_bytes": 471173,
+  "sorted_path_list_sha256": "1941a8dbc7659e50c94018ef018cf41eec66bae2da283c011403421e52f911ef",
+  "sorted_identity_list_sha256": "9a221ada7b847592519ff74916c52bf2754496cc0fd43d2974991164d5f0ffb0",
+  "entries": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug-report.yaml",
+      "mode": "100644",
+      "blob_sha": "d0a13b96e7881ab5a5ce63e695e31fdf52ea65d0",
+      "size": 1911
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yaml",
+      "mode": "100644",
+      "blob_sha": "4b69b225c869b22b6d8ea5d8ceb05ac40e7c8273",
+      "size": 141
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature-request.yaml",
+      "mode": "100644",
+      "blob_sha": "e43e913898f0048b2cbe5da282ee10b521abc25c",
+      "size": 1598
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "mode": "100644",
+      "blob_sha": "fbc9a07b70713206ee55ae73907c4efbf59ae338",
+      "size": 357
+    },
+    {
+      "path": ".github/workflows/tests.yml",
+      "mode": "100644",
+      "blob_sha": "5003e56b0379ce06bbdb0239f955a5256906c61b",
+      "size": 1067
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "blob_sha": "b526ea4c75a358bb34be1ce3d73c702ebdc27db3",
+      "size": 3329
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "mode": "100644",
+      "blob_sha": "408374b800ad00d3c6643718da01cec13793a5fa",
+      "size": 261
+    },
+    {
+      "path": "LICENSE",
+      "mode": "100644",
+      "blob_sha": "c197ebd940f422f0762219f87a69aa2acf9d9a97",
+      "size": 1069
+    },
+    {
+      "path": "Makefile",
+      "mode": "100644",
+      "blob_sha": "11bdbb120c45d6b3391d2eeb5c524c5227676581",
+      "size": 333
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "blob_sha": "dcc6f8083ca99149ebab567992e89381359bb29c",
+      "size": 14976
+    },
+    {
+      "path": "assets/banner.png",
+      "mode": "100644",
+      "blob_sha": "64451abf1cb881c74d5019cd0596195214e8f9ce",
+      "size": 66172
+    },
+    {
+      "path": "assets/logo.png",
+      "mode": "100644",
+      "blob_sha": "35e2c35c90c4a6ec2c2948e1c6ab103f0c95a00c",
+      "size": 58927
+    },
+    {
+      "path": "community/benchmarks/template/README.md",
+      "mode": "100644",
+      "blob_sha": "15ec35bc0830692b5d52b223a4c05671658d40ff",
+      "size": 1723
+    },
+    {
+      "path": "community/benchmarks/template/run.sh",
+      "mode": "100644",
+      "blob_sha": "a5335b283e66ce27239cd5a39c76195e320cdebc",
+      "size": 1115
+    },
+    {
+      "path": "community/leaderboard.md",
+      "mode": "100644",
+      "blob_sha": "ffb515ab7972b0753ef727f0df1b2bcb6b45f417",
+      "size": 3043
+    },
+    {
+      "path": "community/methods/AltPO/README.md",
+      "mode": "100644",
+      "blob_sha": "39ff09f0c79426c5991e170c135835c9ca5077ce",
+      "size": 1817
+    },
+    {
+      "path": "community/methods/AltPO/generate.py",
+      "mode": "100644",
+      "blob_sha": "52c206e9d7cf814e8d7d53f8082c1424bd83ccc4",
+      "size": 12303
+    },
+    {
+      "path": "community/methods/AltPO/generate.yaml",
+      "mode": "100644",
+      "blob_sha": "076dbc28f75067b8f098ee1d518078c8bd239376",
+      "size": 812
+    },
+    {
+      "path": "community/methods/AltPO/run.sh",
+      "mode": "100644",
+      "blob_sha": "6f8fb0b44e456f48d0caa2e4fb8df3db7a586b11",
+      "size": 4124
+    },
+    {
+      "path": "community/methods/CEU/run.sh",
+      "mode": "100644",
+      "blob_sha": "b91d504aefe0a6e042274b0c576cbdcdeb732ad3",
+      "size": 2854
+    },
+    {
+      "path": "community/methods/SatImp/README.md",
+      "mode": "100644",
+      "blob_sha": "617d3e34405e1c0b89c4ff9a9da21916b8e130a3",
+      "size": 1348
+    },
+    {
+      "path": "community/methods/SatImp/run.sh",
+      "mode": "100644",
+      "blob_sha": "3ad3d583548b14a38794fab18d84c9e2dc0c7018",
+      "size": 3513
+    },
+    {
+      "path": "community/methods/UNDIAL/README.md",
+      "mode": "100644",
+      "blob_sha": "28c309d2c84fd4df7b8e575dc8838b0291ded9e4",
+      "size": 1462
+    },
+    {
+      "path": "community/methods/UNDIAL/run.sh",
+      "mode": "100644",
+      "blob_sha": "06caef2b7b44ffb2bfbbdf6351e633caebd5defe",
+      "size": 3423
+    },
+    {
+      "path": "community/methods/WGA/README.md",
+      "mode": "100644",
+      "blob_sha": "dcb4e53f9f8d5838cc1798f579d4c12990905a0e",
+      "size": 933
+    },
+    {
+      "path": "community/methods/WGA/run.sh",
+      "mode": "100644",
+      "blob_sha": "b590fa3485dca61e719a661a7cb055427ea3122d",
+      "size": 3478
+    },
+    {
+      "path": "community/methods/template/README.md",
+      "mode": "100644",
+      "blob_sha": "6c77875157d49b976938dab20a735e2ce42db192",
+      "size": 1525
+    },
+    {
+      "path": "community/methods/template/run.sh",
+      "mode": "100644",
+      "blob_sha": "8c165e5197c56000d246ac75ef4f931fcdf7c7d7",
+      "size": 788
+    },
+    {
+      "path": "configs/accelerate/default_config.yaml",
+      "mode": "100644",
+      "blob_sha": "876c98451d3a42d8f7070f9e1b32c8b7f5457c6b",
+      "size": 333
+    },
+    {
+      "path": "configs/accelerate/zero_stage3_offload_config.json",
+      "mode": "100644",
+      "blob_sha": "1273d9d66c70f029c697021e68ed7bf42e17fb31",
+      "size": 805
+    },
+    {
+      "path": "configs/collator/DataCollatorForSupervisedDataset.yaml",
+      "mode": "100644",
+      "blob_sha": "4883ba43a002267803db8f017030f127d3e16c09",
+      "size": 110
+    },
+    {
+      "path": "configs/collator/DataCollatorForSupervisedDatasetwithIndex.yaml",
+      "mode": "100644",
+      "blob_sha": "a840c4411d47f297af55e30a42334406cea8dbe5",
+      "size": 106
+    },
+    {
+      "path": "configs/data/datasets/MUSE_MIA.yaml",
+      "mode": "100644",
+      "blob_sha": "66e818c6cfa3bf62efea0fe1920483740b571aaa",
+      "size": 526
+    },
+    {
+      "path": "configs/data/datasets/MUSE_forget.yaml",
+      "mode": "100644",
+      "blob_sha": "9a8379a4d63dbc98964774edaccb03e450220d4e",
+      "size": 180
+    },
+    {
+      "path": "configs/data/datasets/MUSE_forget_knowmem.yaml",
+      "mode": "100644",
+      "blob_sha": "7684fa2db682b6be818c92fd92c5c082c237eec3",
+      "size": 334
+    },
+    {
+      "path": "configs/data/datasets/MUSE_forget_scal.yaml",
+      "mode": "100644",
+      "blob_sha": "a1cce281c0aee341d61a8b5eda007ff4bb05fed0",
+      "size": 188
+    },
+    {
+      "path": "configs/data/datasets/MUSE_forget_sust.yaml",
+      "mode": "100644",
+      "blob_sha": "c691920caf0fc3647936115cf2608916e454b718",
+      "size": 188
+    },
+    {
+      "path": "configs/data/datasets/MUSE_forget_verbmem.yaml",
+      "mode": "100644",
+      "blob_sha": "f8ee0e41e504a4ea11e15bda3c7d2138cab78ed4",
+      "size": 237
+    },
+    {
+      "path": "configs/data/datasets/MUSE_retain.yaml",
+      "mode": "100644",
+      "blob_sha": "2b0ba4a496ab2d5a7cfb62b7056b144ae1487f70",
+      "size": 181
+    },
+    {
+      "path": "configs/data/datasets/MUSE_retain_knowmem.yaml",
+      "mode": "100644",
+      "blob_sha": "40515339cc49049eda38cda4086e6728afc7c85b",
+      "size": 334
+    },
+    {
+      "path": "configs/data/datasets/TOFU_MIA.yaml",
+      "mode": "100644",
+      "blob_sha": "20b6c97e6ec3c3ef8eb0aac59884115313523434",
+      "size": 452
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_forget.yaml",
+      "mode": "100644",
+      "blob_sha": "32a505cfb30d84843db610ccaefe0a8b0c51db06",
+      "size": 209
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_forget_idk.yaml",
+      "mode": "100644",
+      "blob_sha": "f39bdc75b7bc3376496a34589f544ced398cf69c",
+      "size": 276
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_forget_para.yaml",
+      "mode": "100644",
+      "blob_sha": "ebb61f6b04fe65e9808eb2e8eb8f7b70410be41e",
+      "size": 231
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_forget_pert.yaml",
+      "mode": "100644",
+      "blob_sha": "184ef0beb4a493bf38ab860dddcbbf7cf6001f3f",
+      "size": 229
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_full.yaml",
+      "mode": "100644",
+      "blob_sha": "164cc565131ec714a3d19a53a4ca8b71a384fd9e",
+      "size": 197
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_ra.yaml",
+      "mode": "100644",
+      "blob_sha": "16f0da0a25e1578647197b4a303452bbedd55b04",
+      "size": 213
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_ra_pert.yaml",
+      "mode": "100644",
+      "blob_sha": "aae0d3163a77680f64e2147cd21b53dab8cbfd4c",
+      "size": 228
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_retain.yaml",
+      "mode": "100644",
+      "blob_sha": "e2b2082f7b87944654a5d9f03b9c44a68ca14f2f",
+      "size": 203
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_retain_eval.yaml",
+      "mode": "100644",
+      "blob_sha": "10d6550aae9012fe30f335e9c099df0fd82242d8",
+      "size": 216
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_retain_para.yaml",
+      "mode": "100644",
+      "blob_sha": "a53b881a6a6d1f69b2885d2630bc7d05091e81f2",
+      "size": 229
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_retain_pert.yaml",
+      "mode": "100644",
+      "blob_sha": "5e5d8320aa43c0f85de129a9242580238ebed898",
+      "size": 227
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_wf.yaml",
+      "mode": "100644",
+      "blob_sha": "ffb34c3a84a870712e1f373656fc498e53292b03",
+      "size": 212
+    },
+    {
+      "path": "configs/data/datasets/TOFU_QA_wf_pert.yaml",
+      "mode": "100644",
+      "blob_sha": "a6bd9143a7643b78a0e16116d7949a887ce719c9",
+      "size": 227
+    },
+    {
+      "path": "configs/data/datasets/WMDP_forget.yaml",
+      "mode": "100644",
+      "blob_sha": "4bd260ff34f520cbe53213f41640e88a7c715a78",
+      "size": 213
+    },
+    {
+      "path": "configs/data/datasets/WMDP_retain.yaml",
+      "mode": "100644",
+      "blob_sha": "53d87a7322e84ef5b96c0341b0778e6927d6144b",
+      "size": 213
+    },
+    {
+      "path": "configs/data/finetune.yaml",
+      "mode": "100644",
+      "blob_sha": "99f17b1fa7ad4718ddcaaa8544a2ad01d9cbfadb",
+      "size": 66
+    },
+    {
+      "path": "configs/data/unlearn.yaml",
+      "mode": "100644",
+      "blob_sha": "81a851fe46f2864e49677b85a42bef36ff90dd92",
+      "size": 121
+    },
+    {
+      "path": "configs/eval.yaml",
+      "mode": "100644",
+      "blob_sha": "fef5ed4484b4891e93cfcacd4bb111a39b17d30b",
+      "size": 223
+    },
+    {
+      "path": "configs/eval/lm_eval.yaml",
+      "mode": "100644",
+      "blob_sha": "f67487d18868167f86b0a4d6983339fd26eb1acf",
+      "size": 620
+    },
+    {
+      "path": "configs/eval/muse.yaml",
+      "mode": "100644",
+      "blob_sha": "0b30777029dc8020bb9e8958c048f68105dca952",
+      "size": 652
+    },
+    {
+      "path": "configs/eval/muse_metrics/exact_memorization.yaml",
+      "mode": "100644",
+      "blob_sha": "68b940dd87f6233c920ae3cce488d924d98c5aba",
+      "size": 338
+    },
+    {
+      "path": "configs/eval/muse_metrics/extraction_strength.yaml",
+      "mode": "100644",
+      "blob_sha": "18d716a5f3c469d5524190f92b0897515dc63bbc",
+      "size": 340
+    },
+    {
+      "path": "configs/eval/muse_metrics/forget_gibberish.yaml",
+      "mode": "100644",
+      "blob_sha": "a4163d03057aaf63ad174f7e3c3bd2f145ec12ab",
+      "size": 504
+    },
+    {
+      "path": "configs/eval/muse_metrics/forget_knowmem_ROUGE.yaml",
+      "mode": "100644",
+      "blob_sha": "59aeaec3c2db6c04504dcb72c902ac0d9c1d3e06",
+      "size": 686
+    },
+    {
+      "path": "configs/eval/muse_metrics/forget_verbmem_ROUGE.yaml",
+      "mode": "100644",
+      "blob_sha": "dc6a629837767772775d831a48d32439f906f2ea",
+      "size": 551
+    },
+    {
+      "path": "configs/eval/muse_metrics/mia_gradnorm.yaml",
+      "mode": "100644",
+      "blob_sha": "89cb8c565c7bbc98d66b9e49d213d4620d19ef41",
+      "size": 438
+    },
+    {
+      "path": "configs/eval/muse_metrics/mia_loss.yaml",
+      "mode": "100644",
+      "blob_sha": "dfca1136ab92fc5424c438f209e5fbc68e01f026",
+      "size": 426
+    },
+    {
+      "path": "configs/eval/muse_metrics/mia_min_k.yaml",
+      "mode": "100644",
+      "blob_sha": "9b2b14c7396175d3b821c00afd1b346eb902c708",
+      "size": 434
+    },
+    {
+      "path": "configs/eval/muse_metrics/mia_min_k_plus_plus.yaml",
+      "mode": "100644",
+      "blob_sha": "e497c206f552e2f6a2b29214ae3ff3bcc76679d8",
+      "size": 454
+    },
+    {
+      "path": "configs/eval/muse_metrics/mia_reference.yaml",
+      "mode": "100644",
+      "blob_sha": "ea5d38cda8c40a033d1fbe8f41c61b10f7cc02bb",
+      "size": 529
+    },
+    {
+      "path": "configs/eval/muse_metrics/mia_zlib.yaml",
+      "mode": "100644",
+      "blob_sha": "d88133206404e170bf3af801f3e2c5d5d10d4f26",
+      "size": 425
+    },
+    {
+      "path": "configs/eval/muse_metrics/privleak.yaml",
+      "mode": "100644",
+      "blob_sha": "048f946ed0bd6f7353780994133ac906f263fba3",
+      "size": 307
+    },
+    {
+      "path": "configs/eval/muse_metrics/retain_knowmem_ROUGE.yaml",
+      "mode": "100644",
+      "blob_sha": "9b7b46ee634a6ccbbee208ac9171e20460f77f8e",
+      "size": 686
+    },
+    {
+      "path": "configs/eval/tofu.yaml",
+      "mode": "100644",
+      "blob_sha": "5a895d1922db054013f908d39a8d767d013c68b3",
+      "size": 1280
+    },
+    {
+      "path": "configs/eval/tofu_metrics/exact_memorization.yaml",
+      "mode": "100644",
+      "blob_sha": "9108437f075531eb6b3fbe32279b116e276ae300",
+      "size": 453
+    },
+    {
+      "path": "configs/eval/tofu_metrics/extraction_strength.yaml",
+      "mode": "100644",
+      "blob_sha": "ca4410294da53420a3d9d9a9aed127f4a9c4f3ee",
+      "size": 455
+    },
+    {
+      "path": "configs/eval/tofu_metrics/forget_Q_A_PARA_Prob.yaml",
+      "mode": "100644",
+      "blob_sha": "b648defd4f730d2d89e7b60907ac80859fb6d4f2",
+      "size": 459
+    },
+    {
+      "path": "configs/eval/tofu_metrics/forget_Q_A_PARA_ROUGE.yaml",
+      "mode": "100644",
+      "blob_sha": "6049706669073a59b136306ad34cde5e66894e54",
+      "size": 667
+    },
+    {
+      "path": "configs/eval/tofu_metrics/forget_Q_A_PERT_Prob.yaml",
+      "mode": "100644",
+      "blob_sha": "06d5b11ca51384bbc99c81a7f378a0707acd2d52",
+      "size": 458
+    },
+    {
+      "path": "configs/eval/tofu_metrics/forget_Q_A_PERT_ROUGE.yaml",
+      "mode": "100644",
+      "blob_sha": "0885de7ef62be5df5ca83f816c4b694cbe1c07cb",
+      "size": 663
+    },
+    {
+      "path": "configs/eval/tofu_metrics/forget_Q_A_Prob.yaml",
+      "mode": "100644",
+      "blob_sha": "d231732811a363452973076a96b42667613c575d",
+      "size": 443
+    },
+    {
+      "path": "configs/eval/tofu_metrics/forget_Q_A_ROUGE.yaml",
+      "mode": "100644",
+      "blob_sha": "467ff7fd899a4214353e58f39b01facf4b2d6f20",
+      "size": 651
+    },
+    {
+      "path": "configs/eval/tofu_metrics/forget_Q_A_gibberish.yaml",
+      "mode": "100644",
+      "blob_sha": "a22eb0d549eefbca916331fc21d657ef77f70fa3",
+      "size": 495
+    },
+    {
+      "path": "configs/eval/tofu_metrics/forget_Truth_Ratio.yaml",
+      "mode": "100644",
+      "blob_sha": "e481bb98f45a43e60e6e102abf3ca60b65b32c4c",
+      "size": 341
+    },
+    {
+      "path": "configs/eval/tofu_metrics/forget_quality.yaml",
+      "mode": "100644",
+      "blob_sha": "888e8176f234b695f3f906b4d96155a227c8dc9b",
+      "size": 332
+    },
+    {
+      "path": "configs/eval/tofu_metrics/mia_gradnorm.yaml",
+      "mode": "100644",
+      "blob_sha": "107b6dd7e96f31634d3da2d3717d7330296ca356",
+      "size": 443
+    },
+    {
+      "path": "configs/eval/tofu_metrics/mia_loss.yaml",
+      "mode": "100644",
+      "blob_sha": "57cee14aeb28ed23ff58d67cddc7c524004bf610",
+      "size": 451
+    },
+    {
+      "path": "configs/eval/tofu_metrics/mia_min_k.yaml",
+      "mode": "100644",
+      "blob_sha": "117ece69d85f100fa2ad4fbf70df375bcd90a297",
+      "size": 460
+    },
+    {
+      "path": "configs/eval/tofu_metrics/mia_min_k_plus_plus.yaml",
+      "mode": "100644",
+      "blob_sha": "f87fef52d417415e55f0a1ecd2f24d3d6b56d3b2",
+      "size": 480
+    },
+    {
+      "path": "configs/eval/tofu_metrics/mia_reference.yaml",
+      "mode": "100644",
+      "blob_sha": "820c46f7339ad7df41634bfe309b1d92f8ba5be6",
+      "size": 574
+    },
+    {
+      "path": "configs/eval/tofu_metrics/mia_zlib.yaml",
+      "mode": "100644",
+      "blob_sha": "274f0bca16289884c8e401888d71c4a3d7ff62ff",
+      "size": 451
+    },
+    {
+      "path": "configs/eval/tofu_metrics/model_utility.yaml",
+      "mode": "100644",
+      "blob_sha": "f0bdded51480f8bac98697c9c6c54327a6cc8929",
+      "size": 554
+    },
+    {
+      "path": "configs/eval/tofu_metrics/privleak.yaml",
+      "mode": "100644",
+      "blob_sha": "44a461e2074f93d08aacb3cf4b42f67d166749af",
+      "size": 308
+    },
+    {
+      "path": "configs/eval/tofu_metrics/ra_Q_A_PERT_Prob.yaml",
+      "mode": "100644",
+      "blob_sha": "7ec61e16a7d28651cde2343905fe8bb12ad46fd6",
+      "size": 295
+    },
+    {
+      "path": "configs/eval/tofu_metrics/ra_Q_A_Prob.yaml",
+      "mode": "100644",
+      "blob_sha": "7e103bf7cd7bef243b4882bd79b5a91fefef9972",
+      "size": 285
+    },
+    {
+      "path": "configs/eval/tofu_metrics/ra_Q_A_Prob_normalised.yaml",
+      "mode": "100644",
+      "blob_sha": "623981e6ac480043e10d8ebefbf45a6e3f5c801d",
+      "size": 284
+    },
+    {
+      "path": "configs/eval/tofu_metrics/ra_Q_A_ROUGE.yaml",
+      "mode": "100644",
+      "blob_sha": "5a1301eaf4bca4bc4d836f4b95ebfd4597621711",
+      "size": 527
+    },
+    {
+      "path": "configs/eval/tofu_metrics/ra_Truth_Ratio.yaml",
+      "mode": "100644",
+      "blob_sha": "5c8c16d29856488ef51ff9f0f625bba74c6e46e9",
+      "size": 291
+    },
+    {
+      "path": "configs/eval/tofu_metrics/retain_Q_A_PARA_Prob.yaml",
+      "mode": "100644",
+      "blob_sha": "3ccb5d6796aafdb4f92b4971d0ed72cae1dc53fb",
+      "size": 393
+    },
+    {
+      "path": "configs/eval/tofu_metrics/retain_Q_A_PERT_Prob.yaml",
+      "mode": "100644",
+      "blob_sha": "54109e3473c142d6ec268142b82c93f85a12d3b2",
+      "size": 393
+    },
+    {
+      "path": "configs/eval/tofu_metrics/retain_Q_A_Prob.yaml",
+      "mode": "100644",
+      "blob_sha": "8b6a04facb5adfb32e47f88c3144ac69f6a255b4",
+      "size": 388
+    },
+    {
+      "path": "configs/eval/tofu_metrics/retain_Q_A_ROUGE.yaml",
+      "mode": "100644",
+      "blob_sha": "9ff1d377940a0d750f696511a8a21cf548cb8f60",
+      "size": 595
+    },
+    {
+      "path": "configs/eval/tofu_metrics/retain_Truth_Ratio.yaml",
+      "mode": "100644",
+      "blob_sha": "1637ac13b974052ab03f8cf293400d77b0554aa3",
+      "size": 334
+    },
+    {
+      "path": "configs/eval/tofu_metrics/wf_Q_A_PERT_Prob.yaml",
+      "mode": "100644",
+      "blob_sha": "6ef901e7ac1d764ebd422b22b3d971c12ed950c1",
+      "size": 295
+    },
+    {
+      "path": "configs/eval/tofu_metrics/wf_Q_A_Prob.yaml",
+      "mode": "100644",
+      "blob_sha": "2b605453e9e8dcdcdd428609deb0a897e2a9f148",
+      "size": 285
+    },
+    {
+      "path": "configs/eval/tofu_metrics/wf_Q_A_Prob_normalised.yaml",
+      "mode": "100644",
+      "blob_sha": "4a2d0511edbf54d8ee678059bc3c4c643afe3c13",
+      "size": 284
+    },
+    {
+      "path": "configs/eval/tofu_metrics/wf_Q_A_ROUGE.yaml",
+      "mode": "100644",
+      "blob_sha": "adb42cc4f6979e707782256d0bcad8e49d37051f",
+      "size": 527
+    },
+    {
+      "path": "configs/eval/tofu_metrics/wf_Truth_Ratio.yaml",
+      "mode": "100644",
+      "blob_sha": "ad93200dec897805fac2343dabb5c4a730a66e25",
+      "size": 291
+    },
+    {
+      "path": "configs/experiment/eval/muse/default.yaml",
+      "mode": "100644",
+      "blob_sha": "60065713f47deb11f1ef6583ee288579c254e8c2",
+      "size": 330
+    },
+    {
+      "path": "configs/experiment/eval/tofu/default.yaml",
+      "mode": "100644",
+      "blob_sha": "b2be02055979ef74475ca617703662bf7a261cca",
+      "size": 418
+    },
+    {
+      "path": "configs/experiment/eval/wmdp/default.yaml",
+      "mode": "100644",
+      "blob_sha": "983ad289b9db7481690d3f999f4d0f44d4824765",
+      "size": 198
+    },
+    {
+      "path": "configs/experiment/examples/muse_unlearn.yaml",
+      "mode": "100644",
+      "blob_sha": "0e6b2b6c32f7307364be58dc73886325eb5b2f8e",
+      "size": 7578
+    },
+    {
+      "path": "configs/experiment/examples/tofu_eval.yaml",
+      "mode": "100644",
+      "blob_sha": "0100d7921530563c3ffa15b3fea0768a2f8c8d71",
+      "size": 3997
+    },
+    {
+      "path": "configs/experiment/finetune/tofu/default.yaml",
+      "mode": "100644",
+      "blob_sha": "ce4d62bfd9c01a73cfe3ba0b347c1de3f00086a2",
+      "size": 594
+    },
+    {
+      "path": "configs/experiment/unlearn/muse/default.yaml",
+      "mode": "100644",
+      "blob_sha": "b0d34ea36299debfeffade660280a8f25edcc472",
+      "size": 1130
+    },
+    {
+      "path": "configs/experiment/unlearn/muse/scalability.yaml",
+      "mode": "100644",
+      "blob_sha": "da1dcf730ffd5d129e894eb7278994ac9f9488c2",
+      "size": 1141
+    },
+    {
+      "path": "configs/experiment/unlearn/muse/sustainabilty.yaml",
+      "mode": "100644",
+      "blob_sha": "3b9e2100d1ad6cd77f9d3064a741dde0f6f24f9d",
+      "size": 1141
+    },
+    {
+      "path": "configs/experiment/unlearn/tofu/default.yaml",
+      "mode": "100644",
+      "blob_sha": "2d7f8b61382a19e7e76288c0a97ccd9c4eb25d90",
+      "size": 1086
+    },
+    {
+      "path": "configs/experiment/unlearn/tofu/idk.yaml",
+      "mode": "100644",
+      "blob_sha": "5fcb85df589b580c3ba1ac9800da584436b3cdd2",
+      "size": 968
+    },
+    {
+      "path": "configs/experiment/unlearn/wmdp/default.yaml",
+      "mode": "100644",
+      "blob_sha": "8b126ac9316168e503722f84e05ca538b4978776",
+      "size": 1514
+    },
+    {
+      "path": "configs/generation/default.yaml",
+      "mode": "100644",
+      "blob_sha": "ef76c624159158293fb4f16c5ac9198671e8ab5c",
+      "size": 82
+    },
+    {
+      "path": "configs/hydra/default.yaml",
+      "mode": "100644",
+      "blob_sha": "2c52ad15f853b8f25933934b79f52ed56de8d9de",
+      "size": 602
+    },
+    {
+      "path": "configs/hydra/eval.yaml",
+      "mode": "100644",
+      "blob_sha": "ff2cc1c95f8bddf986f3d29405d8d88c409f02d3",
+      "size": 284
+    },
+    {
+      "path": "configs/model/Llama-2-7b-chat-hf.yaml",
+      "mode": "100644",
+      "blob_sha": "ac256562a26896bc2801aac9df804a2a96ea015d",
+      "size": 697
+    },
+    {
+      "path": "configs/model/Llama-2-7b-hf.yaml",
+      "mode": "100644",
+      "blob_sha": "6c8e99dc3ccb11fe327bf8c9ffe98b65daeaa245",
+      "size": 455
+    },
+    {
+      "path": "configs/model/Llama-3.1-8B-Instruct.yaml",
+      "mode": "100644",
+      "blob_sha": "63294bf09c4001648463335ce4c8861458fc9404",
+      "size": 680
+    },
+    {
+      "path": "configs/model/Llama-3.2-1B-Instruct.yaml",
+      "mode": "100644",
+      "blob_sha": "1f14feaea30e6abe3eec296b4fcd1c8e02cd7b30",
+      "size": 680
+    },
+    {
+      "path": "configs/model/Llama-3.2-3B-Instruct.yaml",
+      "mode": "100644",
+      "blob_sha": "2cccdc683499c2661516ce7e157c028e72e0855e",
+      "size": 680
+    },
+    {
+      "path": "configs/model/Phi-3.5-mini-instruct.yaml",
+      "mode": "100644",
+      "blob_sha": "541c085902db7203fbfb1cef84e9beef7a200e60",
+      "size": 529
+    },
+    {
+      "path": "configs/model/gemma-7b-it.yaml",
+      "mode": "100644",
+      "blob_sha": "fe3d263248d8349e9f0a99af629845f4c1eb0992",
+      "size": 404
+    },
+    {
+      "path": "configs/model/phi-1_5.yaml",
+      "mode": "100644",
+      "blob_sha": "0dc8095767f960c841e95cefa096ac38b262ff5d",
+      "size": 302
+    },
+    {
+      "path": "configs/model/zephyr-7b-beta.yaml",
+      "mode": "100644",
+      "blob_sha": "24f6cefbfb8617bbba059b1b156de4c2216350a4",
+      "size": 537
+    },
+    {
+      "path": "configs/paths/default.yaml",
+      "mode": "100644",
+      "blob_sha": "8c5125d598fb6da3858201f18231394d18afcaaa",
+      "size": 554
+    },
+    {
+      "path": "configs/train.yaml",
+      "mode": "100644",
+      "blob_sha": "101b48ebd6b86f83005563e7b619d0cb47aa95ec",
+      "size": 243
+    },
+    {
+      "path": "configs/trainer/CEU.yaml",
+      "mode": "100644",
+      "blob_sha": "0af06006bbd2640e21441eef05818e68daeafa87",
+      "size": 84
+    },
+    {
+      "path": "configs/trainer/DPO.yaml",
+      "mode": "100644",
+      "blob_sha": "90eec8a17b8db842b2f8f001627fed5216ab134d",
+      "size": 111
+    },
+    {
+      "path": "configs/trainer/GradAscent.yaml",
+      "mode": "100644",
+      "blob_sha": "5b85b7f47975d2b4eef3bf42032b6ae16ab5bd72",
+      "size": 43
+    },
+    {
+      "path": "configs/trainer/GradDiff.yaml",
+      "mode": "100644",
+      "blob_sha": "36844bb7a9c65c0ee6203aaaac911926903016c9",
+      "size": 105
+    },
+    {
+      "path": "configs/trainer/NPO.yaml",
+      "mode": "100644",
+      "blob_sha": "ae4b74be9b5f00cdc06387f9c38eb7c058ba25f7",
+      "size": 112
+    },
+    {
+      "path": "configs/trainer/RMU.yaml",
+      "mode": "100644",
+      "blob_sha": "7e1f90288e2be5ce9219e2eac95c2b5616c43786",
+      "size": 642
+    },
+    {
+      "path": "configs/trainer/SatImp.yaml",
+      "mode": "100644",
+      "blob_sha": "f8d9c757ba255050694792e6d394e911a534929c",
+      "size": 212
+    },
+    {
+      "path": "configs/trainer/SimNPO.yaml",
+      "mode": "100644",
+      "blob_sha": "7b9f3cb0876313cb312b4229266af10cb30b65a1",
+      "size": 317
+    },
+    {
+      "path": "configs/trainer/UNDIAL.yaml",
+      "mode": "100644",
+      "blob_sha": "5b2b0d307c76ba8aa919f8ec54af2412d8990d78",
+      "size": 354
+    },
+    {
+      "path": "configs/trainer/WGA.yaml",
+      "mode": "100644",
+      "blob_sha": "c79c63b976ac0d4db3b561a8f99c30f5f7de1460",
+      "size": 195
+    },
+    {
+      "path": "configs/trainer/finetune.yaml",
+      "mode": "100644",
+      "blob_sha": "e4b787b98024a9052c53791870c028e5164be512",
+      "size": 584
+    },
+    {
+      "path": "configs/unlearn.yaml",
+      "mode": "100644",
+      "blob_sha": "0ebde97704dc11bbc573ec701b4ac64a6ad38ee0",
+      "size": 298
+    },
+    {
+      "path": "docs/components.md",
+      "mode": "100644",
+      "blob_sha": "a0ba85a64aee5c8a154e2ca4feaf54799eaca66a",
+      "size": 11255
+    },
+    {
+      "path": "docs/contributing.md",
+      "mode": "100644",
+      "blob_sha": "583d3f27671cbb6e074b26472306820b704de119",
+      "size": 11126
+    },
+    {
+      "path": "docs/evaluation.md",
+      "mode": "100644",
+      "blob_sha": "d460c6eb9ff0c93567d4d33f5fd77b1d0c1af838",
+      "size": 12239
+    },
+    {
+      "path": "docs/experiments.md",
+      "mode": "100644",
+      "blob_sha": "728e61bbb11b5917619417b513a69178b8440087",
+      "size": 9952
+    },
+    {
+      "path": "docs/hydra.md",
+      "mode": "100644",
+      "blob_sha": "6e2b080b8984da93605c0ca0dec8ad002fa6e12d",
+      "size": 4424
+    },
+    {
+      "path": "docs/links.md",
+      "mode": "100644",
+      "blob_sha": "bbc032c1c18d46f0ad18d27b44acd94207b9d26c",
+      "size": 7604
+    },
+    {
+      "path": "docs/repro.md",
+      "mode": "100644",
+      "blob_sha": "9bd5103780734cb2a5bf996afb8905e9bc7ea74a",
+      "size": 9819
+    },
+    {
+      "path": "requirements.txt",
+      "mode": "100644",
+      "blob_sha": "2f39c76e295613b2fed157c9f7baea8cd9522d76",
+      "size": 256
+    },
+    {
+      "path": "scripts/muse_unlearn.sh",
+      "mode": "100644",
+      "blob_sha": "4a055af793b42d7b92bb5f8344909ec96f764442",
+      "size": 5398
+    },
+    {
+      "path": "scripts/tofu_finetune.sh",
+      "mode": "100644",
+      "blob_sha": "dfb3a692691783805fcc2f094587e42f335b699b",
+      "size": 3631
+    },
+    {
+      "path": "scripts/tofu_unlearn.sh",
+      "mode": "100644",
+      "blob_sha": "87d9a7c1f3f230958d0f3a84d66f02de725f8cc5",
+      "size": 3117
+    },
+    {
+      "path": "setup.py",
+      "mode": "100644",
+      "blob_sha": "6a5c99c7e23dd73efdb5ba500a8b5c4daa0b7cf7",
+      "size": 943
+    },
+    {
+      "path": "setup_data.py",
+      "mode": "100644",
+      "blob_sha": "7fa5cb2086d854d1ae0ce97f0da0b28a2abdb40f",
+      "size": 1640
+    },
+    {
+      "path": "src/data/__init__.py",
+      "mode": "100644",
+      "blob_sha": "c24b0b03d7281a37409e7c35c7f48b80fec9bc9f",
+      "size": 3546
+    },
+    {
+      "path": "src/data/collators.py",
+      "mode": "100644",
+      "blob_sha": "77483f9ca225f711be7889e170d552d447c06df2",
+      "size": 2626
+    },
+    {
+      "path": "src/data/pretraining.py",
+      "mode": "100644",
+      "blob_sha": "493b1729b1e96c8a1dd3fca0e05058378d681ca3",
+      "size": 2904
+    },
+    {
+      "path": "src/data/qa.py",
+      "mode": "100644",
+      "blob_sha": "60361ce3eb73efa3440704b7a83d5766de27c49b",
+      "size": 5220
+    },
+    {
+      "path": "src/data/unlearn.py",
+      "mode": "100644",
+      "blob_sha": "0cb0badaaeb9541b3aef2a733ee0ab9386b4cc7d",
+      "size": 1810
+    },
+    {
+      "path": "src/data/utils.py",
+      "mode": "100644",
+      "blob_sha": "4a5df348bb7ec4bde3b9426c63c2d2442e32934c",
+      "size": 8244
+    },
+    {
+      "path": "src/eval.py",
+      "mode": "100644",
+      "blob_sha": "066c8dad8eba98d1c792bd052df1b423be82b4c8",
+      "size": 944
+    },
+    {
+      "path": "src/evals/__init__.py",
+      "mode": "100644",
+      "blob_sha": "5ab4f6037dc37fb0ddb85589e27fd3fdbd7dea26",
+      "size": 1160
+    },
+    {
+      "path": "src/evals/base.py",
+      "mode": "100644",
+      "blob_sha": "88114678149d82710092f3d773aba7c5ea5f6c24",
+      "size": 4337
+    },
+    {
+      "path": "src/evals/lm_eval.py",
+      "mode": "100644",
+      "blob_sha": "43080e4fa5f89b53ce0385af9aaa6f2e8a733601",
+      "size": 4544
+    },
+    {
+      "path": "src/evals/metrics/__init__.py",
+      "mode": "100644",
+      "blob_sha": "5afb04243e663f27cd44663ab43ad34f1b62bd9e",
+      "size": 2092
+    },
+    {
+      "path": "src/evals/metrics/base.py",
+      "mode": "100644",
+      "blob_sha": "105ff1c6a53e7f4e39baff0fbeb04a995bc3d319",
+      "size": 6238
+    },
+    {
+      "path": "src/evals/metrics/memorization.py",
+      "mode": "100644",
+      "blob_sha": "d033c1ea0cc5e89be5bd01b1e804b51c0874af27",
+      "size": 9580
+    },
+    {
+      "path": "src/evals/metrics/mia/__init__.py",
+      "mode": "100644",
+      "blob_sha": "5ab869f6d9bf92565c1f86cdd6413a9696ab8275",
+      "size": 2729
+    },
+    {
+      "path": "src/evals/metrics/mia/all_attacks.py",
+      "mode": "100644",
+      "blob_sha": "f2d074c22480b1d9630a6dc33da88ffa61390b03",
+      "size": 1807
+    },
+    {
+      "path": "src/evals/metrics/mia/gradnorm.py",
+      "mode": "100644",
+      "blob_sha": "e01cefda0dd3761eca48e65e6badd15f256b6e64",
+      "size": 1608
+    },
+    {
+      "path": "src/evals/metrics/mia/loss.py",
+      "mode": "100644",
+      "blob_sha": "bcfd204a4b4c43c3d6ebedd9cc5acf6761a5839f",
+      "size": 537
+    },
+    {
+      "path": "src/evals/metrics/mia/min_k.py",
+      "mode": "100644",
+      "blob_sha": "8b8d4ecfafb01c36d191dd8f013e908a2fd4c6a2",
+      "size": 782
+    },
+    {
+      "path": "src/evals/metrics/mia/min_k_plus_plus.py",
+      "mode": "100644",
+      "blob_sha": "cfc85deafa08b7776bcc2eb8c7ebf7ae517e9b6a",
+      "size": 1524
+    },
+    {
+      "path": "src/evals/metrics/mia/reference.py",
+      "mode": "100644",
+      "blob_sha": "3faeb6d6ef12544fbeb3cec8d6ed76666526b77c",
+      "size": 902
+    },
+    {
+      "path": "src/evals/metrics/mia/utils.py",
+      "mode": "100644",
+      "blob_sha": "15eb19b477a4dc25f84b5969c58a32a11ac56810",
+      "size": 2400
+    },
+    {
+      "path": "src/evals/metrics/mia/zlib.py",
+      "mode": "100644",
+      "blob_sha": "5a8f7ba3ac301d2ffba2b414df40786184fb47a9",
+      "size": 1019
+    },
+    {
+      "path": "src/evals/metrics/privacy.py",
+      "mode": "100644",
+      "blob_sha": "1d9bdfbe652fefef93f4088290ebbab1f2173157",
+      "size": 2727
+    },
+    {
+      "path": "src/evals/metrics/utility.py",
+      "mode": "100644",
+      "blob_sha": "7f47e9ca2fe041b1617c78597b645afe4e33b7fd",
+      "size": 2678
+    },
+    {
+      "path": "src/evals/metrics/utils.py",
+      "mode": "100644",
+      "blob_sha": "71684b7dec6ef710d2a22b3d4a3f36998ec1b0e2",
+      "size": 14200
+    },
+    {
+      "path": "src/evals/muse.py",
+      "mode": "100644",
+      "blob_sha": "974d877d8b5a1acab67ceb34dad4a94b85f5b4ca",
+      "size": 164
+    },
+    {
+      "path": "src/evals/tofu.py",
+      "mode": "100644",
+      "blob_sha": "2e39f8eeac448ec9d5fca6384d3468dcd2f1c67e",
+      "size": 164
+    },
+    {
+      "path": "src/model/__init__.py",
+      "mode": "100644",
+      "blob_sha": "05add68be3ce381555c4082d3165697cb85d6ce8",
+      "size": 4062
+    },
+    {
+      "path": "src/model/probe.py",
+      "mode": "100644",
+      "blob_sha": "7b90d1daff1b1cf4880ae849a6383d141c6be197",
+      "size": 2639
+    },
+    {
+      "path": "src/train.py",
+      "mode": "100644",
+      "blob_sha": "a2f81c8d4f9d97e5c4fac67264fdd44392c5411a",
+      "size": 1958
+    },
+    {
+      "path": "src/trainer/__init__.py",
+      "mode": "100644",
+      "blob_sha": "fa89bf2b631ab9e018011e259777129ee02279f4",
+      "size": 2951
+    },
+    {
+      "path": "src/trainer/base.py",
+      "mode": "100644",
+      "blob_sha": "05f36a2a44654f300a31911c716493b852fd498b",
+      "size": 2401
+    },
+    {
+      "path": "src/trainer/unlearn/base.py",
+      "mode": "100644",
+      "blob_sha": "683698da25bd2264e4adb79ef152183de989b05f",
+      "size": 7655
+    },
+    {
+      "path": "src/trainer/unlearn/ceu.py",
+      "mode": "100644",
+      "blob_sha": "33da99c3c1db43760a9873c1861cfcdfd2ea0375",
+      "size": 4029
+    },
+    {
+      "path": "src/trainer/unlearn/dpo.py",
+      "mode": "100644",
+      "blob_sha": "b64b474b48a7eed72c29223ada2e35bee92d3fba",
+      "size": 1209
+    },
+    {
+      "path": "src/trainer/unlearn/grad_ascent.py",
+      "mode": "100644",
+      "blob_sha": "eda8b4812032286a001f093583590efdfbf4fe87",
+      "size": 518
+    },
+    {
+      "path": "src/trainer/unlearn/grad_diff.py",
+      "mode": "100644",
+      "blob_sha": "bfecc19a2a5b810d0652467902c069bbd9618f83",
+      "size": 2331
+    },
+    {
+      "path": "src/trainer/unlearn/npo.py",
+      "mode": "100644",
+      "blob_sha": "7c782d968819c0cfd5e5d4a2d141f3402af1dfc2",
+      "size": 1128
+    },
+    {
+      "path": "src/trainer/unlearn/rmu.py",
+      "mode": "100644",
+      "blob_sha": "d990d3a383cb3090da4a6a8a768876b231070de9",
+      "size": 7228
+    },
+    {
+      "path": "src/trainer/unlearn/satimp.py",
+      "mode": "100644",
+      "blob_sha": "b664390cdacb55ea7c6172d4dac2f74cdb44e820",
+      "size": 1432
+    },
+    {
+      "path": "src/trainer/unlearn/simnpo.py",
+      "mode": "100644",
+      "blob_sha": "cb4f7f99c2373ffa3b6f22bd96bc9936d57918f6",
+      "size": 1197
+    },
+    {
+      "path": "src/trainer/unlearn/undial.py",
+      "mode": "100644",
+      "blob_sha": "e32147b3095f7a5eefd7a6a2bd410312e9a33f4d",
+      "size": 1037
+    },
+    {
+      "path": "src/trainer/unlearn/wga.py",
+      "mode": "100644",
+      "blob_sha": "08c4bf402e4fa745703837d5ba27f4834f03c89c",
+      "size": 1360
+    },
+    {
+      "path": "src/trainer/utils.py",
+      "mode": "100644",
+      "blob_sha": "af883e8a4b7f89071b1f2d7dcc57c548267c4171",
+      "size": 4883
+    }
+  ]
+}

@@ -56,6 +56,8 @@ class Phase3C1CompleteTests(unittest.TestCase):
  A1_BASE='1b51643414c7790c4860401f7a879c4a18e0b408'
  BASE='0ecac2dd29617d4156cdef82217fdcd2980f2157'
  BASE_TREE='e6d229c3d177e2abcfeaaaf4e4c2a458477a84a7'
+ COMPLETE='9e843af06e9f5dcf6e69c14e6500ca0c812c84fc'
+ COMPLETE_TREE='db501bce7d205a3de9f3ef75a1fe6855aadf0d08'
  ALLOWED={'.gitattributes','.gitignore','results/repository_cleanup_plan.json','tests/test_repository_cleanup.py'}
  B_MANAGEMENT={'results/repository_cleanup_plan.json','tests/test_repository_cleanup.py'}
  GROUP_PREFIXES=(
@@ -99,7 +101,8 @@ class Phase3C1CompleteTests(unittest.TestCase):
   self.assertEqual(self.summary(self.batch_b),(640,90844714,'91f70a94bdc294508c8d87d16170d4881e133e713e258847fb842539591d2bdf'))
   self.assertFalse(self.batch_a&self.batch_b); self.assertEqual(self.batch_a|self.batch_b,self.targets)
  def test_phase3c1_exact_final_tracked_set(self):
-  tracked=set(self.index_rows())
+  self.assertEqual(git('rev-parse',self.COMPLETE+'^{tree}').stdout.strip(),self.COMPLETE_TREE)
+  tracked=set(git('ls-tree','-r','--name-only',self.COMPLETE).stdout.splitlines())
   self.assertEqual(tracked,set(self.rows)-self.targets); self.assertEqual(len(tracked),632)
   self.assertFalse(tracked&self.targets); self.assertFalse(tracked&self.batch_a); self.assertFalse(tracked&self.batch_b)
  def test_exact_base_diff(self):
