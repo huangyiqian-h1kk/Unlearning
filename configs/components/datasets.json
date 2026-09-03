@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "reproduction_component_registry",
+  "component_kind": "datasets",
+  "inventory": "results/paper/mcq_dataset_inventory.json",
+  "datasets": {
+    "clinicia/a/deaths/att@historical_v1": "llm2vec/unlearn_eval/data/mcqs_deaths_att.jsonl",
+    "clinicia/a/deaths/id-equal@historical_v1": "llm2vec/unlearn_eval/data/mcqs_deaths_id_eq.jsonl",
+    "clinicia/a/deaths/id-similar@historical_v1": "llm2vec/unlearn_eval/data/mcqs_deaths_id_sim.jsonl",
+    "clinicia/a/diagnosis/att@historical_v1": "llm2vec/unlearn_eval/data/mcqs_diagnosis_att.jsonl",
+    "clinicia/a/diagnosis/id@historical_v1": "llm2vec/unlearn_eval/data/mcqs_diagnosis_id.jsonl",
+    "clinicia/b/pmc/forget/att@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_forget_att.jsonl",
+    "clinicia/b/pmc/forget/id-equal@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_forget_id_equal.jsonl",
+    "clinicia/b/pmc/forget/id@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_forget_id_identical.jsonl",
+    "clinicia/b/pmc/retain/att@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_retain_att.jsonl",
+    "clinicia/b/pmc/retain/id-equal@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_retain_id_equal.jsonl",
+    "clinicia/b/pmc/retain/id@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_retain_id_identical.jsonl"
+  },
+  "redistribution_status": "unresolved_do_not_redistribute"
+}

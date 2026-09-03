@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "reproduction_candidate",
+  "config_id": "validated-v2-conrep-diagnosis-mistral",
+  "runnable": false,
+  "model": "mistral-7b-instruct-v0.2",
+  "method": "conrep",
+  "protocol": "validated_v2",
+  "dataset_ids": [
+    "clinicia/a/diagnosis/att@historical_v1",
+    "clinicia/a/diagnosis/id@historical_v1"
+  ],
+  "entrypoint": "scripts/train_conrep.py",
+  "arguments": {
+    "variant": "adaptive-random-token-lmloss-margin"
+  },
+  "environment": {
+    "model_cache": "${HF_HOME}",
+    "output_root": "${CONREP_ARTIFACT_ROOT}/validated_v2"
+  },
+  "gates": {
+    "dependency_environment_validated": false,
+    "dataset_redistribution_reviewed": false,
+    "checkpoint_lineage_validated": false,
+    "real_model_smoke_test_passed": false,
+    "numerical_protocol_validated": false
+  },
+  "historical_equivalence_claimed": false,
+  "may_write_archived_paper_results": false
+}

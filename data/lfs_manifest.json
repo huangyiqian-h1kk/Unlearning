@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "phase3d3_tracked_lfs_release_summary",
+  "phase_base": {
+    "commit": "39b4824640236c33a74ec5d297d834976e2bd388",
+    "tree": "97fd3c030cb36374c1d5bf8059bad213a263ac1e"
+  },
+  "tracked_pointer_scopes": [
+    "llm2vec/UnlearnData/",
+    "llm2vec/cache/"
+  ],
+  "pointer_count": 25,
+  "identity_policy": "validate_current_paths_and_pointer_blobs_against_the_phase_base_tree",
+  "duplicate_per_object_metadata_published": false,
+  "object_availability_status": "not_verified_by_phase3d3",
+  "default_redistribution_status": "unresolved_do_not_redistribute",
+  "paper_mcq_inventory": "results/paper/mcq_dataset_inventory.json"
+}

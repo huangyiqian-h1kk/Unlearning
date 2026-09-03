@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "phase3d3_dependency_matrix",
+  "phase_base": {
+    "commit": "39b4824640236c33a74ec5d297d834976e2bd388",
+    "tree": "97fd3c030cb36374c1d5bf8059bad213a263ac1e"
+  },
+  "components": {
+    "llm2vec": {
+      "upstream_repository": "McGill-NLP/llm2vec",
+      "inferred_upstream_commit": "312adcfb578b4023bfc9d3bcc83b6b87448ab059",
+      "inferred_upstream_tree": "0bf0b8f4960e4c65f6995b16756ac147a30fa000",
+      "packaging_path": "llm2vec/setup.py",
+      "packaging_blob": "be5bc44bd9c39238a6ed3783ac859dfe109c8595",
+      "python_requires": ">=3.8",
+      "requirements": [
+        "numpy",
+        "tqdm",
+        "torch",
+        "peft",
+        "transformers>=4.43.1,<=4.44.2",
+        "datasets",
+        "evaluate",
+        "scikit-learn"
+      ],
+      "optional_requirements": {
+        "evaluation": [
+          "mteb>=1.14.12"
+        ]
+      },
+      "license_path": "llm2vec/LICENSE",
+      "license_blob": "3963f35c44922d45047f1cd3c69f92cd9a75472f",
+      "license_sha256": "e69268828e67ffd1d3393a2d3530f97df6deaa0b961039fc971abea28cec8715"
+    },
+    "open_unlearning": {
+      "upstream_repository": "locuslab/open-unlearning",
+      "inferred_upstream_commit": "d33c4762941731cb397494f605f71528d8ce9dce",
+      "inferred_upstream_tree": "22cf1a2efd0dd194dfbdd0be3d4d3723a4936888",
+      "packaging_path": "llm2vec/open_unlearning/setup.py",
+      "packaging_blob": "6a5c99c7e23dd73efdb5ba500a8b5c4daa0b7cf7",
+      "requirements_path": "llm2vec/open_unlearning/requirements.txt",
+      "requirements_blob": "2f39c76e295613b2fed157c9f7baea8cd9522d76",
+      "python_requires": ">=3.11",
+      "requirements": [
+        "huggingface-hub==0.29.1",
+        "transformers==4.45.1",
+        "numpy==2.2.3",
+        "hydra-core==1.3",
+        "hydra_colorlog==1.2.0",
+        "torch==2.4.1",
+        "datasets==3.0.1",
+        "accelerate==0.34.2",
+        "bitsandbytes==0.44.1",
+        "rouge-score==0.1.2",
+        "scipy==1.14.1",
+        "tensorboard==2.18.0",
+        "scikit-learn==1.5.2",
+        "deepspeed==0.15.4"
+      ],
+      "optional_requirements": {
+        "lm-eval": [
+          "lm-eval==0.4.8"
+        ],
+        "dev": [
+          "pre-commit==4.0.1",
+          "ruff==0.6.9"
+        ]
+      },
+      "license_path": "llm2vec/open_unlearning/LICENSE",
+      "license_blob": "c197ebd940f422f0762219f87a69aa2acf9d9a97",
+      "license_sha256": "2f6df7a76faaefa1a6b50bdcf4191c1c2fcb72454964266f0210c2f452291dea"
+    }
+  },
+  "conflicts": [
+    {
+      "dependency": "transformers",
+      "llm2vec_constraint": ">=4.43.1,<=4.44.2",
+      "open_unlearning_constraint": "==4.45.1",
+      "intersection": "empty",
+      "resolution": "keep_model_environments_separate"
+    }
+  ],
+  "release_policy": {
+    "unified_model_environment_published": false,
+    "dependency_download_performed": false,
+    "real_dependency_import_performed": false,
+    "real_model_execution_performed": false,
+    "artifact_table_tools_require_model_dependencies": false
+  }
+}

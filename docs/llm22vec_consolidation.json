@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "phase3d3_llm22vec_shared_module_consolidation",
+  "phase_base": {
+    "commit": "39b4824640236c33a74ec5d297d834976e2bd388",
+    "tree": "97fd3c030cb36374c1d5bf8059bad213a263ac1e"
+  },
+  "strategy": "extend_llm22vec_package_path_with_canonical_llm2vec_support_modules",
+  "removed_duplicate_count": 18,
+  "removed_sorted_path_list_sha256": "671420711d1d849a3661bcde860dac6cb0b3ef633f342b1742060f112da29eda",
+  "shared_modules": [
+    {"derivative_path": "llm2vec/llm22vec/dataset/E5Data.py", "canonical_path": "llm2vec/llm2vec/dataset/E5Data.py", "base_blob": "cfe33cdec9ce26a94dd211418a8755e61af620a2"},
+    {"derivative_path": "llm2vec/llm22vec/dataset/Wiki1M.py", "canonical_path": "llm2vec/llm2vec/dataset/Wiki1M.py", "base_blob": "98677e65656340f517fff5d36fd0709e650d3961"},
+    {"derivative_path": "llm2vec/llm22vec/dataset/__init__.py", "canonical_path": "llm2vec/llm2vec/dataset/__init__.py", "base_blob": "c248cdc7389da713739b93486ad363eea69ae287"},
+    {"derivative_path": "llm2vec/llm22vec/dataset/dataset.py", "canonical_path": "llm2vec/llm2vec/dataset/dataset.py", "base_blob": "335230babe674c0a819e2e0da783035905618938"},
+    {"derivative_path": "llm2vec/llm22vec/dataset/utils.py", "canonical_path": "llm2vec/llm2vec/dataset/utils.py", "base_blob": "34c6299c7cca3352d688e39fea6278b05436227e"},
+    {"derivative_path": "llm2vec/llm22vec/experiment_utils.py", "canonical_path": "llm2vec/llm2vec/experiment_utils.py", "base_blob": "a819537d71a3417b9f221d65caa8b31751eac9bf"},
+    {"derivative_path": "llm2vec/llm22vec/loss/HardNegativeNLLLoss.py", "canonical_path": "llm2vec/llm2vec/loss/HardNegativeNLLLoss.py", "base_blob": "43d756931e00b1703b2ce14364b6cec37e31a654"},
+    {"derivative_path": "llm2vec/llm22vec/loss/__init__.py", "canonical_path": "llm2vec/llm2vec/loss/__init__.py", "base_blob": "60830ac5c6544963ec89aa255e4b573aebe5e38e"},
+    {"derivative_path": "llm2vec/llm22vec/loss/loss_utils.py", "canonical_path": "llm2vec/llm2vec/loss/loss_utils.py", "base_blob": "540e8e8850c90f9d2c428a8b52f2286588ce7e38"},
+    {"derivative_path": "llm2vec/llm22vec/loss/utils.py", "canonical_path": "llm2vec/llm2vec/loss/utils.py", "base_blob": "04072532c8dacfbe63358d1350957f71ef1b456b"},
+    {"derivative_path": "llm2vec/llm22vec/models/__init__.py", "canonical_path": "llm2vec/llm2vec/models/__init__.py", "base_blob": "59e9784a770c06b255dd8e52e4538c7a93b38b49"},
+    {"derivative_path": "llm2vec/llm22vec/models/attn_mask_utils.py", "canonical_path": "llm2vec/llm2vec/models/attn_mask_utils.py", "base_blob": "3c74570b0f6fceb1a12c6fb1750fc4e61c01d0fb"},
+    {"derivative_path": "llm2vec/llm22vec/models/bidirectional_gemma.py", "canonical_path": "llm2vec/llm2vec/models/bidirectional_gemma.py", "base_blob": "99bc1a0c7a5323bce8e9298d0d9662a47742109c"},
+    {"derivative_path": "llm2vec/llm22vec/models/bidirectional_llama.py", "canonical_path": "llm2vec/llm2vec/models/bidirectional_llama.py", "base_blob": "a11e6ebee667dd98d5e57fc69e61706545da5d99"},
+    {"derivative_path": "llm2vec/llm22vec/models/bidirectional_mistral.py", "canonical_path": "llm2vec/llm2vec/models/bidirectional_mistral.py", "base_blob": "d3f2b9e83459327de3f233f48fe786a9eb5aa60c"},
+    {"derivative_path": "llm2vec/llm22vec/models/bidirectional_qwen2.py", "canonical_path": "llm2vec/llm2vec/models/bidirectional_qwen2.py", "base_blob": "f5d5546dee38fec26c88af1050afe8be444f0d26"},
+    {"derivative_path": "llm2vec/llm22vec/models/utils.py", "canonical_path": "llm2vec/llm2vec/models/utils.py", "base_blob": "edd62c93f76aaa3e974a624289a848e579846ac6"},
+    {"derivative_path": "llm2vec/llm22vec/version.py", "canonical_path": "llm2vec/llm2vec/version.py", "base_blob": "d31c31eaeb0ef12d7e45a4f738d5029b6d95d135"}
+  ],
+  "retained_derivative_modules": [
+    "llm2vec/llm22vec/__init__.py",
+    "llm2vec/llm22vec/llm22vec.py",
+    "llm2vec/llm22vec/openunlearn_wrapper.py"
+  ],
+  "validation": {
+    "base_blob_identity_proven": true,
+    "package_fallback_import_proven_with_dependency_stubs": true,
+    "causal_contract_tests_retained": true,
+    "real_dependency_import": "not_run",
+    "real_model_initialization": "not_run",
+    "real_model_numerical_equivalence": "not_run",
+    "causal_adapter_removed": false
+  }
+}

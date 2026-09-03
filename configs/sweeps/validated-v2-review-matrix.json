@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "compact_reproduction_sweep",
+  "sweep_id": "validated-v2-review-matrix",
+  "status": "review_only_not_runnable",
+  "base_candidate": "configs/reproduction/validated-v2-conrep-diagnosis-mistral.json",
+  "axes": {
+    "model": [
+      "llama2-7b-chat",
+      "mistral-7b-instruct-v0.2"
+    ],
+    "method": [
+      "conrep",
+      "graddiff",
+      "npo",
+      "rmu"
+    ],
+    "knowledge_target": [
+      "deaths",
+      "diagnosis",
+      "pmc"
+    ]
+  },
+  "expected_combinations": 24,
+  "expanded_products_tracked": false,
+  "historical_equivalence_claimed": false
+}
