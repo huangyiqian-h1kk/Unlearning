@@ -1,13 +1,0 @@
-/apps/t4/rhel9/free/miniconda/24.1.2/lib/python3.12/site-packages/conda/base/context.py:201: FutureWarning: Adding 'defaults' to channel list implicitly is deprecated and will be removed in 25.3. 
-
-To remove this warning, please choose a default channel explicitly with conda's regular configuration system, e.g. by adding 'defaults' to the list of channels:
-
-  conda config --add channels defaults
-
-For more information see https://docs.conda.io/projects/conda/en/stable/user-guide/configuration/use-condarc.html
-
-  deprecated.topic(
-You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
-Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:01<00:03,  1.57s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:03<00:01,  1.63s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:04<00:00,  1.26s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:04<00:00,  1.36s/it]
-  0%|          | 0/9 [00:00<?, ?it/s]Could not estimate the number of tokens of the input, floating-point operations will not be computed
- 11%|█         | 1/9 [00:21<02:52, 21.59s/it] 22%|██▏       | 2/9 [00:28<01:30, 12.87s/it] 33%|███▎      | 3/9 [00:33<00:57,  9.55s/it] 44%|████▍     | 4/9 [00:58<01:18, 15.61s/it] 56%|█████▌    | 5/9 [01:04<00:48, 12.05s/it]                                              56%|█████▌    | 5/9 [01:04<00:48, 12.05s/it] 67%|██████▋   | 6/9 [01:10<00:29,  9.90s/it] 78%|███████▊  | 7/9 [01:32<00:27, 13.96s/it] 89%|████████▉ | 8/9 [01:38<00:11, 11.30s/it]100%|██████████| 9/9 [01:43<00:00,  9.55s/it]                                             100%|██████████| 9/9 [02:20<00:00,  9.55s/it]100%|██████████| 9/9 [02:20<00:00, 15.60s/it]
