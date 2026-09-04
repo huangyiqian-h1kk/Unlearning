@@ -19,19 +19,19 @@
       "paper_label": "GradDiff",
       "owner": "open_unlearning_derived",
       "backend": "open_unlearning",
-      "entrypoint": "llm2vec/open_unlearning/src/train.py"
+      "entrypoint": "third_party/open-unlearning/src/train.py"
     },
     "npo": {
       "paper_label": "NPO",
       "owner": "open_unlearning_derived",
       "backend": "open_unlearning",
-      "entrypoint": "llm2vec/open_unlearning/src/train.py"
+      "entrypoint": "third_party/open-unlearning/src/train.py"
     },
     "rmu": {
       "paper_label": "RMU",
       "owner": "open_unlearning_derived",
       "backend": "open_unlearning",
-      "entrypoint": "llm2vec/open_unlearning/src/train.py"
+      "entrypoint": "third_party/open-unlearning/src/train.py"
     }
   }
 }

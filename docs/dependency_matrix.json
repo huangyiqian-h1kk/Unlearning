@@ -10,7 +10,7 @@
       "upstream_repository": "McGill-NLP/llm2vec",
       "inferred_upstream_commit": "312adcfb578b4023bfc9d3bcc83b6b87448ab059",
       "inferred_upstream_tree": "0bf0b8f4960e4c65f6995b16756ac147a30fa000",
-      "packaging_path": "llm2vec/setup.py",
+      "packaging_path": "third_party/llm2vec/setup.py",
       "packaging_blob": "be5bc44bd9c39238a6ed3783ac859dfe109c8595",
       "python_requires": ">=3.8",
       "requirements": [
@@ -28,7 +28,7 @@
           "mteb>=1.14.12"
         ]
       },
-      "license_path": "llm2vec/LICENSE",
+      "license_path": "third_party/llm2vec/LICENSE",
       "license_blob": "3963f35c44922d45047f1cd3c69f92cd9a75472f",
       "license_sha256": "e69268828e67ffd1d3393a2d3530f97df6deaa0b961039fc971abea28cec8715"
     },
@@ -36,9 +36,9 @@
       "upstream_repository": "locuslab/open-unlearning",
       "inferred_upstream_commit": "d33c4762941731cb397494f605f71528d8ce9dce",
       "inferred_upstream_tree": "22cf1a2efd0dd194dfbdd0be3d4d3723a4936888",
-      "packaging_path": "llm2vec/open_unlearning/setup.py",
+      "packaging_path": "third_party/open-unlearning/setup.py",
       "packaging_blob": "6a5c99c7e23dd73efdb5ba500a8b5c4daa0b7cf7",
-      "requirements_path": "llm2vec/open_unlearning/requirements.txt",
+      "requirements_path": "third_party/open-unlearning/requirements.txt",
       "requirements_blob": "2f39c76e295613b2fed157c9f7baea8cd9522d76",
       "python_requires": ">=3.11",
       "requirements": [
@@ -66,7 +66,7 @@
           "ruff==0.6.9"
         ]
       },
-      "license_path": "llm2vec/open_unlearning/LICENSE",
+      "license_path": "third_party/open-unlearning/LICENSE",
       "license_blob": "c197ebd940f422f0762219f87a69aa2acf9d9a97",
       "license_sha256": "2f6df7a76faaefa1a6b50bdcf4191c1c2fcb72454964266f0210c2f452291dea"
     }
@@ -86,5 +86,6 @@
     "real_dependency_import_performed": false,
     "real_model_execution_performed": false,
     "artifact_table_tools_require_model_dependencies": false
-  }
+  },
+  "path_layout": "paper_facing_v2"
 }

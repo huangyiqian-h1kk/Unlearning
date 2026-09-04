@@ -6,6 +6,11 @@
     "tree": "97fd3c030cb36374c1d5bf8059bad213a263ac1e"
   },
   "strategy": "extend_llm22vec_package_path_with_canonical_llm2vec_support_modules",
+  "current_layout": {
+    "canonical_support_prefix": "third_party/llm2vec/llm2vec/",
+    "project_adapter_prefix": "src/conrep/backends/llm22vec/",
+    "row_path_semantics": "shared_modules retain their Phase 3D-3 historical paths; current canonical paths replace llm2vec/llm2vec/ with third_party/llm2vec/llm2vec/"
+  },
   "removed_duplicate_count": 18,
   "removed_sorted_path_list_sha256": "671420711d1d849a3661bcde860dac6cb0b3ef633f342b1742060f112da29eda",
   "shared_modules": [
@@ -29,9 +34,9 @@
     {"derivative_path": "llm2vec/llm22vec/version.py", "canonical_path": "llm2vec/llm2vec/version.py", "base_blob": "d31c31eaeb0ef12d7e45a4f738d5029b6d95d135"}
   ],
   "retained_derivative_modules": [
-    "llm2vec/llm22vec/__init__.py",
-    "llm2vec/llm22vec/llm22vec.py",
-    "llm2vec/llm22vec/openunlearn_wrapper.py"
+    "src/conrep/backends/llm22vec/__init__.py",
+    "src/conrep/backends/llm22vec/llm22vec.py",
+    "src/conrep/backends/llm22vec/openunlearn_wrapper.py"
   ],
   "validation": {
     "base_blob_identity_proven": true,

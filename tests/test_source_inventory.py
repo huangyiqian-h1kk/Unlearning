@@ -3,16 +3,18 @@ import importlib.util
 import json
 import pathlib
 import subprocess
+import sys
 import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-INVENTORY_PATH = ROOT / "docs" / "repository_source_inventory.json"
-VALIDATOR_PATH = ROOT / "scripts" / "repository" / "validate_source_inventory.py"
-
-SPEC = importlib.util.spec_from_file_location("validate_source_inventory", VALIDATOR_PATH)
-VALIDATOR = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(VALIDATOR)
+BASE_COMMIT = "623e305655a10a87685e49d83404fe7cd5f2ed81"
+SPEC = importlib.util.spec_from_file_location(
+    "source_inventory_validator",
+    ROOT / "scripts/repository/validate_source_inventory.py",
+)
+validator = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(validator)
 
 
 def git(*args):
@@ -26,207 +28,117 @@ def git(*args):
 
 
 def index_entries():
-    entries = {}
-    for record in git("ls-files", "-s", "-z").split(b"\0"):
-        if not record:
+    result = {}
+    for row in git("ls-files", "-s", "-z").split(b"\0"):
+        if not row:
             continue
-        metadata, raw_path = record.split(b"\t", 1)
-        mode, blob_sha, stage = metadata.split()
-        entries[raw_path.decode("utf-8")] = {
-            "mode": mode.decode("ascii"),
-            "blob_sha": blob_sha.decode("ascii"),
-            "stage": stage.decode("ascii"),
-        }
-    return entries
+        metadata, path = row.split(b"\t", 1)
+        mode, blob, stage = metadata.split()
+        result[path.decode()] = (mode.decode(), blob.decode(), stage.decode())
+    return result
 
 
-class Phase3D0SourceInventoryTests(unittest.TestCase):
-    COMPLETION_COMMIT = "cb1d9c926dd1985b3a1ac58041cd605f4b63e60a"
-    COMPLETION_TREE = "6f413f9e2863e0412ced99c83b6cf381c04d6aa2"
-
+class PaperFacingSourceInventoryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
-        cls.baseline = cls.inventory["baseline"]
-        cls.allowed = set(cls.inventory["phase_scope"]["allowed_additive_paths"])
-        cls.allowed_modified = set(cls.inventory["phase_scope"]["allowed_modified_paths"])
-        cls.base_entries = VALIDATOR.tree_entries(cls.baseline["commit"])
-        cls.completed_entries = VALIDATOR.tree_entries(cls.COMPLETION_COMMIT)
+        cls.current = index_entries()
+        cls.base = validator.tree_entries(BASE_COMMIT)
+        cls.catalog = json.loads((ROOT / "data/clinicia/catalog.json").read_text())
+        cls.selected = json.loads((ROOT / "results/repository_selected_legacy_sources.json").read_text())
+        cls.runs = json.loads((ROOT / "experiments/paper_runs/index.json").read_text())
 
-    def test_offline_inventory_validator(self):
+    def test_validator_function_accepts_complete_layout(self):
         self.assertEqual(
-            VALIDATOR.validate_inventory(INVENTORY_PATH),
-            {
-                "baseline_paths": 632,
-                "llm2vec_identical": 99,
-                "llm2vec_modified": 5,
-                "open_unlearning_identical": 199,
-                "open_unlearning_modified": 5,
-                "portability_files": 107,
-                "credential_matches": 0,
-            },
+            (718, 28, 16, 5),
+            validator.validate(
+                ROOT / "data/clinicia/catalog.json",
+                ROOT / "results/repository_selected_legacy_sources.json",
+            ),
         )
 
-    def test_phase3d0_has_six_additions_and_one_test_update(self):
-        expected = {
-            "docs/repository_source_inventory.json",
-            "docs/source_ownership_audit.md",
-            "docs/upstream_snapshots/llm2vec-312adcf.json",
-            "docs/upstream_snapshots/open-unlearning-d33c476.json",
-            "scripts/repository/validate_source_inventory.py",
-            "tests/test_source_inventory.py",
-        }
-        self.assertEqual(self.allowed, expected)
-        self.assertEqual(self.allowed_modified, {"tests/test_repository_cleanup.py"})
-        self.assertEqual(
-            git("rev-parse", self.COMPLETION_COMMIT + "^{tree}").decode().strip(),
-            self.COMPLETION_TREE,
+    def test_validator_cli_is_offline_and_deterministic(self):
+        result = subprocess.run(
+            [sys.executable, "scripts/repository/validate_source_inventory.py"],
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
         )
-        changed = {}
-        for line in git(
-            "diff", "--name-status", self.baseline["commit"], self.COMPLETION_COMMIT, "--"
-        ).decode().splitlines():
-            status, path = line.split("\t", 1)
-            changed[path] = status
-        expected_changes = {path: "A" for path in expected}
-        expected_changes["tests/test_repository_cleanup.py"] = "M"
-        self.assertEqual(changed, expected_changes)
+        self.assertEqual(
+            "validated paper-facing layout: 718 tracked paths, 28 ClinicIA datasets, "
+            "16 selected historical files across 5 ConRep runs\n",
+            result.stdout,
+        )
+        self.assertEqual("", result.stderr)
 
-    def test_baseline_paths_keep_exact_completion_identities(self):
-        self.assertEqual(set(self.completed_entries), set(self.base_entries) | self.allowed)
-        self.assertEqual(len(self.completed_entries), 638)
-        for path, expected in self.base_entries.items():
-            if path in self.allowed_modified:
-                self.assertEqual(self.completed_entries[path]["mode"], expected["mode"], path)
-                self.assertNotEqual(self.completed_entries[path]["blob_sha"], expected["blob_sha"], path)
-                continue
+    def test_current_roots_make_ownership_obvious(self):
+        required = validator.REQUIRED_PREFIXES
+        for prefix in required:
+            self.assertTrue(any(path.startswith(prefix) for path in self.current), prefix)
+        self.assertFalse(any(path.startswith("llm2vec/") for path in self.current))
+
+    def test_clinicia_catalog_is_an_exact_move_map(self):
+        rows = self.catalog["datasets"]
+        self.assertEqual(28, len(rows))
+        for row in rows:
+            self.assertEqual(row["git_blob_oid"], self.base[row["historical_path"]])
+            self.assertEqual(row["git_blob_oid"], self.current[row["path"]][1])
+
+    def test_clinicia_catalog_covers_both_paper_regimes(self):
+        rows = self.catalog["datasets"]
+        self.assertEqual({"A", "B"}, {row["regime"] for row in rows})
+        self.assertEqual({"diagnosis", "deaths", "pmc", "shared"}, {row["target"] for row in rows})
+        self.assertEqual({"probe", "training"}, {row["role"] for row in rows})
+
+    def test_selected_inventory_has_exact_public_materializations(self):
+        rows = self.selected["sources"]
+        self.assertEqual(16, self.selected["materialized_file_count"])
+        self.assertEqual(5, self.selected["selected_experiment_count"])
+        for row in rows:
+            path = ROOT / row["materialized_path"]
+            self.assertTrue(path.is_file())
+            self.assertIn(row["materialized_path"], self.current)
+            self.assertEqual(row["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+
+    def test_selected_inventory_remains_git_history_anchored(self):
+        trees = {}
+        for row in self.selected["sources"]:
+            trees.setdefault(row["starting_git_commit"], validator.tree_entries(row["starting_git_commit"]))
             self.assertEqual(
-                (self.completed_entries[path]["mode"], self.completed_entries[path]["blob_sha"]),
-                (expected["mode"], expected["blob_sha"]),
-                path,
+                row["git_blob_object_id"],
+                trees[row["starting_git_commit"]][row["path"]],
             )
 
-    def test_upstream_comparison_contract(self):
-        comparisons = {item["component"]: item for item in self.inventory["upstream_comparisons"]}
-        llm2vec = comparisons["LLM2Vec"]
-        open_unlearning = comparisons["OpenUnlearning"]
-        self.assertEqual(
-            [
-                llm2vec[name]["path_count"]
-                for name in ("local", "upstream", "common", "identical", "modified", "local_only", "upstream_only")
-            ],
-            [251, 105, 104, 99, 5, 147, 1],
-        )
-        self.assertEqual(
-            [
-                open_unlearning[name]["path_count"]
-                for name in ("local", "upstream", "common", "identical", "modified", "local_only", "upstream_only")
-            ],
-            [289, 204, 204, 199, 5, 85, 0],
-        )
-        self.assertEqual(
-            [item["path"] for item in llm2vec["modified_paths"]],
-            [
-                "experiments/run_simcse.py",
-                "llm2vec/loss/HardNegativeNLLLoss.py",
-                "llm2vec/loss/__init__.py",
-                "llm2vec/loss/utils.py",
-                "train_configs/simcse/Mistral.json",
-            ],
-        )
-        self.assertEqual(
-            [item["path"] for item in open_unlearning["modified_paths"]],
-            [
-                "configs/eval/tofu.yaml",
-                "configs/experiment/finetune/tofu/default.yaml",
-                "configs/trainer/finetune.yaml",
-                "src/data/__init__.py",
-                "src/trainer/unlearn/npo.py",
-            ],
-        )
+    def test_paper_run_index_covers_all_25_table_rows(self):
+        experiments = self.runs["experiments"]
+        self.assertEqual(25, len(experiments))
+        self.assertEqual(set(range(1, 7)), {table for row in experiments for table in row["paper_tables"]})
+        for row in experiments:
+            self.assertTrue((ROOT / row["record_path"]).is_file())
 
-    def test_historical_conrep_entrypoint_is_blob_anchored(self):
-        entrypoints = {item["id"]: item for item in self.inventory["critical_entrypoints"]}
-        historical = entrypoints["conrep_historical_training"]
-        self.assertEqual(
-            historical["path"],
-            "llm2vec/ContrastiveUnlearning_Adaptive_RandomToken_LMloss_margin.py",
-        )
-        self.assertEqual(
-            self.base_entries[historical["path"]]["blob_sha"],
-            "adbbcab5e9316d6b1b9dea1521a4c54c0a63b1ef",
-        )
-        self.assertFalse(historical["lightweight_execution_allowed_in_repository_audit"])
+    def test_five_selected_capsules_are_human_navigable(self):
+        selected = self.runs["selected_conrep_runs"]
+        self.assertEqual(5, len(selected))
+        self.assertTrue(all(row["objective"] == "symmetric" for row in selected))
+        for row in selected:
+            self.assertTrue(row["historical_files"])
+            self.assertTrue(all((ROOT / path).is_file() for path in row["historical_files"].values()))
 
-    def test_llm22vec_removal_remains_blocked(self):
-        duplicate = self.inventory["duplicate_packages"]
-        self.assertEqual(duplicate["canonical"]["path_count"], 20)
-        self.assertEqual(duplicate["derivative"]["path_count"], 21)
-        self.assertEqual(duplicate["same_named_common"]["path_count"], 19)
-        self.assertEqual(duplicate["same_named_identical"]["path_count"], 18)
-        self.assertEqual(duplicate["same_named_modified_paths"], ["__init__.py"])
-        self.assertEqual(duplicate["canonical_only_paths"], ["llm2vec.py"])
-        self.assertEqual(duplicate["derivative_only_paths"], ["llm22vec.py", "openunlearn_wrapper.py"])
-        self.assertEqual(duplicate["equivalence_status"], "not_validated")
-        self.assertFalse(duplicate["removal_allowed"])
+    def test_historical_records_moved_without_content_change(self):
+        old_prefix = "configs/historical/paper/"
+        new_prefix = "configs/paper/historical/"
+        old = {path: blob for path, blob in self.base.items() if path.startswith(old_prefix)}
+        self.assertEqual(26, len(old))
+        for path, blob in old.items():
+            current = path.replace(old_prefix, new_prefix, 1)
+            self.assertEqual(blob, self.current[current][1], current)
 
-    def test_dependency_and_license_gates_are_not_overclaimed(self):
-        dependencies = self.inventory["dependency_surfaces"]
-        licenses = self.inventory["license_status"]
-        self.assertEqual(dependencies["root_environment_status"], "absent")
-        self.assertFalse(dependencies["validated_reproduction_environment_available"])
-        self.assertEqual(
-            dependencies["known_conflicts"],
-            [{"package": "transformers", "status": "unresolved_version_mismatch_between_nested_projects"}],
-        )
-        self.assertEqual(licenses["root_project_license"], "absent_and_requires_researcher_choice")
-        self.assertEqual(licenses["project_owned_code_license_status"], "unresolved")
-        self.assertEqual(
-            {item["component"]: item["license"] for item in licenses["third_party_licenses"]},
-            {"LLM2Vec": "MIT", "OpenUnlearning": "MIT"},
-        )
-
-    def test_portability_findings_and_credential_scan_are_frozen(self):
-        scan = self.inventory["portability_and_privacy_scan"]
-        self.assertTrue(scan["baseline_only"])
-        self.assertEqual(scan["legacy_absolute_path_matches"]["path_count"], 106)
-        self.assertEqual(scan["cluster_or_account_marker_matches"]["path_count"], 106)
-        self.assertEqual(scan["legacy_absolute_or_identity_matches"]["path_count"], 107)
-        self.assertEqual(scan["credential_pattern_matches"]["path_count"], 0)
-        self.assertEqual(
-            scan["credential_pattern_matches"]["sorted_path_list_sha256"],
-            hashlib.sha256(b"").hexdigest(),
-        )
-        self.assertTrue(scan["remediation_status"].startswith("not_started"))
-
-    def test_scientific_and_provenance_content_is_unchanged(self):
-        phase = self.inventory["phase_scope"]
-        self.assertFalse(phase["source_movement_performed"])
-        self.assertFalse(phase["scientific_or_provenance_content_changed"])
-        expected_archives = {
-            "clinicia_provenance_bundle.tar.gz": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
-            "clinicia_configs_mmlu_bundle.tar.gz": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
-        }
-        for path, expected in expected_archives.items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), expected, path)
-        protected = [
-            path
-            for path in self.base_entries
-            if path.startswith(("configs/historical/", "results/paper/"))
-            or path in expected_archives
-        ]
-        self.assertTrue(protected)
-        self.assertEqual(
-            git(
-                "diff",
-                "--name-only",
-                self.baseline["commit"],
-                self.COMPLETION_COMMIT,
-                "--",
-                *protected,
-            ),
-            b"",
-        )
+    def test_results_inventory_remains_a_historical_audit_record(self):
+        inventory = json.loads((ROOT / "docs/repository_source_inventory.json").read_text())
+        self.assertEqual("phase3d0_source_migration_baseline", inventory["record_kind"])
+        self.assertFalse(inventory["phase_scope"]["source_movement_performed"])
+        self.assertTrue((ROOT / "docs/source_ownership_audit.md").is_file())
 
 
 if __name__ == "__main__":

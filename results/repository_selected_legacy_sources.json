@@ -15,55 +15,8 @@
       "path": "llm2vec/grid_search_death/configs/forget_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.json",
       "sha256": "6343c8cbdfc44bc38c81199a573a7c3afc2b14c6ce88c0b84ddc9f47eaf75829",
       "source_role": "evaluation config",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
-    },
-    {
-      "evidence_strength": "direct",
-      "experiment_id": "a-deaths-mistral-conrep",
-      "git_blob_object_id": "d1ffb9a94b63f66aba66498045cf7e067ba4b068",
-      "misleading_label": null,
-      "normalized_semantic_identity": {
-        "dataset_id": "clinicia/celebrity",
-        "method": "ConRep",
-        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-        "target": "deaths"
-      },
-      "path": "llm2vec/grid_search_death/configs/forget_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
-      "sha256": "3de19d9ef6a1223a8eab5310640edb1b53477eb71523a803027a2e5da4bbbdcf",
-      "source_role": "evaluation config",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
-    },
-    {
-      "evidence_strength": "direct",
-      "experiment_id": "a-deaths-llama2-conrep",
-      "git_blob_object_id": "63ef71e9f28ada6346b48f43626c267fc45b0a20",
-      "misleading_label": "Llama3 filename resolves to Llama-2",
-      "normalized_semantic_identity": {
-        "dataset_id": "clinicia/celebrity",
-        "method": "ConRep",
-        "model_id": "meta-llama/Llama-2-7b-chat-hf",
-        "target": "deaths"
-      },
-      "path": "llm2vec/grid_search_death/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.json",
-      "sha256": "e2d3b569f811c20d4bbaaf13ab97d21c7ffc2b7d4324ca95f093de04c6a6eb19",
-      "source_role": "training config",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
-    },
-    {
-      "evidence_strength": "direct",
-      "experiment_id": "a-deaths-mistral-conrep",
-      "git_blob_object_id": "81e9cd9855414ff5c64db88a9f88180efeef9cf5",
-      "misleading_label": null,
-      "normalized_semantic_identity": {
-        "dataset_id": "clinicia/celebrity",
-        "method": "ConRep",
-        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-        "target": "deaths"
-      },
-      "path": "llm2vec/grid_search_death/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
-      "sha256": "94b252e76bc7c2200cfb0b8db16ab118d1814dd023fb22e1028aad2567b7a843",
-      "source_role": "training config",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-deaths-llama2-conrep/historical/evaluate_forget.json"
     },
     {
       "evidence_strength": "corroborating",
@@ -79,7 +32,42 @@
       "path": "llm2vec/grid_search_death/jobs/job_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.sh",
       "sha256": "1a1b4018715f2a9ac9c6806d0959b171c869d0801dbe3f5adfbdf4ecb3033cee",
       "source_role": "job command",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-deaths-llama2-conrep/historical/job.sh"
+    },
+    {
+      "evidence_strength": "direct",
+      "experiment_id": "a-deaths-llama2-conrep",
+      "git_blob_object_id": "63ef71e9f28ada6346b48f43626c267fc45b0a20",
+      "misleading_label": "Llama3 filename resolves to Llama-2",
+      "normalized_semantic_identity": {
+        "dataset_id": "clinicia/celebrity",
+        "method": "ConRep",
+        "model_id": "meta-llama/Llama-2-7b-chat-hf",
+        "target": "deaths"
+      },
+      "path": "llm2vec/grid_search_death/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epochs3.json",
+      "sha256": "e2d3b569f811c20d4bbaaf13ab97d21c7ffc2b7d4324ca95f093de04c6a6eb19",
+      "source_role": "training config",
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-deaths-llama2-conrep/historical/train.json"
+    },
+    {
+      "evidence_strength": "direct",
+      "experiment_id": "a-deaths-mistral-conrep",
+      "git_blob_object_id": "d1ffb9a94b63f66aba66498045cf7e067ba4b068",
+      "misleading_label": null,
+      "normalized_semantic_identity": {
+        "dataset_id": "clinicia/celebrity",
+        "method": "ConRep",
+        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+        "target": "deaths"
+      },
+      "path": "llm2vec/grid_search_death/configs/forget_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
+      "sha256": "3de19d9ef6a1223a8eab5310640edb1b53477eb71523a803027a2e5da4bbbdcf",
+      "source_role": "evaluation config",
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-deaths-mistral-conrep/historical/evaluate_forget.json"
     },
     {
       "evidence_strength": "corroborating",
@@ -95,7 +83,25 @@
       "path": "llm2vec/grid_search_death/jobs/job_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.sh",
       "sha256": "7074386a7a163b4416cff5c18cf9dfbd74fa4cd6727e269ff0f2c13bff327c79",
       "source_role": "job command",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-deaths-mistral-conrep/historical/job.sh"
+    },
+    {
+      "evidence_strength": "direct",
+      "experiment_id": "a-deaths-mistral-conrep",
+      "git_blob_object_id": "81e9cd9855414ff5c64db88a9f88180efeef9cf5",
+      "misleading_label": null,
+      "normalized_semantic_identity": {
+        "dataset_id": "clinicia/celebrity",
+        "method": "ConRep",
+        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+        "target": "deaths"
+      },
+      "path": "llm2vec/grid_search_death/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
+      "sha256": "94b252e76bc7c2200cfb0b8db16ab118d1814dd023fb22e1028aad2567b7a843",
+      "source_role": "training config",
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-deaths-mistral-conrep/historical/train.json"
     },
     {
       "evidence_strength": "direct",
@@ -111,55 +117,8 @@
       "path": "llm2vec/grid_search_diagnosis/configs/forget_Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4.json",
       "sha256": "4174cb76b8b0937beb295087d9af6a882df04767cecf23bff3509d3b144fd8d1",
       "source_role": "evaluation config",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
-    },
-    {
-      "evidence_strength": "direct",
-      "experiment_id": "a-diagnosis-mistral-conrep",
-      "git_blob_object_id": "f39cb4ac37b1b73ab2dfcf88039880dcec82fe9a",
-      "misleading_label": null,
-      "normalized_semantic_identity": {
-        "dataset_id": "clinicia/celebrity",
-        "method": "ConRep",
-        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-        "target": "diagnosis"
-      },
-      "path": "llm2vec/grid_search_diagnosis/configs/forget_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
-      "sha256": "530014e85c2628f9221a233d4209f97d35b38dc962e6194607e192681fe82bd7",
-      "source_role": "evaluation config",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
-    },
-    {
-      "evidence_strength": "direct",
-      "experiment_id": "a-diagnosis-llama2-conrep",
-      "git_blob_object_id": "b38a984382a458c595666f185ed1195a3e5777c5",
-      "misleading_label": "Llama3 filename resolves to Llama-2",
-      "normalized_semantic_identity": {
-        "dataset_id": "clinicia/celebrity",
-        "method": "ConRep",
-        "model_id": "meta-llama/Llama-2-7b-chat-hf",
-        "target": "diagnosis"
-      },
-      "path": "llm2vec/grid_search_diagnosis/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4.json",
-      "sha256": "65bfbdea62caa9a2e02debd1c4630b6fc26a5f1e9f6b2dad376a5bfefdfbb421",
-      "source_role": "training config",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
-    },
-    {
-      "evidence_strength": "direct",
-      "experiment_id": "a-diagnosis-mistral-conrep",
-      "git_blob_object_id": "08734e8a05356e473144a92a5996fa80d42feb09",
-      "misleading_label": null,
-      "normalized_semantic_identity": {
-        "dataset_id": "clinicia/celebrity",
-        "method": "ConRep",
-        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-        "target": "diagnosis"
-      },
-      "path": "llm2vec/grid_search_diagnosis/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
-      "sha256": "ef4841f688c16c744d0341bace8e0117afd9e64993ccdb938930e437fb1861d8",
-      "source_role": "training config",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-diagnosis-llama2-conrep/historical/evaluate_forget.json"
     },
     {
       "evidence_strength": "corroborating",
@@ -175,7 +134,42 @@
       "path": "llm2vec/grid_search_diagnosis/jobs/job_Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4.sh",
       "sha256": "3b26505a0d4764d59b4ee64bef73e31aafd3768d9bb01a01e47abaab6f5a57fd",
       "source_role": "job command",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-diagnosis-llama2-conrep/historical/job.sh"
+    },
+    {
+      "evidence_strength": "direct",
+      "experiment_id": "a-diagnosis-llama2-conrep",
+      "git_blob_object_id": "b38a984382a458c595666f185ed1195a3e5777c5",
+      "misleading_label": "Llama3 filename resolves to Llama-2",
+      "normalized_semantic_identity": {
+        "dataset_id": "clinicia/celebrity",
+        "method": "ConRep",
+        "model_id": "meta-llama/Llama-2-7b-chat-hf",
+        "target": "diagnosis"
+      },
+      "path": "llm2vec/grid_search_diagnosis/configs/train_Llama3_lm0_fw0.45_lr2e-05_gm1_epchs4.json",
+      "sha256": "65bfbdea62caa9a2e02debd1c4630b6fc26a5f1e9f6b2dad376a5bfefdfbb421",
+      "source_role": "training config",
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-diagnosis-llama2-conrep/historical/train.json"
+    },
+    {
+      "evidence_strength": "direct",
+      "experiment_id": "a-diagnosis-mistral-conrep",
+      "git_blob_object_id": "f39cb4ac37b1b73ab2dfcf88039880dcec82fe9a",
+      "misleading_label": null,
+      "normalized_semantic_identity": {
+        "dataset_id": "clinicia/celebrity",
+        "method": "ConRep",
+        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+        "target": "diagnosis"
+      },
+      "path": "llm2vec/grid_search_diagnosis/configs/forget_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
+      "sha256": "530014e85c2628f9221a233d4209f97d35b38dc962e6194607e192681fe82bd7",
+      "source_role": "evaluation config",
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-diagnosis-mistral-conrep/historical/evaluate_forget.json"
     },
     {
       "evidence_strength": "corroborating",
@@ -191,8 +185,96 @@
       "path": "llm2vec/grid_search_diagnosis/jobs/job_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.sh",
       "sha256": "11538ecf2621606cee80d52683059c1891ee8b0b5cb06c42854be9123393061f",
       "source_role": "job command",
-      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-diagnosis-mistral-conrep/historical/job.sh"
+    },
+    {
+      "evidence_strength": "direct",
+      "experiment_id": "a-diagnosis-mistral-conrep",
+      "git_blob_object_id": "08734e8a05356e473144a92a5996fa80d42feb09",
+      "misleading_label": null,
+      "normalized_semantic_identity": {
+        "dataset_id": "clinicia/celebrity",
+        "method": "ConRep",
+        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+        "target": "diagnosis"
+      },
+      "path": "llm2vec/grid_search_diagnosis/configs/train_Mistral_lm0_fw0.45_lr7e-06_gm1_epochs4.json",
+      "sha256": "ef4841f688c16c744d0341bace8e0117afd9e64993ccdb938930e437fb1861d8",
+      "source_role": "training config",
+      "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+      "materialized_path": "experiments/paper_runs/a-diagnosis-mistral-conrep/historical/train.json"
+    },
+    {
+      "experiment_id": "b-pmc-mistral-conrep",
+      "misleading_label": null,
+      "normalized_semantic_identity": {
+        "dataset_id": "clinicia/pmc",
+        "method": "ConRep",
+        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+        "target": "pmc"
+      },
+      "starting_git_commit": "b09177e64096e7165004f5666db140f7b94285a9",
+      "evidence_strength": "direct",
+      "git_blob_object_id": "4724e8343688bfba030c246f1742d3a173245b30",
+      "path": "llm2vec/grid_search/configs/forget_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.json",
+      "sha256": "e8f2ea779c2f4501edb02da7cd8a4c7706211ae5222dce21310bda005b63a48e",
+      "source_role": "evaluation forget config",
+      "materialized_path": "experiments/paper_runs/b-pmc-mistral-conrep/historical/evaluate_forget.json"
+    },
+    {
+      "experiment_id": "b-pmc-mistral-conrep",
+      "misleading_label": null,
+      "normalized_semantic_identity": {
+        "dataset_id": "clinicia/pmc",
+        "method": "ConRep",
+        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+        "target": "pmc"
+      },
+      "starting_git_commit": "b09177e64096e7165004f5666db140f7b94285a9",
+      "evidence_strength": "direct",
+      "git_blob_object_id": "9aab2b087f5f23390abb0d655dd89962a602b86a",
+      "path": "llm2vec/grid_search/configs/retain_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.json",
+      "sha256": "8b057362804862bb32349c804e332b17e177863e5d07098aec4c5ea3aa3a16b1",
+      "source_role": "evaluation retain config",
+      "materialized_path": "experiments/paper_runs/b-pmc-mistral-conrep/historical/evaluate_retain.json"
+    },
+    {
+      "experiment_id": "b-pmc-mistral-conrep",
+      "misleading_label": null,
+      "normalized_semantic_identity": {
+        "dataset_id": "clinicia/pmc",
+        "method": "ConRep",
+        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+        "target": "pmc"
+      },
+      "starting_git_commit": "b09177e64096e7165004f5666db140f7b94285a9",
+      "evidence_strength": "corroborating",
+      "git_blob_object_id": "2f33b7740cf8d9c8a626c001b49650441e37046c",
+      "path": "llm2vec/grid_search/jobs/job_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.sh",
+      "sha256": "73918d5df3c0943d833aa13f7860706e7742b4b834fe38c36df5e4f6bcd781e2",
+      "source_role": "job command",
+      "materialized_path": "experiments/paper_runs/b-pmc-mistral-conrep/historical/job.sh"
+    },
+    {
+      "experiment_id": "b-pmc-mistral-conrep",
+      "misleading_label": null,
+      "normalized_semantic_identity": {
+        "dataset_id": "clinicia/pmc",
+        "method": "ConRep",
+        "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+        "target": "pmc"
+      },
+      "starting_git_commit": "b09177e64096e7165004f5666db140f7b94285a9",
+      "evidence_strength": "direct",
+      "git_blob_object_id": "cfff16ceab0108f9a45c3ebba20082b0a5a4e464",
+      "path": "llm2vec/grid_search/configs/train_MistralUniversal_lm0_fw0.2_lr1e-05_gm0.5_epochs5.json",
+      "sha256": "7a37af11a5691725b26cd510fcd2b9d50131002348eccec4132d809ff6a7753a",
+      "source_role": "training config",
+      "materialized_path": "experiments/paper_runs/b-pmc-mistral-conrep/historical/train.json"
     }
   ],
-  "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138"
+  "starting_git_commit": "c6ceea0b99f06652f06794c539f43802fbc58138",
+  "selected_experiment_count": 5,
+  "materialized_file_count": 16
 }

@@ -33,14 +33,14 @@ class EvidenceIntegrationTests(unittest.TestCase):
                     "mcqs_diagnosis_id.jsonl": 52}
         for item in self.inventory:
             if item["path"].startswith("llm2vec/unlearn_eval"):
-                count, method = extract.count_jsonl_or_pointer(ROOT / item["path"], item)
+                count, method = extract.count_jsonl_or_pointer(extract.dataset_path(item["path"]), item)
                 self.assertEqual(count, expected[pathlib.Path(item["path"]).name])
                 self.assertEqual(method, "locally_materialized_jsonl")
 
     def test_pmc_pointer_counts_and_oids(self):
         for item in self.inventory:
             if item["split"] in {"retain", "forget"}:
-                count, method = extract.count_jsonl_or_pointer(ROOT / item["path"], item)
+                count, method = extract.count_jsonl_or_pointer(extract.dataset_path(item["path"]), item)
                 self.assertEqual(count, item["record_count"])
                 self.assertEqual(item["lfs_content_oid"], item["expected_content_sha256"])
                 self.assertEqual(method, "researcher_verified_external_lfs_object")
@@ -48,7 +48,7 @@ class EvidenceIntegrationTests(unittest.TestCase):
     def test_lfs_pointer_without_verified_inventory_is_rejected(self):
         item = next(x for x in self.inventory if x["split"] == "retain")
         bad = copy.deepcopy(item); bad["verification_method"] = "unverified"
-        with self.assertRaises(ValueError): extract.count_jsonl_or_pointer(ROOT / item["path"], bad)
+        with self.assertRaises(ValueError): extract.count_jsonl_or_pointer(extract.dataset_path(item["path"]), bad)
 
     def test_success_integrality(self):
         self.assertEqual(extract.derive_success(90 / 228, 228)["success_count"], 90)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Phase 3D-3 LFS, dependency, upstream, and license records offline."""
+"""Validate path-migrated LFS, dependency, upstream, and license records offline."""
 
 from __future__ import annotations
 
@@ -117,22 +117,33 @@ def validate_lfs(manifest: dict, entries: dict[str, str]) -> int:
     base = manifest.get("phase_base", {})
     actual_tree = git("rev-parse", base.get("commit", "") + "^{tree}").decode().strip()
     require(actual_tree == base.get("tree"), "LFS manifest base tree mismatch")
-    scopes = manifest.get("tracked_pointer_scopes")
-    require(
-        scopes == ["llm2vec/UnlearnData/", "llm2vec/cache/"],
-        "tracked LFS pointer scopes mismatch",
-    )
-    base_pointers = pointer_entries(tree_entries(base["commit"]), tuple(scopes))
-    current_pointers = pointer_entries(entries, tuple(scopes))
-    require(current_pointers == base_pointers, "current LFS pointer paths or Git blobs differ from phase base")
-    require(len(current_pointers) == manifest.get("pointer_count"), "LFS pointer count mismatch")
+    migrations = manifest.get("path_migrations")
+    require(isinstance(migrations, list), "LFS path_migrations must be a list")
+    require(len(migrations) == manifest.get("pointer_count"), "LFS pointer count mismatch")
+    historical_paths = [row.get("historical_path") for row in migrations]
+    current_paths = [row.get("path") for row in migrations]
+    require(len(set(historical_paths)) == len(migrations), "duplicate historical LFS path")
+    require(len(set(current_paths)) == len(migrations), "duplicate current LFS path")
+
+    base_entries = tree_entries(base["commit"])
+    for row in migrations:
+        historical = row["historical_path"]
+        current = row["path"]
+        blob = row["pointer_blob_oid"]
+        require(base_entries.get(historical) == blob, f"base LFS blob mismatch: {historical}")
+        require(entries.get(current) == blob, f"current LFS blob mismatch: {current}")
+        oid, size = parse_pointer(blob_bytes(blob), current)
+        require(oid == row["lfs_content_oid"], f"LFS content OID mismatch: {current}")
+        require(size == row["lfs_content_bytes"], f"LFS content size mismatch: {current}")
+
+    current_pointers = pointer_entries(entries, ("data/",))
+    require(set(current_pointers) == set(current_paths), "unrecorded or missing current data pointer")
     require(
         manifest.get("identity_policy")
-        == "validate_current_paths_and_pointer_blobs_against_the_phase_base_tree",
+        == "prove_each_current_pointer_is_byte_identical_to_its_base-tree_historical_path",
         "LFS identity policy mismatch",
     )
-    require(manifest.get("duplicate_per_object_metadata_published") is False, "duplicate LFS metadata must not be published")
-    require(manifest.get("object_availability_status") == "not_verified_by_phase3d3", "LFS availability is overclaimed")
+    require(manifest.get("object_availability_status") == "not_verified_by_phase3dr", "LFS availability is overclaimed")
     require(manifest.get("default_redistribution_status") == "unresolved_do_not_redistribute", "LFS rights are overclaimed")
     paper_inventory = manifest.get("paper_mcq_inventory")
     require(paper_inventory == "results/paper/mcq_dataset_inventory.json", "paper MCQ inventory reference mismatch")
@@ -210,7 +221,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"release inventory validation failed: {exc}", file=sys.stderr)
         return 1
     print(
-        f"validated {pointer_count} base-tree-anchored LFS pointers, "
+        f"validated {pointer_count} path-migrated, base-tree-anchored LFS pointers, "
         f"{component_count} dependency components, 2 upstream pins, and 2 license identities"
     )
     return 0

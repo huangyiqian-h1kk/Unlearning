@@ -1,10 +1,17 @@
-# Future reproduction candidates
+# Future portable runs
 
-Files in this directory are portable candidate descriptions. Phase 3D-3
-validates their schema, component references, repository-relative entry points,
-environment-variable paths, and result namespace boundaries.
+These records describe the `validated_v2` contract for new measurements. They
+are deliberately separate from the byte-identical selected paper capsules in
+[`experiments/paper_runs/`](../../experiments/paper_runs/).
 
-The candidates are not executable claims. A record may become `runnable: true`
-only after every recorded gate is independently validated. Historical paper
-evidence remains under `configs/historical/` and is never rewritten to make a
-future candidate appear complete.
+The current candidate is not declared runnable: dependency, dataset-rights,
+checkpoint-lineage, model smoke-test, and numerical-protocol gates remain
+false. When those gates close, write outputs under `results/validated_v2/`,
+never over `results/paper/`.
+
+Validate structure offline with:
+
+```bash
+python scripts/configs/validate_reproduction_configs.py \
+  --index configs/reproduction/index.json
+```

@@ -1,18 +1,190 @@
 {
-  "schema_version": "1.0",
-  "record_kind": "phase3d3_tracked_lfs_release_summary",
+  "schema_version": "2.0",
+  "record_kind": "phase3dr_path_migrated_lfs_release_summary",
   "phase_base": {
-    "commit": "39b4824640236c33a74ec5d297d834976e2bd388",
-    "tree": "97fd3c030cb36374c1d5bf8059bad213a263ac1e"
+    "commit": "623e305655a10a87685e49d83404fe7cd5f2ed81",
+    "tree": "ddd353d31d5df680918ad6a255826dd3a8aa9553"
   },
-  "tracked_pointer_scopes": [
-    "llm2vec/UnlearnData/",
-    "llm2vec/cache/"
-  ],
   "pointer_count": 25,
-  "identity_policy": "validate_current_paths_and_pointer_blobs_against_the_phase_base_tree",
-  "duplicate_per_object_metadata_published": false,
-  "object_availability_status": "not_verified_by_phase3d3",
+  "identity_policy": "prove_each_current_pointer_is_byte_identical_to_its_base-tree_historical_path",
+  "path_migrations": [
+    {
+      "historical_path": "llm2vec/UnlearnData/easy_QACelebrityDeath.csv",
+      "path": "data/clinicia/regime_a/deaths/training/easy_qa.csv",
+      "pointer_blob_oid": "f2fba860273ebbcfcafaa0754c2c63fece4bddb7",
+      "lfs_content_oid": "0216323a75434f0aaba7b38802a4d212770b891d9fffdf137a203379920d2e28",
+      "lfs_content_bytes": 45263
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/easy_QACelebrityDiagnosis.csv",
+      "path": "data/clinicia/regime_a/diagnosis/training/easy_qa.csv",
+      "pointer_blob_oid": "cb52b800e0a0afc1cfc2f0081670b338ddf62bbe",
+      "lfs_content_oid": "c18f882bc0582807010d5010ffa31e1b650b10bb281f95c5331c8d5e55119d09",
+      "lfs_content_bytes": 13329
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/wiki_double.csv",
+      "path": "data/clinicia/regime_a/shared/retain/wiki_double.csv",
+      "pointer_blob_oid": "c9baf72ff9c0fc33c4c41c079ad370ef06f999fd",
+      "lfs_content_oid": "32ebe15d2de192238c49023fc41f3745dc39d8403b2c2136f73aa0dc880bdc82",
+      "lfs_content_bytes": 15657618
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/wikitext_dup_1_trunc_1.csv",
+      "path": "data/clinicia/regime_a/shared/retain/wikitext_dup_1_trunc_1.csv",
+      "pointer_blob_oid": "7ea7c3e5696ae0dac55207c7bfe8fd45eea1374c",
+      "lfs_content_oid": "587168a7cfef5007e27f1cb488777318355e2ae8f8ab1f0c0976feacf65e1bcf",
+      "lfs_content_bytes": 3458237
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/PMC_QA_subset1000.jsonl",
+      "path": "data/clinicia/regime_b/pmc/probes/generation/all.jsonl",
+      "pointer_blob_oid": "8c241e6d9c2749c4282efc11aa93d86141397261",
+      "lfs_content_oid": "9274a32c0b0e8f954f50a82c4823cd01791d9c87fd8a685a22b41f3813eacf31",
+      "lfs_content_bytes": 5803476
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/PMC_QA_subset1000_forget100.jsonl",
+      "path": "data/clinicia/regime_b/pmc/probes/generation/forget.jsonl",
+      "pointer_blob_oid": "e65f9b7d59a7e9aad71262752d387a36e05cab44",
+      "lfs_content_oid": "d20c15339c9d755ce7ae3881501433d0c9fcdbd25f4545bf98fbc96ab56af3e9",
+      "lfs_content_bytes": 577288
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/PMC_QA_subset1000_retain900.jsonl",
+      "path": "data/clinicia/regime_b/pmc/probes/generation/retain.jsonl",
+      "pointer_blob_oid": "cfdab5ebd22e5c81a32239980b128d29eeaf9977",
+      "lfs_content_oid": "7ac119de96be10cc4325b37ee0fa6f2998caafab80069954c1aacd115fcec74f",
+      "lfs_content_bytes": 5226188
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/mcqs_PMC_forget_att.jsonl",
+      "path": "data/clinicia/regime_b/pmc/probes/mcq/forget/att.jsonl",
+      "pointer_blob_oid": "d913e4962551a2def7b3252a8368b5d1c65df6af",
+      "lfs_content_oid": "d6912093698e0706a75afa93d844c83b15ad01d21550ad9e101c97efe1f8ed3d",
+      "lfs_content_bytes": 24688
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/mcqs_PMC_forget_id_identical.jsonl",
+      "path": "data/clinicia/regime_b/pmc/probes/mcq/forget/id.jsonl",
+      "pointer_blob_oid": "149ed1714a11a557121e5ea312611b4970a9e435",
+      "lfs_content_oid": "cb03a90ae83272d05e4c6b21b66e29a7ee9f6bdb1769df9812a2fae512b651d5",
+      "lfs_content_bytes": 17928
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/mcqs_PMC_forget_id_equal.jsonl",
+      "path": "data/clinicia/regime_b/pmc/probes/mcq/forget/id_equal.jsonl",
+      "pointer_blob_oid": "ddc39504b0a7c57255ba191712f9f1604d7b1890",
+      "lfs_content_oid": "bd40fcb972a7987d36ac5d6a90eae0934cce150925978f696c17eb8c78dc9d2b",
+      "lfs_content_bytes": 19373
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/mcqs_PMC_retain_att.jsonl",
+      "path": "data/clinicia/regime_b/pmc/probes/mcq/retain/att.jsonl",
+      "pointer_blob_oid": "934448c4bd0ebf532277c539c90987c951705286",
+      "lfs_content_oid": "1d7b5e32532c9c4b0ba8b1aa3d2bc546a90c5a540642da8418b07a7a6bebd9f5",
+      "lfs_content_bytes": 49630
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/mcqs_PMC_retain_id_identical.jsonl",
+      "path": "data/clinicia/regime_b/pmc/probes/mcq/retain/id.jsonl",
+      "pointer_blob_oid": "cf874e14d489df21da7ad7aa7a52cf5ad6a3ee45",
+      "lfs_content_oid": "17ecebde9fd93405d01461f9e7de0b1870a37bd648e1e527125e00345a8cabe3",
+      "lfs_content_bytes": 39236
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/mcqs_PMC_retain_id_equal.jsonl",
+      "path": "data/clinicia/regime_b/pmc/probes/mcq/retain/id_equal.jsonl",
+      "pointer_blob_oid": "68e73d7182aa2d5bfdff92cd490c0092eecd1712",
+      "lfs_content_oid": "56296274e174724a6a8aacb3d4127f4ff6e16266a6ebeeed9f321e083d291c1f",
+      "lfs_content_bytes": 40005
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/easy_QA_PMC_forget100_full.csv",
+      "path": "data/clinicia/regime_b/pmc/training/easy_QA_PMC_forget100_full.csv",
+      "pointer_blob_oid": "9d027ca8a645e5aa91077b304d22eee00b0966fd",
+      "lfs_content_oid": "6521a7940135bb62ac534e44778f6ee1ee1cc61667d96d47eb84453f558132a4",
+      "lfs_content_bytes": 28591
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/easy_QA_PMC_forget100_state.csv",
+      "path": "data/clinicia/regime_b/pmc/training/easy_QA_PMC_forget100_state.csv",
+      "pointer_blob_oid": "44a913765ff6e9faf2a759572101e3ad098f3b47",
+      "lfs_content_oid": "eec2e421eb23ce4e6bf00a175245dc5e0a9443f45ef8d7d87314652a1f5ee087",
+      "lfs_content_bytes": 7434
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/easy_QA_PMC_full.csv",
+      "path": "data/clinicia/regime_b/pmc/training/easy_QA_PMC_full.csv",
+      "pointer_blob_oid": "8471994e24e4dab813724a4fd5e3f2b98f9abfe6",
+      "lfs_content_oid": "b5eb267d0712092d1cc2edea52c8da79d9988318fde4e5e1724c27c3df25151b",
+      "lfs_content_bytes": 283668
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/easy_QA_PMC_full_QA.csv",
+      "path": "data/clinicia/regime_b/pmc/training/easy_QA_PMC_full_QA.csv",
+      "pointer_blob_oid": "f76e4eac49b30da87f566b25f13ff303b5dda3ee",
+      "lfs_content_oid": "77d937f3938c8028abed48faa6ff83cbfbd45397ffbe85f341d9b11940e0d7a2",
+      "lfs_content_bytes": 124509
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/easy_QA_PMC_full_repara.csv",
+      "path": "data/clinicia/regime_b/pmc/training/easy_QA_PMC_full_repara.csv",
+      "pointer_blob_oid": "d1cd1f7c4d47d79dcc19a428bd36829537e74ba0",
+      "lfs_content_oid": "3cfd6e844b3d6c265ce1d1d12de3c431e28350724d236d3f614fc49464664f9e",
+      "lfs_content_bytes": 85633
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/easy_QA_PMC_retain900_full.csv",
+      "path": "data/clinicia/regime_b/pmc/training/easy_QA_PMC_retain900_full.csv",
+      "pointer_blob_oid": "98c7d5433ba7a3453ffd2d6a401ff0f4b39ac05b",
+      "lfs_content_oid": "72b53369f435bda727ab06dff0bc0bb86cdb42050faf78ca6b5cdddcfe5dd6e2",
+      "lfs_content_bytes": 255079
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/easy_QA_PMC_retain900_full_reshaped.csv",
+      "path": "data/clinicia/regime_b/pmc/training/easy_QA_PMC_retain900_full_reshaped.csv",
+      "pointer_blob_oid": "a4fc55bfcdf9dc205c050978bf9af1aa12f3a4d5",
+      "lfs_content_oid": "fae592ab572a5ab42b15fb2d2f77b8974e497b9739c601d1e3439b2fe4f720c1",
+      "lfs_content_bytes": 255083
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/retain900_note_archive_patient.csv",
+      "path": "data/clinicia/regime_b/pmc/training/retain900_note_archive_patient.csv",
+      "pointer_blob_oid": "0ab76c3c645a4c9de65fb9dedb64ed8d29cc4484",
+      "lfs_content_oid": "3cd15e9f519332e661a10b83e391d332c476d9eea087aa60773f629506617852",
+      "lfs_content_bytes": 4448050
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/cyber-forget-corpus.jsonl",
+      "path": "data/legacy/cyber/cyber-forget-corpus.jsonl",
+      "pointer_blob_oid": "282c15389703934a9099a88dda89b673298a14f2",
+      "lfs_content_oid": "1fab5b5229d521849273db51175bf176e9208e959b17ccf3e4ec61d20bfe4cf0",
+      "lfs_content_bytes": 21977110
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/cyber-retain-corpus.jsonl",
+      "path": "data/legacy/cyber/cyber-retain-corpus.jsonl",
+      "pointer_blob_oid": "c98dec8eb9ad3d178dd46cede4a60a4acb68aa37",
+      "lfs_content_oid": "ac0249a9fe0f6d2058a497285e95944e3b56874cb3377028c692e8032f933eaf",
+      "lfs_content_bytes": 63053403
+    },
+    {
+      "historical_path": "llm2vec/UnlearnData/cyber_and_bio_forget.csv",
+      "path": "data/legacy/cyber/cyber_and_bio_forget.csv",
+      "pointer_blob_oid": "0507636ff9c8531dd2fbf2a577cfdb6dd2887407",
+      "lfs_content_oid": "2ecbda000db3a1836adb2ab64fcf53f43b75abeb8746467571c63eb023b199e3",
+      "lfs_content_bytes": 717432859
+    },
+    {
+      "historical_path": "llm2vec/cache/wiki1m_for_simcse.txt",
+      "path": "data/legacy/llm2vec/wiki1m_for_simcse.txt",
+      "pointer_blob_oid": "aa2db04ba021508a275d33c49730919e01f4f44e",
+      "lfs_content_oid": "7b1825863a99aa76479b0456f7c210539dfaeeb69598b41fb4de4f524dd5a706",
+      "lfs_content_bytes": 120038621
+    }
+  ],
+  "object_availability_status": "not_verified_by_phase3dr",
   "default_redistribution_status": "unresolved_do_not_redistribute",
   "paper_mcq_inventory": "results/paper/mcq_dataset_inventory.json"
 }

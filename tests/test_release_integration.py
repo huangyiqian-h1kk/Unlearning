@@ -1,201 +1,82 @@
 import hashlib
-import importlib
-import importlib.util
 import json
 import pathlib
 import re
 import subprocess
 import sys
-import types
 import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-BASE_COMMIT = "39b4824640236c33a74ec5d297d834976e2bd388"
-BASE_TREE = "97fd3c030cb36374c1d5bf8059bad213a263ac1e"
-CONSOLIDATION_PATH = ROOT / "docs" / "llm22vec_consolidation.json"
+BASE_COMMIT = "623e305655a10a87685e49d83404fe7cd5f2ed81"
+BASE_TREE = "ddd353d31d5df680918ad6a255826dd3a8aa9553"
 
 
-def git(*args):
+def git(*args, check=True):
     return subprocess.run(
         ["git", *args],
         cwd=ROOT,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        check=True,
+        check=check,
     ).stdout
 
 
-def tree_entries(ref):
-    entries = {}
-    for record in git("ls-tree", "-rlz", ref).split(b"\0"):
-        if not record:
+def entries(ref=None):
+    command = ("ls-tree", "-rz", ref) if ref else ("ls-files", "-s", "-z")
+    result = {}
+    for row in git(*command).split(b"\0"):
+        if not row:
             continue
-        metadata, raw_path = record.split(b"\t", 1)
-        mode, kind, blob, size = metadata.split()
-        if kind == b"blob":
-            entries[raw_path.decode("utf-8")] = {
-                "mode": mode.decode("ascii"),
-                "blob": blob.decode("ascii"),
-                "size": int(size),
-            }
-    return entries
+        metadata, raw_path = row.split(b"\t", 1)
+        fields = metadata.split()
+        if ref:
+            mode, kind, blob = fields
+            if kind != b"blob":
+                continue
+        else:
+            mode, blob, stage = fields
+            if stage != b"0":
+                raise AssertionError(f"non-zero index stage: {raw_path!r}")
+        result[raw_path.decode()] = (mode.decode(), blob.decode())
+    return result
 
 
-def index_entries():
-    entries = {}
-    for record in git("ls-files", "-s", "-z").split(b"\0"):
-        if not record:
-            continue
-        metadata, raw_path = record.split(b"\t", 1)
-        mode, blob, stage = metadata.split()
-        entries[raw_path.decode("utf-8")] = {
-            "mode": mode.decode("ascii"),
-            "blob": blob.decode("ascii"),
-            "stage": stage.decode("ascii"),
-        }
-    return entries
-
-
-def path_hash(paths):
-    payload = "".join(path + "\n" for path in sorted(paths)).encode("utf-8")
-    return hashlib.sha256(payload).hexdigest()
-
-
-class Phase3D3ReleaseIntegrationTests(unittest.TestCase):
+class Phase3DRReleaseIntegrationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.base = tree_entries(BASE_COMMIT)
-        cls.current = index_entries()
-        cls.consolidation = json.loads(CONSOLIDATION_PATH.read_text(encoding="utf-8"))
+        cls.base = entries(BASE_COMMIT)
+        cls.current = entries()
+        cls.catalog = json.loads((ROOT / "data/clinicia/catalog.json").read_text())
 
-    def test_exact_phase_scope_and_immutable_base(self):
-        self.assertEqual(git("rev-parse", BASE_COMMIT + "^{tree}").decode().strip(), BASE_TREE)
-        added = {
-            "README.md",
-            "THIRD_PARTY.md",
-            "configs/components/README.md",
-            "configs/components/datasets.json",
-            "configs/components/methods.json",
-            "configs/components/models.json",
-            "configs/components/protocols.json",
-            "configs/reproduction/README.md",
-            "configs/reproduction/index.json",
-            "configs/reproduction/validated-v2-conrep-diagnosis-mistral.json",
-            "configs/sweeps/README.md",
-            "configs/sweeps/validated-v2-review-matrix.json",
-            "data/README.md",
-            "data/lfs_manifest.json",
-            "docs/dependencies.md",
-            "docs/dependency_matrix.json",
-            "docs/llm22vec_consolidation.json",
-            "docs/manuscript/README.md",
-            "docs/release_integration.md",
-            "environments/README.md",
-            "scripts/README.md",
-            "scripts/configs/validate_reproduction_configs.py",
-            "scripts/repository/validate_release_inventory.py",
-            "tests/configs/test_reproduction_configs.py",
-            "tests/test_release_integration.py",
-        }
-        modified = {
-            "configs/README.md",
-            "docs/repository_architecture.md",
-            "llm2vec/llm22vec/__init__.py",
-            "tests/test_source_migration.py",
-        }
-        removed_duplicates = {
-            row["derivative_path"] for row in self.consolidation["shared_modules"]
-        }
-        deleted = removed_duplicates | {"docs/README_DRAFT.md"}
-        self.assertEqual(set(self.current), (set(self.base) - deleted) | added)
-        self.assertEqual(len(self.current), len(self.base) - len(deleted) + len(added))
-        for path, entry in self.base.items():
-            if path in deleted:
-                self.assertNotIn(path, self.current)
-            elif path in modified:
-                self.assertNotEqual(self.current[path]["blob"], entry["blob"], path)
-            else:
-                self.assertEqual(
-                    (self.current[path]["mode"], self.current[path]["blob"]),
-                    (entry["mode"], entry["blob"]),
-                    path,
-                )
-        self.assertTrue(added.isdisjoint(self.base))
+    def test_base_and_final_scope_are_exact(self):
+        self.assertEqual(BASE_TREE, git("rev-parse", BASE_COMMIT + "^{tree}").decode().strip())
+        diff = git("diff", "--name-status", "--find-renames=50%", BASE_COMMIT, "--").decode().splitlines()
+        counts = {"A": 0, "M": 0, "R": 0, "D": 0}
+        for line in diff:
+            status = line.split("\t", 1)[0]
+            counts[status[0]] = counts.get(status[0], 0) + 1
+        self.assertEqual({"A": 34, "M": 39, "R": 548, "D": 0}, counts)
+        self.assertEqual(621, len(diff))
+        self.assertEqual(718, len(self.current))
 
-    def test_only_blob_identical_support_modules_were_consolidated(self):
-        record = self.consolidation
-        self.assertEqual(record["phase_base"], {"commit": BASE_COMMIT, "tree": BASE_TREE})
-        rows = record["shared_modules"]
-        derivative_paths = {row["derivative_path"] for row in rows}
-        self.assertEqual(len(rows), 18)
-        self.assertEqual(len(derivative_paths), 18)
-        self.assertEqual(path_hash(derivative_paths), record["removed_sorted_path_list_sha256"])
-        for row in rows:
-            derivative = row["derivative_path"]
-            canonical = row["canonical_path"]
-            expected = row["base_blob"]
-            self.assertEqual(self.base[derivative]["blob"], expected, derivative)
-            self.assertEqual(self.base[canonical]["blob"], expected, canonical)
-            self.assertEqual(self.current[canonical]["blob"], expected, canonical)
-            self.assertNotIn(derivative, self.current)
-        for path in (
-            "llm2vec/llm22vec/llm22vec.py",
-            "llm2vec/llm22vec/openunlearn_wrapper.py",
-        ):
-            self.assertEqual(self.current[path]["blob"], self.base[path]["blob"], path)
-        validation = record["validation"]
-        self.assertTrue(validation["base_blob_identity_proven"])
-        self.assertTrue(validation["causal_contract_tests_retained"])
-        self.assertFalse(validation["causal_adapter_removed"])
-        for key in ("real_dependency_import", "real_model_initialization", "real_model_numerical_equivalence"):
-            self.assertEqual(validation[key], "not_run")
+    def test_source_inventory_validator_passes(self):
+        result = subprocess.run(
+            [sys.executable, "scripts/repository/validate_source_inventory.py"],
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        self.assertEqual(
+            "validated paper-facing layout: 718 tracked paths, 28 ClinicIA datasets, "
+            "16 selected historical files across 5 ConRep runs",
+            result.stdout.strip(),
+        )
+        self.assertEqual("", result.stderr)
 
-    def test_shared_support_modules_resolve_from_canonical_package(self):
-        package_root = ROOT / "llm2vec"
-        managed = {
-            "llm22vec",
-            "llm22vec.llm22vec",
-            "llm22vec.experiment_utils",
-            "llm22vec.version",
-        }
-        missing = object()
-        previous = {name: sys.modules.get(name, missing) for name in managed}
-        previous_dont_write = sys.dont_write_bytecode
-        sys.path.insert(0, str(package_root))
-        sys.dont_write_bytecode = True
-        stub = types.ModuleType("llm22vec.llm22vec")
-        stub.LLM2Vec = object()
-        try:
-            for name in managed:
-                sys.modules.pop(name, None)
-            sys.modules["llm22vec.llm22vec"] = stub
-            package = importlib.import_module("llm22vec")
-            self.assertEqual(
-                list(package.__path__),
-                [str(package_root / "llm22vec"), str(package_root / "llm2vec")],
-            )
-            for name in ("experiment_utils", "version"):
-                module = importlib.import_module("llm22vec." + name)
-                self.assertEqual(pathlib.Path(module.__file__).parent, package_root / "llm2vec")
-            for name in ("dataset", "loss", "models"):
-                spec = importlib.util.find_spec("llm22vec." + name)
-                self.assertIsNotNone(spec)
-                self.assertEqual(pathlib.Path(spec.origin).parent, package_root / "llm2vec" / name)
-        finally:
-            sys.dont_write_bytecode = previous_dont_write
-            if sys.path and sys.path[0] == str(package_root):
-                sys.path.pop(0)
-            else:
-                sys.path.remove(str(package_root))
-            for name, value in previous.items():
-                if value is missing:
-                    sys.modules.pop(name, None)
-                else:
-                    sys.modules[name] = value
-            importlib.invalidate_caches()
-
-    def test_release_inventory_validator_and_dependency_split(self):
+    def test_release_inventory_validator_passes(self):
         result = subprocess.run(
             [
                 sys.executable,
@@ -212,76 +93,250 @@ class Phase3D3ReleaseIntegrationTests(unittest.TestCase):
             check=True,
         )
         self.assertEqual(
+            "validated 25 path-migrated, base-tree-anchored LFS pointers, "
+            "2 dependency components, 2 upstream pins, and 2 license identities",
             result.stdout.strip(),
-            "validated 25 base-tree-anchored LFS pointers, 2 dependency components, "
-            "2 upstream pins, and 2 license identities",
         )
-        self.assertEqual(result.stderr, "")
-        matrix = json.loads((ROOT / "docs/dependency_matrix.json").read_text(encoding="utf-8"))
-        self.assertEqual(matrix["conflicts"][0]["intersection"], "empty")
-        self.assertEqual(matrix["conflicts"][0]["resolution"], "keep_model_environments_separate")
+        self.assertEqual("", result.stderr)
+
+    def test_lfs_migrations_preserve_base_pointer_blobs(self):
+        manifest = json.loads((ROOT / "data/lfs_manifest.json").read_text())
+        self.assertEqual("2.0", manifest["schema_version"])
+        self.assertEqual(25, manifest["pointer_count"])
+        self.assertEqual(25, len(manifest["path_migrations"]))
+        for row in manifest["path_migrations"]:
+            self.assertEqual(row["pointer_blob_oid"], self.base[row["historical_path"]][1])
+            self.assertEqual(row["pointer_blob_oid"], self.current[row["path"]][1])
+        self.assertEqual("unresolved_do_not_redistribute", manifest["default_redistribution_status"])
+
+    def test_dependency_components_are_owned_and_separate(self):
+        matrix = json.loads((ROOT / "docs/dependency_matrix.json").read_text())
+        self.assertEqual({"llm2vec", "open_unlearning"}, set(matrix["components"]))
+        self.assertEqual("third_party/llm2vec/setup.py", matrix["components"]["llm2vec"]["packaging_path"])
+        self.assertEqual("third_party/open-unlearning/setup.py", matrix["components"]["open_unlearning"]["packaging_path"])
+        self.assertEqual("empty", matrix["conflicts"][0]["intersection"])
+        self.assertEqual("keep_model_environments_separate", matrix["conflicts"][0]["resolution"])
         self.assertTrue(all(value is False for value in matrix["release_policy"].values()))
 
-    def test_lfs_inventory_is_base_anchored_and_rights_conservative(self):
-        manifest = json.loads((ROOT / "data/lfs_manifest.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["pointer_count"], 25)
-        self.assertEqual(manifest["phase_base"], {"commit": BASE_COMMIT, "tree": BASE_TREE})
-        self.assertEqual(
-            manifest["tracked_pointer_scopes"],
-            ["llm2vec/UnlearnData/", "llm2vec/cache/"],
-        )
-        self.assertFalse(manifest["duplicate_per_object_metadata_published"])
-        self.assertEqual(
-            manifest["identity_policy"],
-            "validate_current_paths_and_pointer_blobs_against_the_phase_base_tree",
-        )
-        self.assertEqual(manifest["default_redistribution_status"], "unresolved_do_not_redistribute")
-        self.assertEqual(manifest["object_availability_status"], "not_verified_by_phase3d3")
-
-    def test_root_release_docs_expose_unresolved_gates(self):
-        readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        third_party = (ROOT / "THIRD_PARTY.md").read_text(encoding="utf-8")
-        self.assertIn("does **not** yet claim complete end-to-end reproduction", readme)
-        self.assertIn("incompatible Transformers versions", readme)
-        self.assertIn("no root project license", readme)
-        self.assertIn("No author", readme)
-        self.assertIn("Pinned inferred revision", third_party)
-        self.assertFalse((ROOT / "LICENSE").exists())
-        self.assertFalse((ROOT / "docs" / "README_DRAFT.md").exists())
-        self.assertTrue((ROOT / "docs" / "manuscript" / "README.md").is_file())
-
-    def test_new_documentation_has_no_broken_local_links(self):
-        paths = [
-            ROOT / "README.md",
-            ROOT / "THIRD_PARTY.md",
-            ROOT / "configs" / "README.md",
-            ROOT / "data" / "README.md",
-            ROOT / "docs" / "dependencies.md",
-            ROOT / "environments" / "README.md",
+    def test_paper_readme_exposes_executable_reproduction_routes(self):
+        readme = (ROOT / "README.md").read_text()
+        for phrase in (
+            "Towards Unlearning Beyond Textual Expressions for LLMs",
+            "ConRep",
+            "ClinicIA",
+            "complete commands",
+            "Required inputs",
+            "Paper experiment",
+            "Verification",
+            "python scripts/reproduce.py sft-pmc",
+            "python scripts/train_conrep.py run",
+            "python scripts/reproduce.py baseline-unlearn",
+            "python scripts/evaluate_clinicia.py run-model",
+            "lm-eval --model hf",
+            "python scripts/reproduce.py rebuild-tables",
+            "experiments/paper_runs/",
+            "data/clinicia/",
+        ):
+            self.assertIn(phrase, readme)
+        self.assertNotIn("baseline-unlearn ...", readme)
+        self.assertNotIn("run-model ...", readme)
+        sections = [
+            "## 0. Install the two model environments",
+            "## 1. Materialize and check the data",
+            "## 2. Prepare the Regime B PMC starting model with SFT",
+            "## 3. Perform unlearning",
+            "## 4. Evaluate all six ClinicIA views",
+            "## 5. Evaluate general utility with MMLU",
+            "## 6. Rebuild the archived paper tables",
         ]
-        link_pattern = re.compile(r"\[[^]]+\]\(([^)]+)\)")
+        for index, heading in enumerate(sections):
+            start = readme.index(heading)
+            end = readme.index(sections[index + 1]) if index + 1 < len(sections) else readme.index("## Paper matrix")
+            section = readme[start:end]
+            self.assertIn("```bash", section, heading)
+            self.assertIn("- **Inputs:**", section, heading)
+            self.assertIn("- **Output:", section, heading)
+            self.assertIn("- **Paper experiment", section, heading)
+            self.assertIn("- **Verification:**", section, heading)
+
+    def test_model_commands_have_offline_inspection_paths(self):
+        commands = [
+            [
+                sys.executable,
+                "scripts/reproduce.py",
+                "sft-pmc",
+                "--output-dir",
+                "results/validated_v2/b-pmc-mistral-baseline/model",
+                "--dry-run",
+            ],
+            [
+                sys.executable,
+                "scripts/reproduce.py",
+                "baseline-unlearn",
+                "a-diagnosis-mistral-npo",
+                "--model-path",
+                "mistralai/Mistral-7B-Instruct-v0.2",
+                "--forget-data",
+                "data/clinicia/regime_a/diagnosis/training/easy_qa.csv",
+                "--output-dir",
+                "results/validated_v2/a-diagnosis-mistral-npo/model",
+                "--dry-run",
+            ],
+        ]
+        outputs = []
+        for command in commands:
+            result = subprocess.run(
+                command,
+                cwd=ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            self.assertEqual("", result.stderr)
+            self.assertIn("working_directory=third_party/open-unlearning", result.stdout)
+            self.assertIn("verification=", result.stdout)
+            outputs.append(result.stdout)
+        self.assertIn("experiment=finetune/pmc/default", outputs[0])
+        self.assertIn("--config-name=train.yaml", outputs[0])
+        self.assertIn("experiment=unlearn/celebrity_diagnosis_npo/default", outputs[1])
+        self.assertIn("--config-name=unlearn.yaml", outputs[1])
+
+        historical = json.loads(
+            (ROOT / "configs/paper/historical/index.json").read_text(encoding="utf-8")
+        )
+        rendered = 0
+        for row in historical["experiments"]:
+            record = json.loads(
+                (ROOT / "configs/paper/historical" / row["path"]).read_text(encoding="utf-8")
+            )
+            if record["method"] not in {"GradDiff", "NPO", "RMU"}:
+                continue
+            experiment_id = record["experiment_id"]
+            command = [
+                sys.executable,
+                "scripts/reproduce.py",
+                "baseline-unlearn",
+                experiment_id,
+                "--model-path",
+                record["starting_checkpoint_id"],
+                "--forget-data",
+                (
+                    "data/clinicia/regime_b/pmc/training/easy_QA_PMC_forget100_state.csv"
+                    if record["regime"] == "B"
+                    else f"data/clinicia/regime_a/{record['knowledge_target']}/training/easy_qa.csv"
+                ),
+                "--output-dir",
+                f"results/validated_v2/{experiment_id}/model",
+                "--dry-run",
+            ]
+            if record["regime"] == "B":
+                command.extend(
+                    [
+                        "--retain-data",
+                        "data/clinicia/regime_b/pmc/training/easy_QA_PMC_retain900_full.csv",
+                    ]
+                )
+            result = subprocess.run(
+                command,
+                cwd=ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            self.assertIn(f"paper_experiment={experiment_id}", result.stdout)
+            for name, value in record["resolved_hyperparameters"].items():
+                self.assertIn(f"trainer.args.{name}={value}", result.stdout)
+            rendered += 1
+        self.assertEqual(15, rendered)
+
+    def test_conrep_and_clinicia_configs_are_inspectable_without_models(self):
+        conrep = subprocess.run(
+            [
+                sys.executable,
+                "scripts/train_conrep.py",
+                "config",
+                "b-pmc-mistral-conrep",
+                "--model-path",
+                "results/validated_v2/b-pmc-mistral-baseline/model",
+                "--peft-model",
+                "none",
+                "--output-root",
+                "results/validated_v2",
+            ],
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        conrep_config = json.loads(conrep.stdout)
+        self.assertIsNone(conrep_config["peft_model_name_or_path"])
+        self.assertEqual(
+            "results/validated_v2/b-pmc-mistral-baseline/model",
+            conrep_config["model_name_or_path"],
+        )
+        self.assertTrue(conrep_config["forget_csv_path"].endswith("easy_QA_PMC_forget100_state.csv"))
+
+        historical = json.loads(
+            (ROOT / "configs/paper/historical/index.json").read_text(encoding="utf-8")
+        )
+        for row in historical["experiments"]:
+            experiment_id = row["experiment_id"]
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/evaluate_clinicia.py",
+                    "paper-config",
+                    experiment_id,
+                    "--model-path",
+                    f"results/validated_v2/{experiment_id}/model",
+                    "--output-root",
+                    "results/validated_v2",
+                ],
+                cwd=ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            config = json.loads(result.stdout)
+            self.assertTrue(config["evaluation_sets"])
+            self.assertTrue(config["mcq_sets"])
+            self.assertIn(experiment_id, config["output_dir"])
+
+    def test_repository_documentation_has_no_broken_local_links(self):
+        paths = [ROOT / "README.md", *sorted((ROOT / "docs").glob("*.md"))]
+        pattern = re.compile(r"\[[^]]+\]\(([^)]+)\)")
         checked = 0
         for path in paths:
-            for target in link_pattern.findall(path.read_text(encoding="utf-8")):
-                if target.startswith(("http://", "https://", "#")):
+            for target in pattern.findall(path.read_text(encoding="utf-8")):
+                if target.startswith(("http://", "https://", "#", "mailto:")):
                     continue
-                resolved = (path.parent / target.split("#", 1)[0]).resolve()
-                self.assertTrue(resolved.exists(), f"broken link in {path.relative_to(ROOT)}: {target}")
+                local = target.split("#", 1)[0]
+                if not local:
+                    continue
+                self.assertTrue((path.parent / local).resolve().exists(), f"broken link in {path.relative_to(ROOT)}: {target}")
                 checked += 1
-        self.assertGreaterEqual(checked, 15)
+        self.assertGreaterEqual(checked, 20)
 
-    def test_archives_and_scientific_evidence_are_unchanged(self):
-        expected_archives = {
+    def test_archives_and_paper_results_are_unchanged(self):
+        expected = {
             "clinicia_provenance_bundle.tar.gz": "6e406e4e96b20413361fa67b2f0af2a67034d0211ba32a1207e8583df8d55fe7",
             "clinicia_configs_mmlu_bundle.tar.gz": "a4b396370aabb6382a028a336202203508991cf910d5e0961d89d8bba75f0bf8",
         }
-        for path, digest in expected_archives.items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), digest)
-            self.assertEqual(self.current[path]["blob"], self.base[path]["blob"])
-        for prefix in ("configs/historical/", "results/paper/"):
-            for path, entry in self.base.items():
-                if path.startswith(prefix):
-                    self.assertEqual(self.current[path]["blob"], entry["blob"], path)
+        for path, digest in expected.items():
+            self.assertEqual(digest, hashlib.sha256((ROOT / path).read_bytes()).hexdigest())
+            self.assertEqual(self.base[path], self.current[path])
+        for path, entry in self.base.items():
+            if path.startswith("results/paper/"):
+                self.assertEqual(entry, self.current[path], path)
+
+    def test_no_root_project_license_is_invented(self):
+        self.assertNotIn("LICENSE", self.current)
+        self.assertTrue((ROOT / "third_party/llm2vec/LICENSE").is_file())
+        self.assertTrue((ROOT / "third_party/open-unlearning/LICENSE").is_file())
 
 
 if __name__ == "__main__":

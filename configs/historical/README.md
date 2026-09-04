@@ -1,3 +1,8 @@
-# Historical experiment records
+# Historical-record support
 
-These JSON records preserve the 25 paper experiment identities and the configuration facts recoverable from archived evidence. `null` and `unresolved_fields` are intentional: filenames are never used to invent missing facts. Run the standard-library validator documented in the top-level config README before changing them.
+This directory contains the schema and notes introduced while reconstructing
+paper provenance. The 25 current records have moved to the clearer paper-facing
+path [`configs/paper/historical/`](../paper/historical/).
+
+Historical paths stored *inside* those records are evidence locators and may
+still name the former `llm2vec/` layout. They must not be silently rewritten.
