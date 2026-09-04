@@ -118,17 +118,193 @@ class Phase3DRReleaseIntegrationTests(unittest.TestCase):
         self.assertEqual("keep_model_environments_separate", matrix["conflicts"][0]["resolution"])
         self.assertTrue(all(value is False for value in matrix["release_policy"].values()))
 
-    def test_paper_readme_exposes_the_reproduction_route(self):
+    def test_paper_readme_exposes_executable_reproduction_routes(self):
         readme = (ROOT / "README.md").read_text()
         for phrase in (
             "Towards Unlearning Beyond Textual Expressions for LLMs",
             "ConRep",
             "ClinicIA",
-            "python scripts/reproduce.py table 1",
+            "complete commands",
+            "Required inputs",
+            "Paper experiment",
+            "Verification",
+            "python scripts/reproduce.py sft-pmc",
+            "python scripts/train_conrep.py run",
+            "python scripts/reproduce.py baseline-unlearn",
+            "python scripts/evaluate_clinicia.py run-model",
+            "lm-eval --model hf",
+            "python scripts/reproduce.py rebuild-tables",
             "experiments/paper_runs/",
             "data/clinicia/",
         ):
             self.assertIn(phrase, readme)
+        self.assertNotIn("baseline-unlearn ...", readme)
+        self.assertNotIn("run-model ...", readme)
+        sections = [
+            "## 0. Install the two model environments",
+            "## 1. Materialize and check the data",
+            "## 2. Prepare the Regime B PMC starting model with SFT",
+            "## 3. Perform unlearning",
+            "## 4. Evaluate all six ClinicIA views",
+            "## 5. Evaluate general utility with MMLU",
+            "## 6. Rebuild the archived paper tables",
+        ]
+        for index, heading in enumerate(sections):
+            start = readme.index(heading)
+            end = readme.index(sections[index + 1]) if index + 1 < len(sections) else readme.index("## Paper matrix")
+            section = readme[start:end]
+            self.assertIn("```bash", section, heading)
+            self.assertIn("- **Inputs:**", section, heading)
+            self.assertIn("- **Output:", section, heading)
+            self.assertIn("- **Paper experiment", section, heading)
+            self.assertIn("- **Verification:**", section, heading)
+
+    def test_model_commands_have_offline_inspection_paths(self):
+        commands = [
+            [
+                sys.executable,
+                "scripts/reproduce.py",
+                "sft-pmc",
+                "--output-dir",
+                "results/validated_v2/b-pmc-mistral-baseline/model",
+                "--dry-run",
+            ],
+            [
+                sys.executable,
+                "scripts/reproduce.py",
+                "baseline-unlearn",
+                "a-diagnosis-mistral-npo",
+                "--model-path",
+                "mistralai/Mistral-7B-Instruct-v0.2",
+                "--forget-data",
+                "data/clinicia/regime_a/diagnosis/training/easy_qa.csv",
+                "--output-dir",
+                "results/validated_v2/a-diagnosis-mistral-npo/model",
+                "--dry-run",
+            ],
+        ]
+        outputs = []
+        for command in commands:
+            result = subprocess.run(
+                command,
+                cwd=ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            self.assertEqual("", result.stderr)
+            self.assertIn("working_directory=third_party/open-unlearning", result.stdout)
+            self.assertIn("verification=", result.stdout)
+            outputs.append(result.stdout)
+        self.assertIn("experiment=finetune/pmc/default", outputs[0])
+        self.assertIn("--config-name=train.yaml", outputs[0])
+        self.assertIn("experiment=unlearn/celebrity_diagnosis_npo/default", outputs[1])
+        self.assertIn("--config-name=unlearn.yaml", outputs[1])
+
+        historical = json.loads(
+            (ROOT / "configs/paper/historical/index.json").read_text(encoding="utf-8")
+        )
+        rendered = 0
+        for row in historical["experiments"]:
+            record = json.loads(
+                (ROOT / "configs/paper/historical" / row["path"]).read_text(encoding="utf-8")
+            )
+            if record["method"] not in {"GradDiff", "NPO", "RMU"}:
+                continue
+            experiment_id = record["experiment_id"]
+            command = [
+                sys.executable,
+                "scripts/reproduce.py",
+                "baseline-unlearn",
+                experiment_id,
+                "--model-path",
+                record["starting_checkpoint_id"],
+                "--forget-data",
+                (
+                    "data/clinicia/regime_b/pmc/training/easy_QA_PMC_forget100_state.csv"
+                    if record["regime"] == "B"
+                    else f"data/clinicia/regime_a/{record['knowledge_target']}/training/easy_qa.csv"
+                ),
+                "--output-dir",
+                f"results/validated_v2/{experiment_id}/model",
+                "--dry-run",
+            ]
+            if record["regime"] == "B":
+                command.extend(
+                    [
+                        "--retain-data",
+                        "data/clinicia/regime_b/pmc/training/easy_QA_PMC_retain900_full.csv",
+                    ]
+                )
+            result = subprocess.run(
+                command,
+                cwd=ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            self.assertIn(f"paper_experiment={experiment_id}", result.stdout)
+            for name, value in record["resolved_hyperparameters"].items():
+                self.assertIn(f"trainer.args.{name}={value}", result.stdout)
+            rendered += 1
+        self.assertEqual(15, rendered)
+
+    def test_conrep_and_clinicia_configs_are_inspectable_without_models(self):
+        conrep = subprocess.run(
+            [
+                sys.executable,
+                "scripts/train_conrep.py",
+                "config",
+                "b-pmc-mistral-conrep",
+                "--model-path",
+                "results/validated_v2/b-pmc-mistral-baseline/model",
+                "--peft-model",
+                "none",
+                "--output-root",
+                "results/validated_v2",
+            ],
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+        conrep_config = json.loads(conrep.stdout)
+        self.assertIsNone(conrep_config["peft_model_name_or_path"])
+        self.assertEqual(
+            "results/validated_v2/b-pmc-mistral-baseline/model",
+            conrep_config["model_name_or_path"],
+        )
+        self.assertTrue(conrep_config["forget_csv_path"].endswith("easy_QA_PMC_forget100_state.csv"))
+
+        historical = json.loads(
+            (ROOT / "configs/paper/historical/index.json").read_text(encoding="utf-8")
+        )
+        for row in historical["experiments"]:
+            experiment_id = row["experiment_id"]
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/evaluate_clinicia.py",
+                    "paper-config",
+                    experiment_id,
+                    "--model-path",
+                    f"results/validated_v2/{experiment_id}/model",
+                    "--output-root",
+                    "results/validated_v2",
+                ],
+                cwd=ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            config = json.loads(result.stdout)
+            self.assertTrue(config["evaluation_sets"])
+            self.assertTrue(config["mcq_sets"])
+            self.assertIn(experiment_id, config["output_dir"])
 
     def test_repository_documentation_has_no_broken_local_links(self):
         paths = [ROOT / "README.md", *sorted((ROOT / "docs").glob("*.md"))]
