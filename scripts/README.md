@@ -1,14 +1,15 @@
-# Script entry points
+# Public commands
 
-| Script area | Status | Purpose |
+| Command | Purpose | Loads a model? |
 | --- | --- | --- |
-| `scripts/results/` | Validated, CPU-only | Extract archived metrics and rebuild paper tables. |
-| `scripts/configs/validate_historical_experiments.py` | Validated, CPU-only | Check immutable historical records against the paper manifest. |
-| `scripts/configs/validate_reproduction_configs.py` | Validated, CPU-only | Check portable future-run candidates and component references. |
-| `scripts/repository/` | Validated, CPU-only | Audit source/release inventories and support cleanup recovery. |
-| `scripts/train_conrep.py` | Stable dispatch only | List or dispatch to preserved ConRep implementations. |
-| `scripts/evaluate_clinicia.py` | Stable dispatch only | List or dispatch to preserved ClinicIA evaluators. |
+| `python scripts/reproduce.py table N` | Verify evidence and rebuild/show paper Tables 1–6 | No |
+| `python scripts/train_conrep.py list` | List five selected ConRep paper runs | No |
+| `python scripts/train_conrep.py show RUN` | Show historical and portable config locations | No |
+| `python scripts/train_conrep.py run RUN --output-root PATH` | Launch a selected trainer after environment preparation | Yes |
+| `python scripts/evaluate_clinicia.py list` | List selected ClinicIA evaluations | No |
+| `python scripts/evaluate_clinicia.py show RUN` | Show evaluation configs/probes | No |
+| `python scripts/evaluate_clinicia.py run RUN --role ROLE --output-root PATH` | Launch a preserved evaluator | Yes |
 
-Listing stable model-facing targets is dependency-free. Actual training and
-evaluation are not part of repository validation and require separately
-reviewed environments, data, checkpoints, and compute.
+`scripts/configs/`, `scripts/results/`, and `scripts/repository/` contain
+offline validators and evidence builders. Exploratory job generators are under
+`legacy/`; upstream framework scripts are under `third_party/`.

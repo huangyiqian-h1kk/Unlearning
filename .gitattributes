@@ -1,3 +1,10 @@
+data/clinicia/**/*.csv filter=lfs diff=lfs merge=lfs -text
+data/clinicia/regime_b/**/*.jsonl filter=lfs diff=lfs merge=lfs -text
+data/legacy/cyber/* filter=lfs diff=lfs merge=lfs -text
+data/legacy/llm2vec/*.txt filter=lfs diff=lfs merge=lfs -text
+
+# Historical LFS patterns below remain so already-materialized local copies at
+# pre-Phase-3D paths are not accidentally recommitted with the wrong filter.
 llm2vec/UnlearnData/*.jsonl filter=lfs diff=lfs merge=lfs -text
 llm2vec/UnlearnData/*.csv filter=lfs diff=lfs merge=lfs -text
 llm2vec/cache/echo-data/*.jsonl filter=lfs diff=lfs merge=lfs -text

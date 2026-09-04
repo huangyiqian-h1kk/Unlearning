@@ -8,11 +8,21 @@ import re
 import subprocess
 import tarfile
 
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 ALLOWED_STATUSES = {"verified", "label_corrected", "non_comparable", "unresolved", "missing", "manuscript_transcription_error"}
 LFS_RE = re.compile(r"\Aversion https://git-lfs.github.com/spec/v1\noid sha256:([0-9a-f]{64})\nsize ([0-9]+)\n?\Z")
 MMLU_RE = re.compile(r"\|mmlu\s*\|[^\n]*?\|acc\s*\|[^\n]*?\|([0-9]+\.[0-9]+)\|")
 
 def sha256_bytes(data): return hashlib.sha256(data).hexdigest()
+
+def dataset_path(historical_path):
+    """Resolve an immutable paper-inventory path through the ClinicIA catalog."""
+    catalog=json.loads((ROOT/"data/clinicia/catalog.json").read_text(encoding="utf-8"))
+    mapping={row["historical_path"]:row["path"] for row in catalog["datasets"]}
+    try: current=mapping[historical_path]
+    except KeyError as exc: raise ValueError(f"dataset path missing from ClinicIA catalog: {historical_path}") from exc
+    return ROOT/current
+
 def sha256_file(path):
     h = hashlib.sha256()
     with open(path, "rb") as stream:
@@ -182,7 +192,7 @@ def main(argv=None):
     for archive in manifest["archives"]: validate_archive(archive["path"],archive["sha256"])
     dataset_evidence=[]
     for item in inventory:
-        count, method=count_jsonl_or_pointer(item["path"],item); dataset_evidence.append({**item,"record_count":count,"verification_method":method})
+        count, method=count_jsonl_or_pointer(dataset_path(item["path"]),item); dataset_evidence.append({**item,"record_count":count,"verification_method":method})
     output=pathlib.Path(args.output_dir);output.mkdir(parents=True,exist_ok=True);expected=set()
     for experiment in manifest["experiments"]:
         if not set(experiment["status_flags"]) <= ALLOWED_STATUSES: raise ValueError(f"invalid status: {experiment['id']}")

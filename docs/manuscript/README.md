@@ -1,10 +1,9 @@
-# Manuscript release placeholder
+# Manuscript status
 
-No manuscript source, PDF, public title, author list, venue record, DOI, arXiv
-identifier, or OpenReview identifier was available for verified placement in
-Phase 3D-3.
+The supplied review copy is titled *Towards Unlearning Beyond Textual
+Expressions for LLMs* and is marked as an ICLR 2026 submission under review.
 
-When the researcher supplies the public manuscript metadata, place manuscript
-artifacts here (or link an authoritative external record), add a verified
-`CITATION.cff`, and update the root README. Until then, citation metadata is a
-release gate and must not be guessed from directory names or historical logs.
+The repository can therefore name the work and map its equations/tables, but
+the review copy is not sufficient public citation metadata. No author list,
+DOI, arXiv identifier, publication status, or `CITATION.cff` is invented.
+Add those only from an author-approved public manuscript record.

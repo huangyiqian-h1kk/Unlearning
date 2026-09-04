@@ -4,17 +4,19 @@
   "component_kind": "datasets",
   "inventory": "results/paper/mcq_dataset_inventory.json",
   "datasets": {
-    "clinicia/a/deaths/att@historical_v1": "llm2vec/unlearn_eval/data/mcqs_deaths_att.jsonl",
-    "clinicia/a/deaths/id-equal@historical_v1": "llm2vec/unlearn_eval/data/mcqs_deaths_id_eq.jsonl",
-    "clinicia/a/deaths/id-similar@historical_v1": "llm2vec/unlearn_eval/data/mcqs_deaths_id_sim.jsonl",
-    "clinicia/a/diagnosis/att@historical_v1": "llm2vec/unlearn_eval/data/mcqs_diagnosis_att.jsonl",
-    "clinicia/a/diagnosis/id@historical_v1": "llm2vec/unlearn_eval/data/mcqs_diagnosis_id.jsonl",
-    "clinicia/b/pmc/forget/att@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_forget_att.jsonl",
-    "clinicia/b/pmc/forget/id-equal@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_forget_id_equal.jsonl",
-    "clinicia/b/pmc/forget/id@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_forget_id_identical.jsonl",
-    "clinicia/b/pmc/retain/att@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_retain_att.jsonl",
-    "clinicia/b/pmc/retain/id-equal@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_retain_id_equal.jsonl",
-    "clinicia/b/pmc/retain/id@historical_v1": "llm2vec/UnlearnData/mcqs_PMC_retain_id_identical.jsonl"
+    "clinicia/a/deaths/att@historical_v1": "data/clinicia/regime_a/deaths/probes/mcq/att.jsonl",
+    "clinicia/a/deaths/id-equal@historical_v1": "data/clinicia/regime_a/deaths/probes/mcq/id_equal.jsonl",
+    "clinicia/a/deaths/id-similar@historical_v1": "data/clinicia/regime_a/deaths/probes/mcq/id.jsonl",
+    "clinicia/a/diagnosis/att@historical_v1": "data/clinicia/regime_a/diagnosis/probes/mcq/att.jsonl",
+    "clinicia/a/diagnosis/id@historical_v1": "data/clinicia/regime_a/diagnosis/probes/mcq/id.jsonl",
+    "clinicia/b/pmc/forget/att@historical_v1": "data/clinicia/regime_b/pmc/probes/mcq/forget/att.jsonl",
+    "clinicia/b/pmc/forget/id-equal@historical_v1": "data/clinicia/regime_b/pmc/probes/mcq/forget/id_equal.jsonl",
+    "clinicia/b/pmc/forget/id@historical_v1": "data/clinicia/regime_b/pmc/probes/mcq/forget/id.jsonl",
+    "clinicia/b/pmc/retain/att@historical_v1": "data/clinicia/regime_b/pmc/probes/mcq/retain/att.jsonl",
+    "clinicia/b/pmc/retain/id-equal@historical_v1": "data/clinicia/regime_b/pmc/probes/mcq/retain/id_equal.jsonl",
+    "clinicia/b/pmc/retain/id@historical_v1": "data/clinicia/regime_b/pmc/probes/mcq/retain/id.jsonl"
   },
-  "redistribution_status": "unresolved_do_not_redistribute"
+  "redistribution_status": "unresolved_do_not_redistribute",
+  "catalog": "data/clinicia/catalog.json",
+  "historical_inventory": "results/paper/mcq_dataset_inventory.json"
 }

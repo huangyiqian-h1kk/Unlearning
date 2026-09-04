@@ -1,128 +1,133 @@
-# ConRep and ClinicIA
+# ConRep + ClinicIA
 
-Representation-space unlearning and diversified evaluation for
-identifier–attribute knowledge in language models.
+**ConRep** removes identifier–attribute knowledge in representation space.
+**ClinicIA** tests whether that knowledge is still recoverable through multiple
+linguistic expressions—not only the prompt form seen during unlearning.
 
-## Artifact status
+This repository is the artifact for *Towards Unlearning Beyond Textual Expressions for LLMs*
+(ICLR 2026 review copy). It now separates the paper's
+code, selected runs, data, evidence, upstream dependencies, and exploratory
+history so a researcher can follow one result end to end.
 
-This repository preserves the scientific evidence used to audit the ConRep and
-ClinicIA paper artifact. The archived tables can be rebuilt without loading a
-model. No experiment was rerun during repository reorganization, and the
-repository does **not** yet claim complete end-to-end reproduction.
+## The paper in one minute
 
-Historical records may be incomplete or non-runnable by design. Future
-measurements use the separate `validated_v2` namespace and must not overwrite
-the archived `historical_v1` evidence.
+An unlearning method can appear successful on one textual question while the
+same identifier–attribute relation remains extractable through a paraphrase,
+cloze prompt, background question, or reversed multiple-choice query.
 
-## Research overview
+- **ConRep** targets the internal representation of the relation. The selected
+  experiments use the symmetric objective described in Eqs. 11–13.
+- **ClinicIA** evaluates six views: generated **QA**, **Cloze**, and
+  **Background (BG)** answers, plus **ATT**, **IDeq**, and **ID** MCQs.
+- **Regime A** forgets pre-existing celebrity diagnosis or death attributes in
+  Llama-2 and Mistral.
+- **Regime B** injects PMC clinical relations into Mistral, then forgets a
+  designated subset while measuring a retain subset.
 
-Identifier–attribute knowledge associates an identifier, an attribute type,
-and a value. Fixed textual probes can underestimate extraction risk when the
-same meaning has diverse expressions. **ConRep** is the project-owned
-representation-space unlearning method. **ClinicIA** is the project-owned
-evaluation layer for QA, cloze, background, and identifier/attribute MCQ
-expressions.
+See [the paper-to-code map](docs/paper-to-code.md) for the equation, module,
+dataset, and table correspondence.
 
-The archived study compares no-unlearning baselines, GradDiff, NPO, RMU, and
-ConRep across celebrity diagnosis, celebrity death, and injected PMC settings.
-Known provenance gaps, non-comparable checkpoints, missing measurements, and
-manuscript transcription discrepancies remain explicit in the evidence layer.
+## Start here
+
+Rebuild the archived paper evidence without a GPU, model, or network access:
+
+```bash
+python scripts/reproduce.py tables
+python scripts/reproduce.py table 1
+```
+
+Inspect the five exact ConRep run capsules selected for the paper:
+
+```bash
+python scripts/train_conrep.py list
+python scripts/train_conrep.py show a-diagnosis-mistral-conrep
+python scripts/evaluate_clinicia.py show a-diagnosis-mistral-conrep
+```
+
+After preparing the model environment and materializing required data, create a
+portable transient config and launch a selected run:
+
+```bash
+python scripts/train_conrep.py run a-diagnosis-mistral-conrep \
+  --output-root /path/to/new/artifacts
+```
+
+The original capsule is never edited. Old cluster paths remain visible as
+historical evidence; the launcher maps recognized datasets to `data/clinicia/`
+and writes new outputs under the path you provide.
+
+## Paper matrix
+
+| Paper tables | Regime and target | Models | Compared methods |
+| --- | --- | --- | --- |
+| 1 and 4 | A: celebrity diagnosis | Llama-2 7B Chat, Mistral 7B Instruct | Baseline, GradDiff, NPO, RMU, ConRep |
+| 2 and 6 | B: injected PMC | Mistral 7B Instruct | Baseline, GradDiff, NPO, RMU, ConRep |
+| 3 and 5 | A: celebrity deaths | Llama-2 7B Chat, Mistral 7B Instruct | Baseline, GradDiff, NPO, RMU, ConRep |
+
+All 25 cells are indexed in
+[`experiments/paper_runs/index.json`](experiments/paper_runs/index.json).
+Exact train/evaluation/job files are materialized only for the five selected
+ConRep cells for which the repository establishes that identity. The remaining
+20 cells retain evidence records and table reconstruction without pretending
+that an arbitrary historical job script was the selected run.
 
 ## Repository map
 
-| Path | Purpose |
+| Path | What belongs there |
 | --- | --- |
-| `src/conrep/` | Stable dispatch and blob-preserved project-owned ConRep implementations. |
-| `src/clinicia/` | ClinicIA registry, integrity adapters, protocol boundary, and preserved evaluators. |
-| `llm2vec/llm2vec/` | Pinned LLM2Vec-derived source with recorded local modifications. |
-| `llm2vec/llm22vec/` | Project-specific causal adapter; byte-identical support modules are shared with `llm2vec`. |
-| `llm2vec/open_unlearning/` | Pinned OpenUnlearning-derived source with recorded local modifications. |
-| `configs/historical/` | Immutable descriptions of evidence-backed past runs. |
-| `configs/components/` | Portable model, method, dataset, and protocol references. |
-| `configs/reproduction/` | Structurally validated future-run candidates, explicitly marked non-runnable until their gates close. |
-| `configs/sweeps/` | Compact review matrices; expanded jobs and results are not tracked. |
-| `results/paper/` | Protected manifest, compact metrics, and reconstructed paper tables. |
-| `data/` | Dataset/LFS release inventory and unresolved redistribution decisions. |
-| `docs/` | Provenance, architecture, ownership, migration, dependency, and release records. |
+| [`src/conrep/`](src/conrep/) | Project-owned method concepts, stable dispatch, and preserved trainers. |
+| [`src/clinicia/`](src/clinicia/) | Probe definitions, metrics, dataset integrity, and evaluators. |
+| [`experiments/paper_runs/`](experiments/paper_runs/) | All paper cells plus five exact ConRep run capsules. |
+| [`data/clinicia/`](data/clinicia/) | Semantic Regime A/B dataset layout and historical-path catalog. |
+| [`configs/paper/historical/`](configs/paper/historical/) | Evidence-backed records for all 25 paper cells. |
+| [`results/paper/`](results/paper/) | Immutable evidence manifest, extracted metrics, and reconstructed tables. |
+| [`third_party/`](third_party/) | Upstream-derived LLM2Vec and OpenUnlearning snapshots with documented local deltas. |
+| [`legacy/`](legacy/) | Exploratory/superseded jobs and code not claimed as selected paper runs. |
+| [`docs/`](docs/) | Reproduction guide, paper map, provenance, and historical reorganization records. |
 
-## Rebuild the archived tables
+The previous all-purpose top-level `llm2vec/` directory no longer exists:
+upstream code, project code, paper jobs, data, and discarded explorations now
+have different owners and different locations.
 
-Only Python's standard library is required for these two commands:
+## What is reproducible today?
 
-```bash
-python scripts/results/extract_archived_metrics.py \
-  --manifest results/paper/manifest.json \
-  --output-dir results/paper/raw_metrics
+| Level | Status |
+| --- | --- |
+| Rebuild archived metrics and tables | **Runnable now**, standard library only |
+| Trace each table cell to evidence | **Available now** for all 25 cells |
+| Inspect exact selected ConRep configs/jobs | **Available now** for five cells |
+| Rerun a selected ConRep job | Requires compatible model environment, checkpoints, and materialized datasets |
+| Claim numerical end-to-end reproduction | Not yet; unresolved gates remain explicit |
 
-python scripts/results/build_tables.py \
-  --manifest results/paper/manifest.json \
-  --output-dir results/paper/reconstructed
-```
+Read [the reproduction guide](docs/reproduction.md) before model execution.
+New measurements must use a separate `results/validated_v2/` namespace and
+must not overwrite archived paper evidence.
 
-These commands reconstruct tables from archived evidence. They do not train or
-evaluate a model. See [`results/paper/README.md`](results/paper/README.md) and
-[`docs/experiment_provenance.md`](docs/experiment_provenance.md).
+## Important limitations
 
-## Validate the repository contracts
+- Several datasets are Git LFS pointers; a pointer proves identity, not local
+  availability or redistribution permission.
+- Historical run files contain machine-specific paths and scheduler commands.
+  They are preserved verbatim; use the public launchers for a portable view.
+- LLM2Vec and OpenUnlearning require incompatible Transformers versions and
+  therefore remain separate environments.
+- The repository does not bundle model weights or selected checkpoints.
+- The review PDF does not provide public citation metadata, so no DOI, arXiv
+  identifier, author list, or `CITATION.cff` is fabricated.
+
+## Validation
 
 ```bash
 python scripts/configs/validate_historical_experiments.py \
-  --index configs/historical/paper/index.json \
+  --index configs/paper/historical/index.json \
   --manifest results/paper/manifest.json
-
 python scripts/configs/validate_reproduction_configs.py \
   --index configs/reproduction/index.json
-
 python scripts/repository/validate_release_inventory.py \
   --manifest data/lfs_manifest.json \
   --dependencies docs/dependency_matrix.json
-
 python -m unittest discover -s tests -p 'test_*.py'
 ```
 
-All are lightweight, offline checks. They do not download dependencies or LFS
-objects, initialize a model, train, infer, or submit scheduler work.
-
-## Model-facing entry points
-
-The stable launchers can enumerate preserved programs without importing model
-dependencies:
-
-```bash
-python scripts/train_conrep.py --list
-python scripts/evaluate_clinicia.py --list
-```
-
-Actual execution remains gated on a separately prepared model environment,
-available datasets/checkpoints, and researcher validation. LLM2Vec and
-OpenUnlearning currently require incompatible Transformers versions, so their
-model stacks are intentionally not combined. See
-[`docs/dependencies.md`](docs/dependencies.md) and
-[`environments/README.md`](environments/README.md).
-
-## Data availability and rights
-
-Git LFS pointer identities are anchored to an immutable base tree by
-[`data/lfs_manifest.json`](data/lfs_manifest.json). A pointer proves object
-identity, not local availability or redistribution permission. Dataset and
-model terms must be reviewed before public redistribution; unresolved entries
-must not be treated as licensed for redistribution. See
-[`data/README.md`](data/README.md).
-
-## Third-party code and project license
-
-LLM2Vec and OpenUnlearning are attributed at pinned inferred revisions and
-retain their upstream MIT license files. Local modifications are documented in
-[`THIRD_PARTY.md`](THIRD_PARTY.md) and
-[`docs/source_ownership_audit.md`](docs/source_ownership_audit.md).
-
-Those upstream licenses do not select a license for project-owned ConRep and
-ClinicIA code. The repository has no root project license; that remains a
-researcher release decision. Do not infer permission beyond the licenses and
-terms attached to each component or dataset.
-
-## Citation
-
-The manuscript identity and public citation have not been supplied. No author
-names, venue, DOI, arXiv identifier, or `CITATION.cff` is fabricated here. See
-[`docs/manuscript/README.md`](docs/manuscript/README.md) for the release gate.
+These checks are offline and do not download models or LFS data, initialize a
+model, submit a scheduler job, train, or evaluate.

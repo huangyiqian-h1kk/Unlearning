@@ -8,7 +8,6 @@ import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-INDEX_PATH = ROOT / "configs" / "reproduction" / "index.json"
 
 
 def load(relative):
@@ -23,6 +22,7 @@ class ReproductionConfigurationTests(unittest.TestCase):
             kind: load(path)
             for kind, path in cls.index["component_registries"].items()
         }
+        cls.catalog = load("data/clinicia/catalog.json")
 
     def test_offline_validator_passes(self):
         result = subprocess.run(
@@ -42,30 +42,44 @@ class ReproductionConfigurationTests(unittest.TestCase):
             result.stdout.strip(),
             "validated 4 component registries, 1 reproduction candidates, and 1 compact sweeps; runnable=0",
         )
-        self.assertEqual(result.stderr, "")
+        self.assertEqual("", result.stderr)
 
-    def test_component_registries_match_owned_interfaces(self):
+    def test_component_registries_have_owned_interfaces(self):
         self.assertEqual(set(self.registries), {"datasets", "methods", "models", "protocols"})
         for kind, record in self.registries.items():
-            self.assertEqual(record["schema_version"], "1.0")
-            self.assertEqual(record["component_kind"], kind)
+            self.assertEqual("1.0", record["schema_version"])
+            self.assertEqual(kind, record["component_kind"])
             self.assertTrue(record[kind])
 
+    def test_dataset_registry_uses_semantic_current_paths(self):
+        historical_to_current = {
+            row["historical_path"]: row["path"] for row in self.catalog["datasets"]
+        }
         paper = load("results/paper/mcq_dataset_inventory.json")
-        paper_paths = {row["path"] for row in paper["datasets"]}
-        datasets = self.registries["datasets"]
-        self.assertEqual(set(datasets["datasets"].values()), paper_paths)
-        self.assertEqual(len(datasets["datasets"]), 11)
-        self.assertEqual(datasets["redistribution_status"], "unresolved_do_not_redistribute")
+        expected = {historical_to_current[row["path"]] for row in paper["datasets"]}
+        dataset_record = self.registries["datasets"]
+        self.assertEqual(expected, set(dataset_record["datasets"].values()))
+        self.assertEqual(11, len(dataset_record["datasets"]))
+        self.assertTrue(all(path.startswith("data/clinicia/") for path in expected))
+        self.assertTrue(all((ROOT / path).is_file() for path in expected))
 
+    def test_catalog_preserves_historical_identity(self):
+        rows = self.catalog["datasets"]
+        self.assertEqual(28, len(rows))
+        self.assertEqual(28, len({row["path"] for row in rows}))
+        self.assertEqual(28, len({row["historical_path"] for row in rows}))
+        self.assertTrue(all(len(row["git_blob_oid"]) == 40 for row in rows))
+
+    def test_method_ownership_is_explicit(self):
         methods = self.registries["methods"]["methods"]
-        self.assertEqual(set(methods), {"baseline", "conrep", "graddiff", "npo", "rmu"})
-        self.assertEqual(methods["conrep"]["owner"], "project")
+        self.assertEqual({"baseline", "conrep", "graddiff", "npo", "rmu"}, set(methods))
+        self.assertEqual("project", methods["conrep"]["owner"])
         for name in ("graddiff", "npo", "rmu"):
-            self.assertEqual(methods[name]["owner"], "open_unlearning_derived")
+            self.assertEqual("open_unlearning_derived", methods[name]["owner"])
+            self.assertEqual("third_party/open-unlearning/src/train.py", methods[name]["entrypoint"])
 
     def test_candidate_is_portable_but_explicitly_blocked(self):
-        self.assertEqual(len(self.index["candidates"]), 1)
+        self.assertEqual(1, len(self.index["candidates"]))
         candidate = load(self.index["candidates"][0])
         self.assertFalse(candidate["runnable"])
         self.assertFalse(candidate["historical_equivalence_claimed"])
@@ -74,22 +88,24 @@ class ReproductionConfigurationTests(unittest.TestCase):
         self.assertTrue(all(value is False for value in candidate["gates"].values()))
         env_pattern = re.compile(r"^\$\{[A-Z][A-Z0-9_]*\}(?:/[A-Za-z0-9_.-]+)*$")
         self.assertTrue(all(env_pattern.fullmatch(value) for value in candidate["environment"].values()))
-        self.assertEqual(candidate["protocol"], "validated_v2")
+
+    def test_protocol_keeps_archived_results_read_only(self):
         protocols = self.registries["protocols"]["protocols"]
-        self.assertEqual(protocols["historical_v1"]["result_namespace"], "results/paper")
-        self.assertEqual(protocols["validated_v2"]["result_namespace"], "results/validated_v2")
+        self.assertEqual("results/paper", protocols["historical_v1"]["result_namespace"])
+        self.assertEqual("results/validated_v2", protocols["validated_v2"]["result_namespace"])
+        self.assertTrue(all(not value["may_modify_archived_paper_results"] for value in protocols.values()))
 
     def test_sweep_is_compact_and_review_only(self):
-        self.assertEqual(len(self.index["sweeps"]), 1)
+        self.assertEqual(1, len(self.index["sweeps"]))
         sweep = load(self.index["sweeps"][0])
-        self.assertEqual(sweep["status"], "review_only_not_runnable")
+        self.assertEqual("review_only_not_runnable", sweep["status"])
         self.assertFalse(sweep["expanded_products_tracked"])
         self.assertFalse(sweep["historical_equivalence_claimed"])
         self.assertEqual(
-            sweep["expected_combinations"],
             math.prod(len(values) for values in sweep["axes"].values()),
+            sweep["expected_combinations"],
         )
-        self.assertEqual(sweep["expected_combinations"], 24)
+        self.assertEqual(24, sweep["expected_combinations"])
 
 
 if __name__ == "__main__":

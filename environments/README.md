@@ -1,16 +1,16 @@
-# Environment boundaries
+# Environments
 
-There is intentionally no single model-environment lock file in this release.
-The two preserved upstream-derived stacks declare incompatible Transformers
-versions.
+Use separate model environments:
 
-For LLM2Vec-facing work, start from `llm2vec/setup.py`. For
-OpenUnlearning-facing work, start from
-`llm2vec/open_unlearning/requirements.txt` and its `setup.py`. Build those in
-separate environments and review hardware-specific packages such as
-FlashAttention, BitsAndBytes, and DeepSpeed for the target platform.
+1. **ConRep/LLM2Vec:** install the pinned package in
+   `third_party/llm2vec/` and the project package from the repository root.
+2. **OpenUnlearning baselines:** install
+   `third_party/open-unlearning/` in a separate environment.
 
-These declarations preserve dependency evidence; they are not a promise that
-the historical experiments can be rerun. Do not install model dependencies as
-part of lightweight artifact validation. Exact declarations and the known
-conflict are recorded in [`docs/dependency_matrix.json`](../docs/dependency_matrix.json).
+Their Transformers constraints conflict. The standard-library evidence tools
+(`scripts/reproduce.py` and validators) need neither model environment.
+
+Historical jobs name the original cluster modules, conda path, caches, and
+scheduler directives. Treat those as provenance. The public launchers replace
+recognized dataset/output paths but do not install CUDA, download weights,
+fetch LFS data, or claim that the historical checkpoint is available.

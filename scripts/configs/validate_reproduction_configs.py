@@ -59,8 +59,21 @@ def validate_index(index_path: pathlib.Path) -> tuple[int, int, int]:
 
     dataset_record = load_json(repository_path(declared_registries["datasets"]))
     inventory = load_json(repository_path(dataset_record["inventory"]))
-    inventory_paths = {row["path"] for row in inventory.get("datasets", [])}
-    require(set(registries["datasets"].values()) == inventory_paths, "dataset registry and paper inventory differ")
+    catalog = load_json(repository_path(dataset_record["catalog"]))
+    current_by_historical = {
+        row["historical_path"]: row["path"]
+        for row in catalog.get("datasets", [])
+    }
+    inventory_paths = {
+        current_by_historical[row["path"]]
+        for row in inventory.get("datasets", [])
+    }
+    require(
+        set(registries["datasets"].values()) == inventory_paths,
+        "dataset registry and paper inventory differ after catalog migration",
+    )
+    for raw_path in inventory_paths:
+        require(repository_path(raw_path).is_file(), f"missing ClinicIA dataset: {raw_path}")
     require(dataset_record.get("redistribution_status") == "unresolved_do_not_redistribute", "dataset rights must remain explicit")
 
     for method_id, method in registries["methods"].items():

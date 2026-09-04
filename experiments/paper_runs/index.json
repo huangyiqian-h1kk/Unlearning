@@ -1,0 +1,446 @@
+{
+  "schema_version": "1.0",
+  "record_kind": "paper_run_index",
+  "paper_tables": {
+    "1": {
+      "regime": "A",
+      "target": "diagnosis",
+      "view": "normalized"
+    },
+    "2": {
+      "regime": "B",
+      "target": "pmc",
+      "view": "normalized"
+    },
+    "3": {
+      "regime": "A",
+      "target": "deaths",
+      "view": "normalized"
+    },
+    "4": {
+      "regime": "A",
+      "target": "diagnosis",
+      "view": "raw"
+    },
+    "5": {
+      "regime": "A",
+      "target": "deaths",
+      "view": "raw"
+    },
+    "6": {
+      "regime": "B",
+      "target": "pmc",
+      "view": "raw"
+    }
+  },
+  "experiments": [
+    {
+      "experiment_id": "a-deaths-llama2-baseline",
+      "record_path": "configs/paper/historical/a-deaths-llama2-baseline.json",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "method": "Baseline",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-deaths-llama2-conrep",
+      "record_path": "configs/paper/historical/a-deaths-llama2-conrep.json",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "method": "ConRep",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "selected_capsule": true
+    },
+    {
+      "experiment_id": "a-deaths-llama2-graddiff",
+      "record_path": "configs/paper/historical/a-deaths-llama2-graddiff.json",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "method": "GradDiff",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-deaths-llama2-npo",
+      "record_path": "configs/paper/historical/a-deaths-llama2-npo.json",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "method": "NPO",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-deaths-llama2-rmu",
+      "record_path": "configs/paper/historical/a-deaths-llama2-rmu.json",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": null,
+      "method": "RMU",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-deaths-mistral-baseline",
+      "record_path": "configs/paper/historical/a-deaths-mistral-baseline.json",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "Baseline",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-deaths-mistral-conrep",
+      "record_path": "configs/paper/historical/a-deaths-mistral-conrep.json",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "ConRep",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "selected_capsule": true
+    },
+    {
+      "experiment_id": "a-deaths-mistral-graddiff",
+      "record_path": "configs/paper/historical/a-deaths-mistral-graddiff.json",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "GradDiff",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-deaths-mistral-npo",
+      "record_path": "configs/paper/historical/a-deaths-mistral-npo.json",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "NPO",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-deaths-mistral-rmu",
+      "record_path": "configs/paper/historical/a-deaths-mistral-rmu.json",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": null,
+      "method": "RMU",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-baseline",
+      "record_path": "configs/paper/historical/a-diagnosis-llama2-baseline.json",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "method": "Baseline",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-conrep",
+      "record_path": "configs/paper/historical/a-diagnosis-llama2-conrep.json",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "method": "ConRep",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "selected_capsule": true
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-graddiff",
+      "record_path": "configs/paper/historical/a-diagnosis-llama2-graddiff.json",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "method": "GradDiff",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-npo",
+      "record_path": "configs/paper/historical/a-diagnosis-llama2-npo.json",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "method": "NPO",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-rmu",
+      "record_path": "configs/paper/historical/a-diagnosis-llama2-rmu.json",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "method": "RMU",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-baseline",
+      "record_path": "configs/paper/historical/a-diagnosis-mistral-baseline.json",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "Baseline",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-conrep",
+      "record_path": "configs/paper/historical/a-diagnosis-mistral-conrep.json",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "ConRep",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "selected_capsule": true
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-graddiff",
+      "record_path": "configs/paper/historical/a-diagnosis-mistral-graddiff.json",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "GradDiff",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-npo",
+      "record_path": "configs/paper/historical/a-diagnosis-mistral-npo.json",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "NPO",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-rmu",
+      "record_path": "configs/paper/historical/a-diagnosis-mistral-rmu.json",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "RMU",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "b-pmc-mistral-baseline",
+      "record_path": "configs/paper/historical/b-pmc-mistral-baseline.json",
+      "regime": "B",
+      "target": "pmc",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "Baseline",
+      "paper_tables": [
+        2,
+        6
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "b-pmc-mistral-conrep",
+      "record_path": "configs/paper/historical/b-pmc-mistral-conrep.json",
+      "regime": "B",
+      "target": "pmc",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "ConRep",
+      "paper_tables": [
+        2,
+        6
+      ],
+      "selected_capsule": true
+    },
+    {
+      "experiment_id": "b-pmc-mistral-graddiff",
+      "record_path": "configs/paper/historical/b-pmc-mistral-graddiff.json",
+      "regime": "B",
+      "target": "pmc",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "GradDiff",
+      "paper_tables": [
+        2,
+        6
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "b-pmc-mistral-npo",
+      "record_path": "configs/paper/historical/b-pmc-mistral-npo.json",
+      "regime": "B",
+      "target": "pmc",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "NPO",
+      "paper_tables": [
+        2,
+        6
+      ],
+      "selected_capsule": false
+    },
+    {
+      "experiment_id": "b-pmc-mistral-rmu",
+      "record_path": "configs/paper/historical/b-pmc-mistral-rmu.json",
+      "regime": "B",
+      "target": "pmc",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "method": "RMU",
+      "paper_tables": [
+        2,
+        6
+      ],
+      "selected_capsule": false
+    }
+  ],
+  "selected_conrep_runs": [
+    {
+      "experiment_id": "a-deaths-llama2-conrep",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "objective": "symmetric",
+      "historical_files": {
+        "train": "experiments/paper_runs/a-deaths-llama2-conrep/historical/train.json",
+        "evaluate_forget": "experiments/paper_runs/a-deaths-llama2-conrep/historical/evaluate_forget.json",
+        "job": "experiments/paper_runs/a-deaths-llama2-conrep/historical/job.sh"
+      }
+    },
+    {
+      "experiment_id": "a-deaths-mistral-conrep",
+      "regime": "A",
+      "target": "deaths",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "paper_tables": [
+        3,
+        5
+      ],
+      "objective": "symmetric",
+      "historical_files": {
+        "train": "experiments/paper_runs/a-deaths-mistral-conrep/historical/train.json",
+        "evaluate_forget": "experiments/paper_runs/a-deaths-mistral-conrep/historical/evaluate_forget.json",
+        "job": "experiments/paper_runs/a-deaths-mistral-conrep/historical/job.sh"
+      }
+    },
+    {
+      "experiment_id": "a-diagnosis-llama2-conrep",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "objective": "symmetric",
+      "historical_files": {
+        "train": "experiments/paper_runs/a-diagnosis-llama2-conrep/historical/train.json",
+        "evaluate_forget": "experiments/paper_runs/a-diagnosis-llama2-conrep/historical/evaluate_forget.json",
+        "job": "experiments/paper_runs/a-diagnosis-llama2-conrep/historical/job.sh"
+      }
+    },
+    {
+      "experiment_id": "a-diagnosis-mistral-conrep",
+      "regime": "A",
+      "target": "diagnosis",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "paper_tables": [
+        1,
+        4
+      ],
+      "objective": "symmetric",
+      "historical_files": {
+        "train": "experiments/paper_runs/a-diagnosis-mistral-conrep/historical/train.json",
+        "evaluate_forget": "experiments/paper_runs/a-diagnosis-mistral-conrep/historical/evaluate_forget.json",
+        "job": "experiments/paper_runs/a-diagnosis-mistral-conrep/historical/job.sh"
+      }
+    },
+    {
+      "experiment_id": "b-pmc-mistral-conrep",
+      "regime": "B",
+      "target": "pmc",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "paper_tables": [
+        2,
+        6
+      ],
+      "objective": "symmetric",
+      "historical_files": {
+        "train": "experiments/paper_runs/b-pmc-mistral-conrep/historical/train.json",
+        "evaluate_forget": "experiments/paper_runs/b-pmc-mistral-conrep/historical/evaluate_forget.json",
+        "evaluate_retain": "experiments/paper_runs/b-pmc-mistral-conrep/historical/evaluate_retain.json",
+        "job": "experiments/paper_runs/b-pmc-mistral-conrep/historical/job.sh"
+      }
+    }
+  ]
+}

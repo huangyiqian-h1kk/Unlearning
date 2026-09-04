@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conrep-clinicia"
+version = "0.1.0"
+description = "ConRep representation-space unlearning and the ClinicIA evaluation artifact"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+conrep-train = "conrep.runs:main"
+clinicia-evaluate = "clinicia.runs:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["conrep*", "clinicia*"]

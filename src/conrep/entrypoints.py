@@ -10,7 +10,8 @@ from typing import Iterable
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 LEGACY_SOURCE_ROOT = REPOSITORY_ROOT / "src" / "conrep" / "legacy"
-LEGACY_LLM2VEC_ROOT = REPOSITORY_ROOT / "llm2vec"
+PROJECT_BACKEND_ROOT = REPOSITORY_ROOT / "src" / "conrep" / "backends"
+LEGACY_LLM2VEC_ROOT = REPOSITORY_ROOT / "third_party" / "llm2vec"
 
 VARIANTS = {
     "base": "ContrastiveUnlearning.py",
@@ -49,14 +50,13 @@ def run_variant(variant: str = DEFAULT_VARIANT, argv: Iterable[str] | None = Non
 
     source = source_path(variant)
     old_argv = sys.argv
-    inserted = str(LEGACY_LLM2VEC_ROOT)
+    inserted = [str(PROJECT_BACKEND_ROOT), str(LEGACY_LLM2VEC_ROOT)]
     sys.argv = [str(source), *(list(argv) if argv is not None else old_argv[1:])]
-    sys.path.insert(0, inserted)
+    sys.path[0:0] = inserted
     try:
         runpy.run_path(str(source), run_name="__main__")
     finally:
         sys.argv = old_argv
-        if sys.path and sys.path[0] == inserted:
-            sys.path.pop(0)
-        else:
-            sys.path.remove(inserted)
+        for path in reversed(inserted):
+            if path in sys.path:
+                sys.path.remove(path)

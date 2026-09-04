@@ -22,6 +22,7 @@ __pycache__/
 # =====================
 # Experiment outputs
 # =====================
+/artifacts/
 grid_search/results/
 outputs/
 results/
@@ -63,6 +64,8 @@ __pycache__/
 /llm2vec/cache/echo-data/
 
 # Phase 3 local historical/generated artifacts (tracked files are unaffected).
+# These old-path rules intentionally remain for researchers whose working tree
+# still contains the index-only-untracked Phase 3C artifacts.
 /llm2vec/grid_search/configs/
 /llm2vec/grid_search/jobs/
 /llm2vec/grid_search/results/
