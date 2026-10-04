@@ -1,5 +1,13 @@
 # Third-party components
 
+The 0390 experiment path adds separately pinned baseline material under
+[`third_party/0390_baselines/`](third_party/0390_baselines/manifest.json): FALCON
+(MIT, Jinwei Hu), LUNAR (MIT, Meta Platforms), SAGO/OpenUnlearning (MIT, CMU Locus
+Lab), ReLearn (MIT, ZJUNLP), and the standalone SophiaG optimizer from
+`zetascale==2.7.7` (license preserved). Exact revisions, hashes and implementation
+adaptations are listed in [`docs/0390/baselines.md`](docs/0390/baselines.md).
+These additions do not change the historical snapshots described below.
+
 Vendored dependency code is isolated under `third_party/`; the project-facing
 API is under `src/`. These are historical working snapshots anchored to
 inferred upstream revisions, not falsely presented as pristine upstream trees.

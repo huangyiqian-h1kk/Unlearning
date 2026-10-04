@@ -1,0 +1,100 @@
+run:
+  seed: 42
+  output_dir: results/validated_v2/0390/qwen7b/conrep-seed42
+model:
+  name_or_path: ${CONREP_MODEL_ROOT}/Qwen2.5-7B-Instruct
+  local_only: true
+  dtype: bfloat16
+  attention: sdpa
+data:
+  prepared_dir: data/processed/0390/pmc
+  injection_csv: data/clinicia/regime_b/pmc/training/easy_QA_PMC_full.csv
+  forget_csv: data/clinicia/regime_b/pmc/training/easy_QA_PMC_forget100_state.csv
+  retain_csv: data/clinicia/regime_b/pmc/training/easy_QA_PMC_retain900_full_reshaped.csv
+  general_file: data/processed/0390/wiki.jsonl
+  general_max_rows: 50000
+  forget_generation: data/clinicia/regime_b/pmc/probes/generation/forget.jsonl
+  retain_generation: data/clinicia/regime_b/pmc/probes/generation/retain.jsonl
+  forget_mcq:
+    attribute: data/clinicia/regime_b/pmc/probes/mcq/forget/att.jsonl
+    identifier-equal: data/clinicia/regime_b/pmc/probes/mcq/forget/id_equal.jsonl
+    identifier-related: data/clinicia/regime_b/pmc/probes/mcq/forget/id.jsonl
+  retain_mcq:
+    attribute: data/clinicia/regime_b/pmc/probes/mcq/retain/att.jsonl
+    identifier-equal: data/clinicia/regime_b/pmc/probes/mcq/retain/id_equal.jsonl
+    identifier-related: data/clinicia/regime_b/pmc/probes/mcq/retain/id.jsonl
+sft:
+  epochs: 5
+  learning_rate: 0.00001
+  batch_size: 1
+  gradient_accumulation_steps: 4
+  max_length: 1024
+  warmup_ratio: 0.05
+  weight_decay: 0.01
+  gradient_checkpointing: true
+  save_steps: 250
+  logging_steps: 5
+  deepspeed: configs/0390/zero2.json
+lora:
+  r: 32
+  lora_alpha: 64
+  lora_dropout: 0.05
+  bias: none
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+unlearn:
+  checkpoint: ${CONREP_SFT_CHECKPOINT}
+  learning_rate: 0.00001
+  forget_passes: 10
+  max_steps: null
+  # GLOBAL batch per forward pass; divided among torchrun ranks.
+  batch_sizes: {forget: 8, retain: 16, general: 32}
+  gradient_accumulation_steps: 1
+  max_length: 512
+  warmup_ratio: 0.05
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  gradient_checkpointing: true
+  save_steps: 10
+conrep:
+  max_length: 512
+  views: 4
+  corruption_rate: 0.7
+  temperature_forget: 0.08
+  temperature_retain: 0.1
+  temperature_general: 0.1
+  retain_negative_weight: 2.0
+  retain_margin: 0.1
+  specified_cl_weight: 1.0
+  general_cl_weight: 1.0
+  specified_lm_weight: 1.0
+  general_lm_weight: 1.0
+  inter_instance_negatives: true
+  shared_target: false
+baseline:
+  method: npo
+  beta: 0.1
+  forget_weight: 1.0
+  specified_weight: 1.0
+  general_weight: 1.0
+  layer: 7
+  train_layers: [5, 6, 7]
+  steering_coefficient: 20.0
+  kl_weight: 1.0
+evaluation:
+  regime: pmc
+  batch_size: 8
+  max_length: 512
+  max_new_tokens: 128
+  mcq_mode: generate
+  limit: null
+  mmlu_file: data/processed/0390/mmlu_validation.jsonl
+  mmlu_max_length: 4096
+selection:
+  max_mmlu_drop: 0.02
+  max_specified_drop: 0.05
+  min_injection_gain: 0.05
+  tie_tolerance: 0.005
+analysis:
+  max_samples: 100
+  sts_file: data/processed/0390/sts_validation.jsonl
+  sts_max_pairs: 1500

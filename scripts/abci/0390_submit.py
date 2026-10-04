@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+"""Render a standalone PBS file and submit at most two active jobs per user."""
+
+import argparse
+import fcntl
+import getpass
+import json
+import re
+import shlex
+import subprocess
+from pathlib import Path
+
+PROFILES = {
+    "preflight": ("00:20:00", 8),
+    "smoke": ("00:20:00", 8),
+    "sft": ("06:00:00", 8),
+    "unlearn": ("02:00:00", 8),
+    "baseline": ("03:00:00", 8),
+    "validate": ("02:00:00", 1),
+    "validate-series": ("04:00:00", 8),
+    "analyze": ("01:00:00", 1),
+    "falcon-layers": ("02:00:00", 1),
+    "relearn-augment": ("02:00:00", 1),
+}
+
+
+def render(stage, model, run_id, root, walltime, nproc, extra):
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", run_id):
+        raise ValueError("run-id may contain only letters, digits, '_' and '-'")
+    if not re.fullmatch(r"\d{1,3}:[0-5]\d:[0-5]\d", walltime):
+        raise ValueError("walltime must be HH:MM:SS")
+    name = ("0390_" + run_id)[:15]
+    argv = [
+        "bash",
+        str(root / "scripts/abci/0390_run.sh"),
+        "--nproc",
+        str(nproc),
+        "--",
+        stage,
+        "--config",
+        f"configs/0390/{model}.yaml",
+        *extra,
+    ]
+    if stage == "preflight":
+        argv.append("--distributed")
+    return (
+        f"#!/bin/bash\n#PBS -P gcg51557\n#PBS -q R9920261000\n#PBS -v RTYPE=rt_HF\n"
+        f"#PBS -l select=1\n#PBS -l walltime={walltime}\n#PBS -N {name}\n#PBS -j oe\n#PBS -k oe\n"
+        f"set -euo pipefail\ncd {shlex.quote(str(root))}\n{shlex.join(argv)}\n"
+    )
+
+
+def active_jobs(payload, user):
+    return [
+        identifier
+        for identifier, job in (payload.get("Jobs") or {}).items()
+        if job.get("Job_Owner", "").split("@")[0] == user
+        and job.get("job_state") in {"Q", "R", "H", "T", "W", "S", "E", "B"}
+    ]
+
+
+def main(argv=None):
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("stage", choices=PROFILES)
+    p.add_argument("--model", choices=["qwen7b", "llama3b"], required=True)
+    p.add_argument("--run-id", required=True)
+    p.add_argument("--walltime")
+    p.add_argument("--nproc", type=int, choices=[1, 2, 4, 8])
+    p.add_argument("--dry-run", action="store_true")
+    args, extra = p.parse_known_args(argv)
+    root = Path(__file__).resolve().parents[2]
+    walltime, nproc = PROFILES[args.stage]
+    if args.stage == "sft" and args.model == "llama3b":
+        walltime = "03:00:00"
+    if args.stage == "unlearn" and args.model == "llama3b":
+        walltime = "01:00:00"
+    script = render(
+        args.stage,
+        args.model,
+        args.run_id,
+        root,
+        args.walltime or walltime,
+        args.nproc or nproc,
+        extra,
+    )
+    path = root / "logs/0390/jobs" / f"0390_{args.stage}_{args.model}_{args.run_id}.pbs"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists() and path.read_text() != script:
+        raise FileExistsError(f"Different job already uses run-id: {path}")
+    path.write_text(script)
+    if args.dry_run:
+        print(script)
+        print(f"Written: {path}")
+        return
+    with (path.parent / "submit.lock").open("w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        result = subprocess.run(
+            ["qstat", "-f", "-F", "json"], check=True, text=True, capture_output=True
+        )
+        jobs = active_jobs(json.loads(result.stdout), getpass.getuser())
+        if len(jobs) >= 2:
+            raise RuntimeError(
+                f"Two-job limit: already {len(jobs)} active/queued jobs. No job submitted."
+            )
+        result = subprocess.run(
+            ["qsub", str(path)], check=True, text=True, capture_output=True, cwd=root
+        )
+        job_id = result.stdout.strip()
+        (path.with_suffix(".jobid")).write_text(job_id + "\n")
+        print(f"Submitted {job_id}: {path}")
+
+
+if __name__ == "__main__":
+    main()

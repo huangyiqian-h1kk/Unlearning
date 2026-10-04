@@ -15,6 +15,15 @@ models/*
 # Python cache
 __pycache__/
 *.pyc
+.venv*/
+*.egg-info/
+/vendor_checkouts/
+/data/processed/
+/logs/
+/local.env
+/configs/0390/local.yaml
+0390_*.o[0-9]*
+0390_*.e[0-9]*
 
 # HuggingFace runtime cache (only real cache)
 **/.cache/

@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -P gcg51557
+#PBS -q R9920261000
+#PBS -v RTYPE=rt_HF
+#PBS -l select=1
+#PBS -l walltime=00:20:00
+#PBS -N 0390_preflight
+#PBS -j oe
+#PBS -k oe
+set -euo pipefail
+cd "${PBS_O_WORKDIR:?Submit from the Unlearning repository root}"
+bash scripts/abci/0390_run.sh --nproc 8 -- preflight --config configs/0390/llama3b.yaml --distributed

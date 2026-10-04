@@ -1,0 +1,40 @@
+{
+  "FALCON/LICENSE": {
+    "upstream_commit": "12e09a337cb5f8cec60f24f29c76c2911b15468c",
+    "sha256": "550f387a9b5922108a8d2733fa1ab2db94a4926a4bebf4a64cf5b0d33ddd3313"
+  },
+  "FALCON/falcon/algorithms.py": {
+    "upstream_commit": "12e09a337cb5f8cec60f24f29c76c2911b15468c",
+    "sha256": "a1a1938bf8383c6fed804715b4026b5cb0107aceede7d41e786e7156e6e524a9"
+  },
+  "FALCON/MI/Mutual_Info.py": {
+    "upstream_commit": "12e09a337cb5f8cec60f24f29c76c2911b15468c",
+    "sha256": "5d1129eb347e46cfa895906edfc70720dd016cbe33cf236628db7fd994313a70"
+  },
+  "LUNAR/LICENSE": {
+    "upstream_commit": "dfa56eb0291a93e967284a9ec2d28d5572d235b1",
+    "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+  },
+  "SAGO/LICENSE": {
+    "upstream_commit": "2363ee74ec45cf467e7c28127b0b82b3b94690f7",
+    "sha256": "2f6df7a76faaefa1a6b50bdcf4191c1c2fcb72454964266f0210c2f452291dea"
+  },
+  "ReLearn/LICENSE": {
+    "upstream_commit": "e0d6938a0b7adcaf6d8e9e869c598bf100b8849e",
+    "sha256": "709689de0661432127f04070a0e4e194009ded3cc17ab43dccea95dc2b5ee0ed"
+  },
+  "ReLearn/dataAugument/templates.json": {
+    "upstream_commit": "e0d6938a0b7adcaf6d8e9e869c598bf100b8849e",
+    "sha256": "9b29172f680cbb9a1caa6d58396ffc68d16090eab516560fc2d01f1eff4edea6"
+  },
+  "zeta/sophia.py": {
+    "source_distribution": "zetascale==2.7.7",
+    "wheel_sha256": "6b8d543257d1c81c3d83c94c0df1065bab92972b5b51fb9792150d160646f9d0",
+    "sha256": "51631b523391f741afb6df94a3b65adc928aba340838809bd8a7a14e502a5c50"
+  },
+  "zeta/LICENSE": {
+    "source_distribution": "zetascale==2.7.7",
+    "wheel_sha256": "6b8d543257d1c81c3d83c94c0df1065bab92972b5b51fb9792150d160646f9d0",
+    "sha256": "58188f76d60dd0f95daa827fffddac9a51f79dc7d9d1efd16bf3fcbdcf7cdd9c"
+  }
+}

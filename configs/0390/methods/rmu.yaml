@@ -1,0 +1,6 @@
+baseline:
+  method: rmu
+  layer: 7
+  train_layers: [5, 6, 7]
+  specified_weight: 100.0
+  general_weight: 100.0
