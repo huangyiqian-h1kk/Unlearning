@@ -27,7 +27,7 @@ cp environments/0390/local.env.example local.env
 source local.env
 # 使用已安装的 miniforge，在本项目目录下创建 Python 3.11 bootstrap。
 source /home/aci18769hm/opt/miniforge3/etc/profile.d/conda.sh
-conda create --prefix "$CONREP_WORK_ROOT/envs/bootstrap-py311" python=3.11 -y
+conda create --prefix "$CONREP_WORK_ROOT/envs/bootstrap-py311" -c conda-forge python=3.11 git-lfs -y
 bash scripts/abci/0390_setup_env.sh
 source "$CONREP_ENV/bin/activate"
 ```
@@ -37,12 +37,23 @@ Transformers 4.48.3、PEFT 0.14.0、Accelerate 1.3.0；SFT 使用 DeepSpeed 0.16
 采用 SDPA，不要求 FlashAttention 编译。安装脚本运行 `pip check` 并保存实际 freeze。
 CPU 验证与 ABCI GPU 验证的范围见 [verification.md](verification.md)。
 
+若此前已创建 bootstrap，但没有安装 Git LFS，可在加载 `local.env` 和上述
+Miniforge 初始化脚本后补装：
+
+```bash
+conda install --prefix "$CONREP_WORK_ROOT/envs/bootstrap-py311" --freeze-installed -c conda-forge git-lfs -y
+```
+
+`local.env` 将 bootstrap 的工具目录加入 PATH；训练继续使用 `CONREP_ENV` 中的 Python。
+
 ## 2. 准备原数据和离线资产
 
 输入是原 PMC 的 CSV/JSONL；保留原 forget/retain 划分，不生成新的 injection 内容。
 先在可访问资产的环境中物化 LFS 数据；已有服务器副本也可放回 catalog 对应路径。
 
 ```bash
+git lfs version
+git lfs install --local
 git lfs pull --include='data/clinicia/**'
 python scripts/reproduce.py data-status --require-materialized
 
