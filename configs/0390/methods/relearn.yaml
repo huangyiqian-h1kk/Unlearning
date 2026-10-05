@@ -1,0 +1,5 @@
+baseline:
+  method: relearn
+  augmented_file: data/processed/0390/relearn.jsonl
+  augmentation_model: null
+  kl_weight: 1.0

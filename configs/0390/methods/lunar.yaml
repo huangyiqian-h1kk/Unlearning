@@ -1,0 +1,10 @@
+baseline:
+  method: lunar
+  layer: 22
+  refusal_file: vendor_checkouts/LUNAR/dataset/splits/harmful.json
+  calibration_samples: 128
+  direction_coefficient: 2.0
+  fit_learning_rate: 0.01
+  fit_steps: 200
+  scheduler_gamma: 0.9
+  scheduler_every_steps: 10

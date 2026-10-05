@@ -1,0 +1,17 @@
+data:
+  prepared_dir: data/processed/0390/diagnosis
+  injection_csv: null
+  forget_csv: data/clinicia/regime_a/diagnosis/training/easy_qa.csv
+  retain_csv: data/clinicia/regime_a/deaths/training/easy_qa.csv
+  forget_generation: data/clinicia/regime_a/diagnosis/probes/generation.jsonl
+  retain_generation: data/clinicia/regime_a/deaths/probes/generation.jsonl
+  forget_mcq:
+    attribute: data/clinicia/regime_a/diagnosis/probes/mcq/att.jsonl
+    identifier-equal: null
+    identifier-related: data/clinicia/regime_a/diagnosis/probes/mcq/id.jsonl
+  retain_mcq:
+    attribute: data/clinicia/regime_a/deaths/probes/mcq/att.jsonl
+    identifier-equal: data/clinicia/regime_a/deaths/probes/mcq/id_equal.jsonl
+    identifier-related: data/clinicia/regime_a/deaths/probes/mcq/id.jsonl
+evaluation:
+  regime: celebrity

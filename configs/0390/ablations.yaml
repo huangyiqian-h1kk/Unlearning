@@ -1,0 +1,13 @@
+# Each row is applied to the same model/SFT/data configuration.
+ablations:
+  main: {}
+  shared_noise_target:
+    conrep: {shared_target: true}
+  no_forget_inter_instance_negatives:
+    conrep: {inter_instance_negatives: false}
+  no_specified_cl:
+    conrep: {specified_cl_weight: 0.0}
+  no_general_cl:
+    conrep: {general_cl_weight: 0.0}
+  no_retain_lm:
+    conrep: {specified_lm_weight: 0.0, general_lm_weight: 0.0}

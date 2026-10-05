@@ -7,6 +7,32 @@ LLM2Vec/OpenUnlearning code used by the implementations.
 
 Paper: [OpenReview submission S9JBN7LmH0](https://openreview.net/forum?id=S9JBN7LmH0).
 
+## Updated experiments: 0390
+
+The new execution path supports **Qwen2.5-7B-Instruct** and
+**Llama-3.2-3B-Instruct**, PMC multi-format knowledge injection, causal
+embedder-generator ConRep, and the six fixed baselines: NPO, RMU, FALCON,
+LUNAR, SAGO, and ReLearn. It has its own code, configurations and outputs;
+the historical reproduction paths below remain available.
+
+- [ABCI execution guide / 新版实验执行方案](docs/0390/README_zh.md): setup,
+  data preparation, SFT, checkpoint selection, training and validation commands.
+- [Method and implementation specification](docs/0390/method.md): losses,
+  corruption, parameterization, distributed batches, diagnostics and ablations.
+- [Baseline integration](docs/0390/baselines.md): pinned sources, preserved
+  algorithms, explicit ClinicIA adaptations and preparation requirements.
+- [Verification report](docs/0390/verification.md): what was actually executed.
+
+```bash
+python scripts/0390_experiment.py config --config configs/0390/llama3b.yaml
+python scripts/abci/0390_submit.py smoke --model llama3b --run-id smoke \
+  --set run.output_dir=results/validated_v2/0390/llama3b/gpu-smoke --dry-run
+```
+
+ABCI jobs use project `gcg51557`, reservation `R9920261000`, resource type
+`rt_HF`, and `0390` job names. The submitter enforces the user's two-job limit.
+Local tiny-model execution is verified; full-size GPU results are not claimed.
+
 ConRep removes an identifier-attribute relation in representation space.
 ClinicIA then asks whether the same relation remains recoverable through six
 linguistic views:
