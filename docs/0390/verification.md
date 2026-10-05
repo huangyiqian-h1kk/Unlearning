@@ -65,6 +65,13 @@ added to ABCI scripts and does not verify CUDA or DeepSpeed execution.
   They execute the batch wrapper with a simulated module environment, checking
   that the toolkit, venv and project-local caches reach Python, and that a missing
   compiler prevents Python startup. These tests do not execute CUDA or DeepSpeed.
+- Resource selection now supports `rt_HF` and `rt_HG` in the same reserved queue.
+  `validate`, `analyze`, `falcon-layers` and `relearn-augment` default to HG;
+  training and parallel checkpoint-series validation retain their HF defaults.
+  This changes allocation only: training batch sizes and objectives are unchanged.
+  Six local submitter tests pass (`python tests/0390/test_abci_submit.py -v`),
+  covering default allocations, explicit overrides, preserved training arguments,
+  the one-GPU HG limit and rejection of multiple writers for unsharded evaluation.
 
 ## Not yet verified
 
@@ -72,7 +79,7 @@ The two-process Gloo test is skipped only when this execution host specifically
 rejects the socket setup with `Operation not permitted`; other failures still fail
 the test. The server Llama 3B smoke above covers NCCL and the eight-rank
 contrastive gather/backward; the SFT rerun covers Llama's ZeRO-2 execution.
-Qwen 7B GPU execution and completed full-length training remain unverified.
+Qwen 7B GPU execution, HG allocations and completed full-length training remain unverified.
 
 The local checkout contains Git LFS pointers; the user materialized the original
 assets on ABCI and ran PMC preparation as recorded above. Selected SFT quality,

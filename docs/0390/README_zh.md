@@ -87,7 +87,7 @@ Retain-only 对照只适用于当前 PMC 按 patient ID 划分的设定。若身
 
 ## 3. ABCI 短验证
 
-提交器生成的 PBS 始终包含：
+提交器生成的 PBS 保留项目、预约队列和 `0390` 作业前缀。以 HF 为例：
 
 ```bash
 #PBS -P gcg51557
@@ -99,21 +99,50 @@ Retain-only 对照只适用于当前 PMC 按 patient ID 划分的设定。若身
 #PBS -k oe
 ```
 
-[ABCI 官方资源表](https://docs.abci.ai/v3/en/job-execution/)将 Reserved 服务列为 `rt_HF`。
-所以这里不假定预约队列支持 `rt_HG`。节点申请保持 `rt_HF`，按阶段缩短 walltime。
+[ABCI 官方预约作业示例](https://docs.abci.ai/v3/en/job-execution/#how-to-use-reserved-node)
+明确支持在预约队列中设置 `RTYPE=rt_HG`；此前只支持 HF 的限制已移除。
+HF 独占整节点的 8 张 GPU；HG 使用共享节点中的 1 张 GPU。
+两者均使用 `-q R9920261000`，不切换到公开队列。
 
-| 阶段 | 默认 walltime | GPU 进程数 |
-| --- | --- | --- |
-| preflight / 真实 backbone 两步 ConRep smoke | 20 分钟 | 8 |
-| Llama 3B / Qwen 7B SFT | 3 / 6 小时 | 8 |
-| Llama 3B / Qwen 7B ConRep | 1 / 2 小时 | 8 |
-| baseline | 3 小时 | 8 |
-| 一组 checkpoints 验证 | 4 小时 | 8，各 rank 分配不同 checkpoints |
-| FALCON MI / ReLearn augmentation | 2 小时 | 1 |
-| embedding 分析 | 1 小时 | 1 |
+| 阶段 | 默认资源 | 默认 walltime | GPU 进程数 |
+| --- | --- | --- | --- |
+| preflight / 真实 backbone 两步 ConRep smoke | HF | 20 分钟 | 8 |
+| Llama 3B / Qwen 7B SFT | HF | 3 / 6 小时 | 8 |
+| Llama 3B / Qwen 7B ConRep | HF | 1 / 2 小时 | 8 |
+| baseline | HF | 3 小时 | 8 |
+| 单 checkpoint 验证 | HG | 2 小时 | 1 |
+| 一组 checkpoints 验证 | HF | 4 小时 | 8，各 rank 分配不同 checkpoints |
+| FALCON MI / ReLearn augmentation | HG | 2 小时 | 1 |
+| embedding 分析 | HG | 1 小时 | 1 |
 
 这些是初始申请上限，不是实测运行时间。首轮根据日志调整 `--walltime`。
 所有 GPU 任务均为单节点，当前不引入跨节点通信。
+
+可显式传入 `--rtype rt_HG` 或 `--rtype rt_HF`。HG 默认启动 1 个进程，并拒绝
+`--nproc 8` 等超出分配的进程数。只修改 `--nproc 1` 不会把默认 HF 的任务变成 HG。
+现有 SFT/ConRep 训练默认配置继续使用 HF；下列 HG 适用性判断尚不是 HG 实测结果：
+
+- `validate`、`analyze`、`falcon-layers`、`relearn-augment` 本来只运行单 GPU，默认改用 HG。
+- `validate-series --rtype rt_HG` 会逐个处理 checkpoints，需按数量增加 walltime；
+  大量候选可继续使用 HF 的 8 个独立评测进程。
+- LUNAR 的冻结模型特征前向与局部投影拟合适合优先做 HG 短测试。
+- NPO/RMU/SAGO/FALCON/ReLearn 可做 HG 显存与速度测试；提交器不会自动改变其
+  batch、梯度累积或方法参数。正式试验前保持相同有效数据曝光预算。
+- 若把 Llama 3B full SFT 改到 HG，当前每卡 batch 1 下须设
+  `--set sft.gradient_accumulation_steps=32`，维持有效 batch 32。Qwen 7B full SFT
+  在单卡上失去 ZeRO-2 的跨卡状态分片，首轮继续 HF。
+- ConRep 的全局每次前向 batch 仍为 8/16/32；HG 时全部由单卡承担。
+  不能把 batch 缩小后仅靠梯度累积，便声称保留了相同的对比负样本集合。
+
+例如，原始 Llama 的验证可使用默认 HG：
+
+```bash
+python scripts/abci/0390_submit.py validate --model llama3b --run-id l3baseval \
+  --rtype rt_HG --checkpoint "$CONREP_MODEL_ROOT/Llama-3.2-3B-Instruct" \
+  --output results/validated_v2/0390/llama3b/base-validation --dry-run
+```
+
+`--dry-run` 仅生成并显示 PBS。已提交的作业不会被这次提交器更新修改或重新提交。
 
 ```bash
 # 第一遍可以加 --dry-run 看完整 PBS；去掉后才提交。

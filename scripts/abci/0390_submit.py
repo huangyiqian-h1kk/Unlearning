@@ -23,8 +23,16 @@ PROFILES = {
     "relearn-augment": ("02:00:00", 1),
 }
 
+SINGLE_GPU_STAGES = {"validate", "analyze", "falcon-layers", "relearn-augment"}
 
-def render(stage, model, run_id, root, walltime, nproc, extra):
+
+def render(stage, model, run_id, root, walltime, nproc, extra, rtype="rt_HF"):
+    if rtype not in {"rt_HF", "rt_HG"}:
+        raise ValueError("rtype must be rt_HF or rt_HG")
+    if rtype == "rt_HG" and nproc != 1:
+        raise ValueError("rt_HG allocates one GPU; use --nproc 1")
+    if stage in SINGLE_GPU_STAGES and nproc != 1:
+        raise ValueError(f"{stage} has no multi-rank output sharding; use --nproc 1")
     if not re.fullmatch(r"[A-Za-z0-9_-]+", run_id):
         raise ValueError("run-id may contain only letters, digits, '_' and '-'")
     if not re.fullmatch(r"\d{1,3}:[0-5]\d:[0-5]\d", walltime):
@@ -44,7 +52,7 @@ def render(stage, model, run_id, root, walltime, nproc, extra):
     if stage == "preflight":
         argv.append("--distributed")
     return (
-        f"#!/bin/bash\n#PBS -P gcg51557\n#PBS -q R9920261000\n#PBS -v RTYPE=rt_HF\n"
+        f"#!/bin/bash\n#PBS -P gcg51557\n#PBS -q R9920261000\n#PBS -v RTYPE={rtype}\n"
         f"#PBS -l select=1\n#PBS -l walltime={walltime}\n#PBS -N {name}\n#PBS -j oe\n#PBS -k oe\n"
         f"set -euo pipefail\ncd {shlex.quote(str(root))}\n{shlex.join(argv)}\n"
     )
@@ -65,6 +73,11 @@ def main(argv=None):
     p.add_argument("--model", choices=["qwen7b", "llama3b"], required=True)
     p.add_argument("--run-id", required=True)
     p.add_argument("--walltime")
+    p.add_argument(
+        "--rtype",
+        choices=["rt_HF", "rt_HG"],
+        help="Default: rt_HG for single-GPU evaluation/preparation, rt_HF otherwise",
+    )
     p.add_argument("--nproc", type=int, choices=[1, 2, 4, 8])
     p.add_argument("--dry-run", action="store_true")
     args, extra = p.parse_known_args(argv)
@@ -74,14 +87,17 @@ def main(argv=None):
         walltime = "03:00:00"
     if args.stage == "unlearn" and args.model == "llama3b":
         walltime = "01:00:00"
+    rtype = args.rtype or ("rt_HG" if args.stage in SINGLE_GPU_STAGES else "rt_HF")
+    nproc = args.nproc or (1 if rtype == "rt_HG" else nproc)
     script = render(
         args.stage,
         args.model,
         args.run_id,
         root,
         args.walltime or walltime,
-        args.nproc or nproc,
+        nproc,
         extra,
+        rtype=rtype,
     )
     path = root / "logs/0390/jobs" / f"0390_{args.stage}_{args.model}_{args.run_id}.pbs"
     path.parent.mkdir(parents=True, exist_ok=True)
