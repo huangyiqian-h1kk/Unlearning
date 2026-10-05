@@ -26,6 +26,8 @@ import time
 ARTIFACT_NAMES = {
     "TRAINING_COMPLETE.json", "COMPLETE.json", "metrics.json", "report.json",
     "resolved_config.json", "lineage.json", "trainer_state.json", "train.jsonl",
+    "sft-pipeline-config.json", "pipeline.json", "pipeline-events.jsonl",
+    "sft-validation-summary.tsv", "selected-sft.json",
 }
 SCHEDULER_FIELDS = {
     "Job_Name", "Job_Owner", "job_state", "queue", "Resource_List",
@@ -390,7 +392,7 @@ def recover_script(root, job_id, dest):
             snapshot_file(marker.with_suffix(".pbs"), dest / "recovered.pbs")
             # A recovered script is evidence collected now, not a guaranteed submission snapshot.
             script = marker.with_suffix(".pbs").read_text()
-            identity = re.match(r"0390_(.+)_(llama3b|qwen7b)_(.+)\.pbs$", marker.with_suffix(".pbs").name)
+            identity = re.match(r"0390_(.+)_(llama3b|llama8b|qwen7b)_(.+)\.pbs$", marker.with_suffix(".pbs").name)
             name = re.search(r"^#PBS -N (\S+)$", script, re.M)
             for line in script.splitlines():
                 if not line.startswith("bash "):

@@ -18,6 +18,7 @@ PROFILES = {
     "preflight": ("00:20:00", 8),
     "smoke": ("00:20:00", 8),
     "sft": ("06:00:00", 8),
+    "sft-pipeline": ("03:00:00", 8),
     "unlearn": ("02:00:00", 8),
     "baseline": ("03:00:00", 8),
     "validate": ("02:00:00", 1),
@@ -75,7 +76,7 @@ def active_jobs(payload, user):
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("stage", choices=PROFILES)
-    p.add_argument("--model", choices=["qwen7b", "llama3b"], required=True)
+    p.add_argument("--model", choices=["qwen7b", "llama3b", "llama8b"], required=True)
     p.add_argument("--run-id", required=True)
     p.add_argument("--walltime")
     p.add_argument(

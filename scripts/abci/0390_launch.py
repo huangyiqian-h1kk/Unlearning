@@ -20,7 +20,7 @@ if not torch.cuda.is_available() or torch.cuda.device_count() < args.nproc:
     raise RuntimeError(
         f"Requested {args.nproc} GPU processes, visible GPUs={torch.cuda.device_count()}"
     )
-if argv[0] == "sft":
+if argv[0] in {"sft", "sft-pipeline"}:
     # Check the GPU-only DeepSpeed import path once before spawning workers or
     # loading model weights; CPU dependency tests cannot exercise this path.
     import deepspeed
@@ -41,5 +41,10 @@ command = [
 ]
 if args.nproc == 1:
     command = [sys.executable, "scripts/0390_experiment.py", *argv]
+if argv[0] == "sft-pipeline":
+    # Exactly one coordinator. It waits for SFT's torchrun process group to exit
+    # before launching fresh, independent checkpoint-validation workers.
+    command = [sys.executable, "scripts/0390_experiment.py", *argv,
+               "--pipeline-nproc", str(args.nproc)]
 print("Launching:", command, flush=True)
 subprocess.run(command, check=True)

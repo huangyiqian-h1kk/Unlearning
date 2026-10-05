@@ -18,6 +18,7 @@ def parser():
             "preflight",
             "smoke",
             "sft",
+            "sft-pipeline",
             "unlearn",
             "baseline",
             "validate",
@@ -39,6 +40,11 @@ def parser():
     p.add_argument("--ablation")
     p.add_argument("--set", action="append", default=[], metavar="KEY=VALUE")
     p.add_argument("--resume")
+    p.add_argument("--pipeline-nproc", type=int, choices=[1, 2, 4, 8], default=1)
+    p.add_argument(
+        "--skip-training", action="store_true",
+        help="sft-pipeline: reuse a completed, configuration-matched SFT run",
+    )
     p.add_argument("--retain-only", action="store_true")
     p.add_argument("--checkpoint")
     p.add_argument("--checkpoint-root")
@@ -93,6 +99,12 @@ def resolve(args):
         cfg = merge(cfg, load_config_overrides(args.set))
     if args.checkpoint and args.stage in {"unlearn", "baseline", "falcon-layers"}:
         cfg["unlearn"]["checkpoint"] = args.checkpoint
+    if args.stage == "sft-pipeline":
+        if not args.output:
+            raise ValueError("sft-pipeline requires --output (parent of sft/ and validation/)")
+        if any(item.partition("=")[0] == "run.output_dir" for item in args.set):
+            raise ValueError("sft-pipeline uses --output; do not also set run.output_dir")
+        cfg["run"]["output_dir"] = str((Path(args.output) / "sft").resolve())
     return cfg
 
 
@@ -210,6 +222,13 @@ def main(argv=None):
         from .sft import run
 
         run(cfg, args.resume, args.retain_only)
+    elif stage == "sft-pipeline":
+        from .sft_pipeline import run
+
+        result = run(
+            cfg, args.output, args.pipeline_nproc, args.resume,
+            args.retain_only, args.skip_training,
+        )
     elif stage == "unlearn":
         from conrep.v2.trainer import run
 

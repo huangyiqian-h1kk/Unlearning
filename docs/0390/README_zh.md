@@ -1,9 +1,12 @@
 # 0390 新版实验执行方案
 
-这条入口用于新版实验：Qwen2.5-7B-Instruct 和 Llama-3.2-3B-Instruct，
+这条入口用于新版实验：Qwen2.5-7B-Instruct、Llama-3.2-3B-Instruct 和 Llama-3.1-8B-Instruct，
 原 PMC 多格式 knowledge injection，新的 ConRep，以及 NPO、RMU、FALCON、
 LUNAR、SAGO、ReLearn。默认先执行 PMC；原 celebrity 数据也可通过 data profile 接入。
 旧论文结果与训练代码保留，不与新实验输出混写。
+
+**Llama 8B 一次排队完成 SFT、原始模型/全部 checkpoints 验证及自动选择：**
+见 [单作业执行说明与可复制命令](llama8b-sft.md)。
 
 ## 1. 文件与环境
 
@@ -12,7 +15,7 @@ LUNAR、SAGO、ReLearn。默认先执行 PMC；原 celebrity 数据也可通过 
 | `src/conrep/v2/` | Corruption、causal embedding、contrastive losses、ConRep trainer |
 | `src/experiments/` | 数据转换、标准 SFT、统一验证、checkpoint 选择、表示分析 |
 | `src/experiments/baselines/` | 六种 baseline 的训练和数据准备 |
-| `configs/0390/` | 两个 backbone、共同训练参数、method overlays、ablations |
+| `configs/0390/` | Backbone 配置、共同训练参数、method overlays、ablations |
 | `environments/0390/` | Python 3.11 依赖和已解析的版本约束 |
 | `scripts/abci/0390_*.py`、`0390_*.sh` | PBS 生成、提交、GPU 启动、环境安装 |
 | `jobs/0390_*.pbs` | 可直接检查的短验证 PBS 样本 |
@@ -114,6 +117,7 @@ HF 独占整节点的 8 张 GPU；HG 使用共享节点中的 1 张 GPU。
 | --- | --- | --- | --- |
 | preflight / 真实 backbone 两步 ConRep smoke | HF | 20 分钟 | 8 |
 | Llama 3B / Qwen 7B SFT | HF | 3 / 6 小时 | 8 |
+| Llama 8B SFT + 全 checkpoint 验证 + 选择 | HF | 3 小时 | 8；训练与验证顺序使用同一分配 |
 | Llama 3B / Qwen 7B ConRep | HF | 1 / 2 小时 | 8 |
 | baseline | HF | 3 小时 | 8 |
 | 单 checkpoint 验证 | HG | 2 小时 | 1 |

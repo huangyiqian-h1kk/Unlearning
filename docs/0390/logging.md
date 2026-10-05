@@ -39,6 +39,12 @@
 不会用可能已复用的输出目录覆盖它。快照表示采集时的文件内容，不单独证明每个文件
 均由该作业生成，尤其是历史回收或 resume 的情形。
 
+`sft-pipeline` 将同一作业的训练、backbone/所有 checkpoint 验证、自动选择串联。
+归档额外包含 `pipeline.json`、`pipeline-events.jsonl`、`sft-pipeline-config.json`、
+`sft-validation-summary.tsv` 和 `selected-sft.json`；事件记录带实际 PBS job ID。
+`TRAINING_COMPLETE.json` 只证明 SFT 完成，整条流程以 `pipeline.json` 为准。
+无合格 checkpoint 会记录 `no_eligible_checkpoint` 并以非零状态退出，不能与训练故障混读。
+
 ## 首次回收现有日志
 
 在 ABCI 登录节点执行，不提交 GPU 作业：

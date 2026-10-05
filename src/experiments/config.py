@@ -19,7 +19,9 @@ def merge(base, update):
 
 def load_config(path, overrides=()):
     path = Path(path).resolve()
-    raw = yaml.safe_load(path.read_text())
+    # Frozen run configurations are JSON. YAML 1.1 can interpret JSON numbers
+    # such as 1e-05 as strings, changing the learning rate on worker reload.
+    raw = json.loads(path.read_text()) if path.suffix == ".json" else yaml.safe_load(path.read_text())
     parents = raw.pop("inherits", [])
     cfg = {}
     for parent in parents:

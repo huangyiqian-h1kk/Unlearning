@@ -2,6 +2,30 @@
 
 Verification date: 2026-10-05. This records code and execution checks, not experiment results.
 
+## Llama 8B single-allocation SFT pipeline
+
+- Added the Llama-3.1-8B-Instruct configuration and `sft-pipeline` stage. One
+  coordinator launches SFT and then a fresh validation process group in the same
+  PBS allocation; selection runs only after every validation worker succeeds.
+- Nine new CPU tests cover process ordering, launcher dispatch, PBS resource/name
+  settings, real constraint/tie-break checkpoint selection, worker failures,
+  missing validation reports, no eligible checkpoint, completed-training reuse,
+  output protection and job-ID-linked artifact capture.
+- The tests exercise JSON configuration reload through the real config loader:
+  scientific-notation learning rates remain numbers when workers load a snapshot.
+- The existing 7 submitter, 9 log, 2 environment, 6 HG validation and 6 MMLU
+  protocol tests also pass: 39 relevant CPU tests in total.
+- Python compilation, PBS/shell syntax and patch whitespace checks pass. These
+  are orchestration checks; actual Llama 8B GPU memory, runtime and SFT quality
+  remain to be measured on ABCI. No model weights or private run results were
+  generated or published by these checks.
+
+```bash
+python tests/0390/test_sft_pipeline.py -v
+```
+
+Commands, expected outputs and restart behavior: [llama8b-sft.md](llama8b-sft.md).
+
 ## Job-log management checks (2026-10-05)
 
 - Nine new CPU-only tests in `tests/0390/test_joblogs.py` pass. They exercise the

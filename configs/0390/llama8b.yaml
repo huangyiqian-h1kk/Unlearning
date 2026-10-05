@@ -1,0 +1,5 @@
+inherits: [base.yaml]
+model:
+  name_or_path: ${CONREP_MODEL_ROOT}/Llama-3.1-8B-Instruct
+run:
+  output_dir: results/validated_v2/0390/llama8b/conrep-seed42
