@@ -18,17 +18,17 @@ LUNAR、SAGO、ReLearn。默认先执行 PMC；原 celebrity 数据也可通过 
 | `jobs/0390_*.pbs` | 可直接检查的短验证 PBS 样本 |
 | `results/validated_v2/0390/` | 新训练、验证和分析输出；不提交模型或运行结果 |
 
-建议服务器工作根目录为 `/groups/gcg51557/experiments/0390_unlearning`。
-这是本方案建议的新目录，不是对服务器已有目录的断言。以下命令在仓库根目录执行。
+服务器工作根目录固定为 `/groups/gcg51557/experiments/0390_rlsd/unlearning`，
+仓库目录为其下的 `Unlearning/`。环境、模型和下载缓存均放在这个工作根目录下。
+以下命令在仓库根目录执行。
 
 ```bash
 cp environments/0390/local.env.example local.env
-# 编辑 local.env：工作根目录、独立环境、Python 3.11 和本地模型目录。
-# 已知 miniforge 安装可用于创建 bootstrap；不复用 RLVR 环境。
-source /home/aci18769hm/opt/miniforge3/etc/profile.d/conda.sh
-conda create -n conrep-bootstrap python=3.11 -y
-bash scripts/abci/0390_setup_env.sh
 source local.env
+# 使用已安装的 miniforge，在本项目目录下创建 Python 3.11 bootstrap。
+source /home/aci18769hm/opt/miniforge3/etc/profile.d/conda.sh
+conda create --prefix "$CONREP_WORK_ROOT/envs/bootstrap-py311" python=3.11 -y
+bash scripts/abci/0390_setup_env.sh
 source "$CONREP_ENV/bin/activate"
 ```
 
