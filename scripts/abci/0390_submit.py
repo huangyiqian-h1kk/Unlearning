@@ -18,12 +18,13 @@ PROFILES = {
     "baseline": ("03:00:00", 8),
     "validate": ("02:00:00", 1),
     "validate-series": ("04:00:00", 8),
+    "audit-mmlu": ("00:30:00", 1),
     "analyze": ("01:00:00", 1),
     "falcon-layers": ("02:00:00", 1),
     "relearn-augment": ("02:00:00", 1),
 }
 
-SINGLE_GPU_STAGES = {"validate", "analyze", "falcon-layers", "relearn-augment"}
+SINGLE_GPU_STAGES = {"validate", "audit-mmlu", "analyze", "falcon-layers", "relearn-augment"}
 
 
 def render(stage, model, run_id, root, walltime, nproc, extra, rtype="rt_HF"):

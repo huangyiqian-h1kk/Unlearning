@@ -217,6 +217,40 @@ MMLU validation 固定取每个 subject 的 20 个 test 样本，使用该 subje
 likelihood。这是用于控制训练成本的固定 validation 协议，不冒充完整 MMLU 测量。
 `mmlu_full.jsonl` 留给后续完整 utility 测量；不得混用两套结果选择 checkpoints。
 
+**2026-10-05：在批量筛选前先核验 MMLU 打分。** 原始 Llama 3B 的首次验证
+作业 `2506253.pbs1` 正常完成，但当前协议的 MMLU 为 36.05%。这是未注入模型的
+读数，不能归因于 SFT。Meta 的 [Instruct MMLU 说明](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/eval_details.md#mmlu)
+使用生成答案字母（5-shot，最多 10 tokens）；本入口原先在 assistant 的起始位置
+直接比较 A/B/C/D 的 likelihood。协议差异可能影响读数，尚未确定原因。
+
+新增 `audit-mmlu` 用同一份已准备 MMLU、每科前 5 题（共 285 题）做格式诊断：
+原 likelihood、原 prompt 自由生成、明确要求只回答最后一题的字母后生成。
+两种生成均 greedy、最多 10 tokens；严格解析短字母答案，无法解析计错并单独
+报告比例。记录原始输出、四个字母的 likelihood/概率质量、预测分布、题目行号和
+截断数量。长 prompt 与现有 likelihood 一样从左侧截断，保留最后的问题。
+这是预先固定的诊断，不自动按最高分选择评测协议，也不声称复现官方完整 MMLU。
+
+```bash
+# 登录节点：先暴露 bootstrap 中的 Git LFS，再更新代码。
+source local.env
+source "$CONREP_ENV/bin/activate"
+git pull --ff-only origin codex/0390-conrep-v2
+
+python scripts/abci/0390_submit.py audit-mmlu --model llama3b --run-id l3mmlua1 \
+  --rtype rt_HG --walltime 00:30:00 \
+  --checkpoint "$CONREP_MODEL_ROOT/Llama-3.2-3B-Instruct" \
+  --output results/validated_v2/0390/llama3b/mmlu-audit-v1
+
+python scripts/abci/0390_submit.py audit-mmlu --model qwen7b --run-id q7mmlua1 \
+  --rtype rt_HG --walltime 00:30:00 \
+  --checkpoint "$CONREP_MODEL_ROOT/Qwen2.5-7B-Instruct" \
+  --output results/validated_v2/0390/qwen7b/mmlu-audit-v1
+```
+
+输出为 `report.json` 和 `predictions.jsonl`，不能传给 `select`。该诊断不修改现有
+PMC/MMLU evaluator、已有验证缓存或 SFT 权重。确认协议后再批量验证 checkpoints；
+如果之后修订 MMLU，原始模型和所有候选必须使用同一新版协议重新验证。
+
 Retain-only 对照使用同一 SFT 入口：
 
 ```bash

@@ -72,6 +72,22 @@ added to ABCI scripts and does not verify CUDA or DeepSpeed execution.
   Six local submitter tests pass (`python tests/0390/test_abci_submit.py -v`),
   covering default allocations, explicit overrides, preserved training arguments,
   the one-GPU HG limit and rejection of multiple writers for unsharded evaluation.
+- Llama formal SFT `2506096.pbs1` (`0390_l3sft42`) exited 0 in 8m48s;
+  the completion marker reports 465 updates and the saved final model.
+- Qwen SFT smoke `2506097.pbs1` exited 0 in 3m23s with a two-step completion
+  marker. Formal Qwen SFT `2506252.pbs1` (`0390_q7sft42`) then exited 0 in
+  15m25s, completed 465 updates and saved the final model. The logged loss fell
+  from 5.1495 to 0.3007; this is execution evidence, not validation quality.
+- Llama original-backbone validation `2506253.pbs1` (`0390_l3baseval`) ran on
+  HG and exited 0 in 10m18s. PMC QA/cloze/background accuracies were zero on
+  both pools; current-protocol MMLU was 0.3605263158 (57 subjects, 20 each).
+  Because this original-backbone score is unexpectedly low, checkpoint selection
+  is deferred pending an answer-format diagnostic. It is not an SFT regression.
+- The new `audit-mmlu` stage compares the unchanged likelihood scorer with
+  short generated answers on a fixed balanced subset. Five CPU-only tests cover
+  sampling, strict extraction, invalid-output accounting, aggregation and CLI;
+  the six submitter tests also cover its single-GPU HG default. Real-model audit
+  execution and the cause of the low MMLU score remain unverified.
 
 ## Not yet verified
 
@@ -79,14 +95,15 @@ The two-process Gloo test is skipped only when this execution host specifically
 rejects the socket setup with `Operation not permitted`; other failures still fail
 the test. The server Llama 3B smoke above covers NCCL and the eight-rank
 contrastive gather/backward; the SFT rerun covers Llama's ZeRO-2 execution.
-Qwen 7B GPU execution, HG allocations and completed full-length training remain unverified.
+The supplied logs now verify Qwen GPU SFT, HG inference, and both full-length SFT
+runs. Knowledge-injection quality and retained utility remain unverified.
 
 The local checkout contains Git LFS pointers; the user materialized the original
 assets on ABCI and ran PMC preparation as recorded above. Selected SFT quality,
 FALCON MI selection and ReLearn teacher-generated augmentation remain unverified.
 Tiny-model tests use synthetic fixtures and are not evidence of baseline quality.
 
-No new scientific benchmark results have been measured. ABCI commands and jobs
+No new unlearning results or selected SFT checkpoints are available yet. ABCI commands and jobs
 are executed by the user; the server evidence above comes from their supplied logs.
 The walltimes remain initial requests to adjust from server measurements. Baseline
 ports preserve the named core algorithms with adaptations listed in

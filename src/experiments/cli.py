@@ -22,6 +22,7 @@ def parser():
             "baseline",
             "validate",
             "validate-series",
+            "audit-mmlu",
             "select",
             "analyze",
             "falcon-layers",
@@ -232,6 +233,12 @@ def main(argv=None):
             gc.collect()
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
+    elif stage == "audit-mmlu":
+        if not args.checkpoint or not args.output:
+            raise ValueError("audit-mmlu requires --checkpoint and --output")
+        from .mmlu_audit import run
+
+        result = run(cfg, args.checkpoint, args.output)
     elif stage == "select":
         if not args.metrics or not args.baseline_metrics or not args.output:
             raise ValueError(

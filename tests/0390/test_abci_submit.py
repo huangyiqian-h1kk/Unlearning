@@ -43,7 +43,7 @@ class ABCISubmitTests(unittest.TestCase):
             return script
 
     def test_single_gpu_stages_default_to_hg(self):
-        for stage in ("validate", "analyze", "falcon-layers", "relearn-augment"):
+        for stage in ("validate", "audit-mmlu", "analyze", "falcon-layers", "relearn-augment"):
             with self.subTest(stage=stage):
                 script = self.render_dry_run(stage)
                 self.assertIn("#PBS -v RTYPE=rt_HG\n", script)
