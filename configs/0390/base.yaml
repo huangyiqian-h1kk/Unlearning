@@ -90,7 +90,9 @@ evaluation:
   mcq_mode: generate
   limit: null
   mmlu_file: data/processed/0390/mmlu_validation.jsonl
+  mmlu_mode: instructed_generate
   mmlu_max_length: 4096
+  mmlu_max_new_tokens: 10
 selection:
   max_mmlu_drop: 0.02
   max_specified_drop: 0.05

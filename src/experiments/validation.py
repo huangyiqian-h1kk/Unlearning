@@ -8,11 +8,8 @@ import json
 import re
 from pathlib import Path
 
-import torch
-import torch.nn.functional as F
-
-from conrep.v2.model import load_model, load_tokenizer
 from .config import digest, read_rows, write_json
+from . import mmlu_protocol
 
 
 def protocol_metadata(cfg):
@@ -26,6 +23,8 @@ def protocol_metadata(cfg):
         paths.append(options["mmlu_file"])
     sources = {str(path): digest(path) for path in paths}
     code = {"validation": digest(__file__)}
+    if options["mmlu_file"]:
+        code["mmlu_protocol"] = digest(mmlu_protocol.__file__)
     if options["regime"] != "pmc":
         from clinicia.legacy import utils
 
@@ -71,6 +70,8 @@ def prompts(row, regime="pmc"):
 
 
 def generate(model, tokenizer, texts, options):
+    import torch
+
     tokenizer.padding_side = "left"
     outputs = []
     for start in range(0, len(texts), options["batch_size"]):
@@ -123,6 +124,9 @@ def letter(text, mapping):
 
 
 def continuation_score(model, tokenizer, prompt, continuation, max_length):
+    import torch
+    import torch.nn.functional as F
+
     prefix = tokenizer.apply_chat_template(
         [{"role": "user", "content": prompt}], tokenize=True, add_generation_prompt=True
     )
@@ -141,21 +145,7 @@ def continuation_score(model, tokenizer, prompt, continuation, max_length):
 
 
 def mmlu(model, tokenizer, path, options):
-    rows = read_rows(path)
-    scores = {}
-    for row in rows:
-        candidate_scores = {
-            key: continuation_score(
-                model, tokenizer, row["prompt"], key, options["mmlu_max_length"]
-            )
-            for key in "ABCD"
-        }
-        hit = max(candidate_scores, key=candidate_scores.get) == row["answer"]
-        scores.setdefault(row["subject"], []).append(int(hit))
-    # Match the conventional subject-macro aggregate and report its sample counts.
-    return sum(sum(x) / len(x) for x in scores.values()) / len(scores), {
-        k: len(v) for k, v in scores.items()
-    }
+    return mmlu_protocol.evaluate(model, tokenizer, path, options, generate)
 
 
 def evaluate_loaded(cfg, checkpoint, model, tokenizer, output):
@@ -252,19 +242,21 @@ def evaluate_loaded(cfg, checkpoint, model, tokenizer, output):
             value for key, value in metrics.items() if key.startswith(split + ".")
         ]
         metrics[f"{split}.mean"] = sum(values) / len(values)
+    mmlu_diagnostics, mmlu_details = {}, []
     if options["mmlu_file"]:
-        metrics["utility.mmlu"], counts = mmlu(
+        metrics["utility.mmlu"], counts, mmlu_diagnostics, mmlu_details = mmlu(
             model, tokenizer, options["mmlu_file"], options
         )
     else:
         counts = {}
     report = {
         "checkpoint": str(Path(checkpoint).resolve()),
-        "protocol": "clinicia-legacy-validation-v2",
+        "protocol": "clinicia-legacy-validation-v3",
         "protocol_hash": signature,
         "metrics": metrics,
         "sources": sources,
         "mmlu_counts": counts,
+        "mmlu_diagnostics": mmlu_diagnostics,
         "usage": "checkpoint validation; not held-out final evidence",
     }
     output = Path(output)
@@ -272,6 +264,10 @@ def evaluate_loaded(cfg, checkpoint, model, tokenizer, output):
     with (output / "predictions.jsonl").open("w") as stream:
         for detail in details:
             stream.write(json.dumps(detail, ensure_ascii=False) + "\n")
+    if options["mmlu_file"]:
+        with (output / "mmlu_predictions.jsonl").open("w") as stream:
+            for detail in mmlu_details:
+                stream.write(json.dumps(detail, ensure_ascii=False) + "\n")
     # The metrics file is the completion marker, published after predictions.
     write_json(output / "metrics.json", report)
     return report
@@ -288,8 +284,14 @@ def run(cfg, checkpoint, output):
             raise ValueError(
                 f"Cached validation differs from this request: {cached}; use a new output"
             )
-        if (Path(output) / "predictions.jsonl").exists():
+        has_mmlu = not cfg["evaluation"]["mmlu_file"] or (
+            Path(output) / "mmlu_predictions.jsonl"
+        ).exists()
+        if (Path(output) / "predictions.jsonl").exists() and has_mmlu:
             return report
+    import torch
+    from conrep.v2.model import load_model, load_tokenizer
+
     mc = cfg["model"]
     device = "cuda" if torch.cuda.is_available() else "cpu"
     tokenizer = load_tokenizer(checkpoint, mc["local_only"])

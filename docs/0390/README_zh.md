@@ -139,7 +139,7 @@ HF 独占整节点的 8 张 GPU；HG 使用共享节点中的 1 张 GPU。
 ```bash
 python scripts/abci/0390_submit.py validate --model llama3b --run-id l3baseval \
   --rtype rt_HG --checkpoint "$CONREP_MODEL_ROOT/Llama-3.2-3B-Instruct" \
-  --output results/validated_v2/0390/llama3b/base-validation --dry-run
+  --output results/validated_v2/0390/llama3b/base-validation-v3 --dry-run
 ```
 
 `--dry-run` 仅生成并显示 PBS。已提交的作业不会被这次提交器更新修改或重新提交。
@@ -185,26 +185,37 @@ python scripts/abci/0390_submit.py sft --model qwen7b --run-id sft \
 输出为每个 SFT run 的 `checkpoint-N/` 与 `final/`。SFT checkpoints 包含 Trainer
 恢复状态。恢复时使用相同 config、输出目录，并追加 `--resume /绝对路径/checkpoint-N`。
 
-训练结束后，先验证原始 backbone，再并行验证 SFT checkpoints。下面以 Llama 为例：
+训练结束后，每个 backbone 用一个 HF 作业同时验证原始模型和全部 SFT checkpoints。
+`--include-backbone` 将原始模型加入任务列表，8 个进程各自处理不同模型；每个候选
+独占一张 GPU，数据集不跨 rank 切分。两个 backbone 总共两个作业：
 
 ```bash
-python scripts/abci/0390_submit.py validate --model llama3b --run-id baseval \
-  --checkpoint "$CONREP_MODEL_ROOT/Llama-3.2-3B-Instruct" \
-  --output results/validated_v2/0390/llama3b/base-validation
-
-python scripts/abci/0390_submit.py validate-series --model llama3b --run-id sftval \
+python scripts/abci/0390_submit.py validate-series --model llama3b --run-id l3sftv3 \
+  --rtype rt_HF --nproc 8 --walltime 01:00:00 --include-backbone \
   --checkpoint-root results/validated_v2/0390/llama3b/sft \
-  --output results/validated_v2/0390/llama3b/sft-validation
+  --output results/validated_v2/0390/llama3b/sft-validation-v3
 
-# 两个验证作业完成后在登录节点选择，无需 GPU。
+python scripts/abci/0390_submit.py validate-series --model qwen7b --run-id q7sftv3 \
+  --rtype rt_HF --nproc 8 --walltime 01:00:00 --include-backbone \
+  --checkpoint-root results/validated_v2/0390/qwen7b/sft \
+  --output results/validated_v2/0390/qwen7b/sft-validation-v3
+```
+
+每个结果根目录包含 `base/`、`checkpoint-N/` 和 `final/` 的验证结果。每个子目录
+写入 `predictions.jsonl`（PMC）、`mmlu_predictions.jsonl`（MMLU 原始回答）和
+`metrics.json`（完成标记）。等待两个作业正常结束，再在登录节点选择；下面以 Llama
+为例，Qwen 将模型名和路径中的 `llama3b` 改为 `qwen7b`：
+
+```bash
 python scripts/0390_experiment.py select --config configs/0390/llama3b.yaml \
   --selection-stage sft \
-  --baseline-metrics results/validated_v2/0390/llama3b/base-validation/metrics.json \
-  --metrics results/validated_v2/0390/llama3b/sft-validation/*/metrics.json \
+  --baseline-metrics results/validated_v2/0390/llama3b/sft-validation-v3/base/metrics.json \
+  --metrics results/validated_v2/0390/llama3b/sft-validation-v3/checkpoint-*/metrics.json \
+            results/validated_v2/0390/llama3b/sft-validation-v3/final/metrics.json \
   --output results/validated_v2/0390/llama3b/selected-sft.json
 
 export CONREP_SFT_CHECKPOINT="$(python -c 'import json; print(json.load(open("results/validated_v2/0390/llama3b/selected-sft.json"))["selected"])')"
-export SFT_VALIDATION_METRICS="results/validated_v2/0390/llama3b/sft-validation/$(basename "$CONREP_SFT_CHECKPOINT")/metrics.json"
+export SFT_VALIDATION_METRICS="results/validated_v2/0390/llama3b/sft-validation-v3/$(basename "$CONREP_SFT_CHECKPOINT")/metrics.json"
 ```
 
 初始选择规则：MMLU validation 相对原 backbone 下降不超过 2 个百分点，
@@ -212,23 +223,40 @@ forget/retain QA 的等权均值至少上升 5 个百分点；在合格 checkpoi
 差距不超过 0.5 个百分点时选更早的 checkpoint。约束在配置中显式给出。
 没有合格 checkpoint 时输出拒绝原因，不自动选择训练最后一步。
 
-MMLU validation 固定取每个 subject 的 20 个 test 样本，使用该 subject 的 5 个 dev
-示例；指标为 subject macro accuracy、native chat prompt 下答案字母 continuation
-likelihood。这是用于控制训练成本的固定 validation 协议，不冒充完整 MMLU 测量。
+MMLU validation 固定取每个 subject 的 20 个 test 样本（共 1,140 题），使用该 subject
+的 5 个 dev 示例。协议 `mmlu-instructed-generate-v1` 在原 prompt 前明确要求只回答
+最后一题、只输出 A/B/C/D；native chat template、greedy、最多 10 个新 tokens。
+严格解析短答案，无法解析仍计错并保留在分母中；指标是 subject macro accuracy。
+`metrics.json` 的 `mmlu_diagnostics` 报告解析失败比例、截断数量和各科准确率。
+该配置统一应用于两个 backbone、所有 SFT checkpoints、ConRep 和各 baseline。
+这是固定 validation 协议，不冒充官方完整 MMLU 测量。
 `mmlu_full.jsonl` 留给后续完整 utility 测量；不得混用两套结果选择 checkpoints。
+现有数据文件无需重新下载或 prepare。旧 `base-validation` 的 likelihood 结果保留，
+后续选择使用新输出目录；协议 hash 包含 prompt/parser 的共享代码，拒绝混用旧结果。
 
-**2026-10-05：在批量筛选前先核验 MMLU 打分。** 原始 Llama 3B 的首次验证
-作业 `2506253.pbs1` 正常完成，但当前协议的 MMLU 为 36.05%。这是未注入模型的
+**2026-10-05：MMLU 格式诊断与修订依据。** 原始 Llama 3B 的首次验证
+作业 `2506253.pbs1` 正常完成，但旧协议的 MMLU 为 36.05%。这是未注入模型的
 读数，不能归因于 SFT。Meta 的 [Instruct MMLU 说明](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/eval_details.md#mmlu)
 使用生成答案字母（5-shot，最多 10 tokens）；本入口原先在 assistant 的起始位置
-直接比较 A/B/C/D 的 likelihood。协议差异可能影响读数，尚未确定原因。
+直接比较 A/B/C/D 的 likelihood。
 
 新增 `audit-mmlu` 用同一份已准备 MMLU、每科前 5 题（共 285 题）做格式诊断：
 原 likelihood、原 prompt 自由生成、明确要求只回答最后一题的字母后生成。
 两种生成均 greedy、最多 10 tokens；严格解析短字母答案，无法解析计错并单独
 报告比例。记录原始输出、四个字母的 likelihood/概率质量、预测分布、题目行号和
 截断数量。长 prompt 与现有 likelihood 一样从左侧截断，保留最后的问题。
-这是预先固定的诊断，不自动按最高分选择评测协议，也不声称复现官方完整 MMLU。
+原始模型上的诊断已经完成：
+
+| 模型 | 旧 likelihood | 明确要求字母后生成 | 后者无法解析 |
+|---|---:|---:|---:|
+| Llama 3.2 3B | 34.39% | 58.25% | 1/285 |
+| Qwen2.5 7B | 68.07% | 71.23% | 0/285 |
+
+两模型均无输入截断。旧 prompt 的短生成均无法解析；原始输出会尝试解答所有题目
+或解释推理。Llama 的旧 likelihood 在 285 题中选 A 共 227 次，四个候选字母的总
+概率质量平均仅 5.04%。因此固定明确任务与答案格式的生成协议，避免将回复开头的
+格式偏好当作知识准确率。这个决定在查看 SFT validation 结果之前完成；并非按各
+checkpoint 的最高分单独挑选协议，也不声称复现官方完整 MMLU。
 
 ```bash
 # 登录节点：先暴露 bootstrap 中的 Git LFS，再更新代码。
@@ -247,9 +275,9 @@ python scripts/abci/0390_submit.py audit-mmlu --model qwen7b --run-id q7mmlua1 \
   --output results/validated_v2/0390/qwen7b/mmlu-audit-v1
 ```
 
-输出为 `report.json` 和 `predictions.jsonl`，不能传给 `select`。该诊断不修改现有
-PMC/MMLU evaluator、已有验证缓存或 SFT 权重。确认协议后再批量验证 checkpoints；
-如果之后修订 MMLU，原始模型和所有候选必须使用同一新版协议重新验证。
+以上为已完成诊断的复现命令，日常推进无需重跑。诊断输出为 `report.json` 和
+`predictions.jsonl`，不能传给 `select`。PMC 的原有任务与评分保持不变，SFT 权重
+直接用于上方新版验证；所有原始模型和候选使用同一协议重新评测。
 
 Retain-only 对照使用同一 SFT 入口：
 

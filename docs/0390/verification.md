@@ -86,8 +86,28 @@ added to ABCI scripts and does not verify CUDA or DeepSpeed execution.
 - The new `audit-mmlu` stage compares the unchanged likelihood scorer with
   short generated answers on a fixed balanced subset. Five CPU-only tests cover
   sampling, strict extraction, invalid-output accounting, aggregation and CLI;
-  the six submitter tests also cover its single-GPU HG default. Real-model audit
-  execution and the cause of the low MMLU score remain unverified.
+  the six submitter tests also cover its single-GPU HG default.
+- Audit jobs `2506422.pbs1` (Llama, 1m13s) and `2506423.pbs1` (Qwen, 1m40s)
+  both exited 0 on HG and evaluated 285 rows across 57 subjects. Llama accuracy
+  changed from 0.3438596491 (old likelihood) to 0.5824561404 (instructed generation);
+  Qwen changed from 0.6807017544 to 0.7122807018. The latter mode had one invalid
+  Llama output and zero invalid Qwen outputs. Neither model had input truncation.
+  Uninstructed short generation was unparseable for all rows in both models;
+  supplied raw outputs begin explanations or attempt all questions. Llama's old
+  likelihood predicted A 227/285 times, with mean A/B/C/D probability mass 0.050449.
+- Formal validation now shares the audited instruction/parser, greedy decoding,
+  ten-token generation limit and context budget. It uses all 1,140 fixed MMLU
+  validation rows and saves raw MMLU generations and invalid/truncation diagnostics.
+  The protocol hash includes the shared MMLU code and rejects old caches. PMC
+  prompts and scoring and SFT weights are unchanged.
+- `validate-series --include-backbone` places original-model scores in `base/`
+  alongside checkpoint scores and assigns distinct candidates to distinct ranks.
+  Six CPU tests in `test_mmlu_protocol.py`, five audit tests and seven submitter
+  tests pass (18 total). They check the exact prompt/token budget, macro averaging,
+  invalid denominators, output files, cache incompatibility, tokenizer restoration
+  and rank assignment. Generation is stubbed in these new integration tests;
+  the actual generator/prompt ran in the two ABCI audits above. Full-series GPU
+  validation with the integrated protocol is the next server step.
 
 ## Not yet verified
 

@@ -71,7 +71,7 @@ def prepare_assets(root, models=False, model_root=None, mmlu_per_subject=20, see
             "seed": seed,
             "sts_source": "sentence-transformers/stsb/validation",
             "sts_rows": len(sts),
-            "utility_protocol": "subject-macro accuracy; native chat template; letter continuation likelihood",
+            "utility_protocol": "subject-macro accuracy; native chat template; instructed letter generation (evaluation config defines the protocol)",
         },
     )
     vendor = Path("vendor_checkouts/LUNAR")

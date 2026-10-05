@@ -3,15 +3,12 @@
 from collections import Counter, defaultdict
 from pathlib import Path
 import math
-import re
 
 from .config import digest, read_rows, write_json
+from . import mmlu_protocol
+from .mmlu_protocol import INSTRUCTION, extract_letter
 
 
-INSTRUCTION = (
-    "Answer only the final multiple-choice question below. "
-    "Respond with exactly one letter: A, B, C, or D.\n\n"
-)
 MODES = ("legacy_letter", "same_prompt_generate", "instructed_generate")
 
 
@@ -29,18 +26,6 @@ def sample_rows(rows, per_subject):
     if not groups or any(len(items) < per_subject for items in groups.values()):
         raise ValueError("Not enough rows to sample every subject equally")
     return [item for subject in sorted(groups) for item in groups[subject][:per_subject]]
-
-
-def extract_letter(text):
-    # Deliberately strict: never infer A from the word "Answer", or scan a long
-    # explanation for an arbitrary letter. Unparsed outputs count as incorrect.
-    match = re.fullmatch(
-        r"\s*(?:(?:the\s+)?(?:(?:correct|best)\s+)?answer\s*(?:is|:)\s*)?"
-        r"(?:\(([ABCD])\)|([ABCD]))[.)]?\s*",
-        text,
-        flags=re.I,
-    )
-    return (match[1] or match[2]).upper() if match else None
 
 
 def summarize(details):
@@ -140,7 +125,7 @@ def run(cfg, checkpoint, output):
         "checkpoint": str(Path(checkpoint).resolve()),
         "usage": "format diagnostic only; do not use for checkpoint selection",
         "source": str(source), "source_sha256": digest(source),
-        "code_sha256": {"audit": digest(__file__), "validation": digest(validation.__file__)},
+        "code_sha256": {"audit": digest(__file__), "validation": digest(validation.__file__), "mmlu_protocol": digest(mmlu_protocol.__file__)},
         "subjects": dict(counts), "rows": len(selected),
         "max_length": max_length, "max_new_tokens": max_new,
         "generation_prompt_limit": generation_limit, "truncation_side": "left",

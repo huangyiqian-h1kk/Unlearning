@@ -42,6 +42,10 @@ def parser():
     p.add_argument("--retain-only", action="store_true")
     p.add_argument("--checkpoint")
     p.add_argument("--checkpoint-root")
+    p.add_argument(
+        "--include-backbone", action="store_true",
+        help="validate-series: evaluate the original backbone into output/base as well",
+    )
     p.add_argument("--output")
     p.add_argument("--metrics", nargs="+")
     p.add_argument("--baseline-metrics")
@@ -153,6 +157,23 @@ def preflight(cfg, distributed=False):
     return report
 
 
+def validation_jobs(cfg, checkpoint_root, output, include_backbone=False):
+    root, dest = Path(checkpoint_root), Path(output)
+    paths = sorted(
+        (path for path in root.glob("checkpoint-*")
+         if path.is_dir() and path.name.split("-")[-1].isdigit()),
+        key=lambda path: int(path.name.split("-")[-1]),
+    )
+    if (root / "final").is_dir():
+        paths.append(root / "final")
+    if not paths:
+        raise ValueError(f"No checkpoints found in {root}")
+    jobs = [(path, dest / path.name) for path in paths]
+    if include_backbone:
+        jobs.insert(0, (Path(cfg["model"]["name_or_path"]), dest / "base"))
+    return jobs
+
+
 def main(argv=None):
     args = parser().parse_args(argv)
     cfg = resolve(args)
@@ -216,20 +237,19 @@ def main(argv=None):
         world = int(os.environ.get("WORLD_SIZE", "1"))
         if torch.cuda.is_available():
             torch.cuda.set_device(int(os.environ.get("LOCAL_RANK", "0")))
-        root = Path(args.checkpoint_root)
-        paths = sorted(
-            root.glob("checkpoint-*"), key=lambda p: int(p.name.split("-")[-1])
+        jobs = validation_jobs(
+            cfg, args.checkpoint_root, args.output, args.include_backbone
         )
-        if (root / "final").exists():
-            paths.append(root / "final")
-        if not paths:
-            raise ValueError(f"No checkpoints found in {root}")
         from .validation import run
         import gc
 
-        for path in paths[rank::world]:
-            dest = Path(args.output) / path.name
-            run(cfg, str(path), str(dest))
+        for path, dest in jobs[rank::world]:
+            print(f"[0390] Validation rank {rank}/{world}: {path} -> {dest}", flush=True)
+            report = run(cfg, str(path), str(dest))
+            print(json.dumps({
+                "checkpoint": report["checkpoint"], "metrics": report["metrics"],
+                "mmlu_invalid_fraction": report.get("mmlu_diagnostics", {}).get("invalid_fraction"),
+            }), flush=True)
             gc.collect()
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()

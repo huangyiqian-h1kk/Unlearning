@@ -79,6 +79,15 @@ class ABCISubmitTests(unittest.TestCase):
         self.assertIn("#PBS -v RTYPE=rt_HF\n", script)
         self.assertIn("--nproc 1 --", script)
 
+    def test_parallel_validation_keeps_backbone_flag(self):
+        script = self.render_dry_run(
+            "validate-series", "--include-backbone", "--checkpoint-root", "/sft",
+            "--output", "/scores", "--walltime", "01:00:00",
+        )
+        self.assertIn("--nproc 8 --", script)
+        self.assertIn("--include-backbone", script)
+        self.assertIn("#PBS -l walltime=01:00:00\n", script)
+
 
 if __name__ == "__main__":
     unittest.main()
