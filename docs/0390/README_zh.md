@@ -207,6 +207,11 @@ python scripts/abci/0390_submit.py validate-series --model qwen7b --run-id q7sft
   --output results/validated_v2/0390/qwen7b/sft-validation-v3
 ```
 
+HF 排队过久时可改用 HG：`python scripts/abci/0390_validate_hg.py --submit --replace-queued-hf`。
+每个 backbone 使用一张 GPU 依次评估，推理 batch 16，Llama/Qwen 分别申请 2/3 小时；
+脚本只替换仍处于 Q 状态的对应 HF 作业。结果写入 `sft-validation-v3-hg`，后续选择也
+使用这个目录。配置、预览及切换行为见 [HG 验证说明](hg-validation.md)。
+
 每个结果根目录包含 `base/`、`checkpoint-N/` 和 `final/` 的验证结果。每个子目录
 写入 `predictions.jsonl`（PMC）、`mmlu_predictions.jsonl`（MMLU 原始回答）和
 `metrics.json`（完成标记）。等待两个作业正常结束，再在登录节点选择；下面以 Llama
