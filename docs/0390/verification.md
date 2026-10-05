@@ -54,8 +54,13 @@ added to ABCI scripts and does not verify CUDA or DeepSpeed execution.
 - Job `2505728.pbs1` (`0390_l3sft1`) exited with status 1 during DeepSpeed import,
   before training, because the launch script had not initialized `CUDA_HOME`.
   The startup now loads ABCI's CUDA 12.4.1 module (matching PyTorch cu124), checks
-  `nvcc`, and imports DeepSpeed once before spawning SFT workers. Its actual
-  GPU/ZeRO-2 validation still requires a new SFT smoke job.
+  `nvcc`, and imports DeepSpeed once before spawning SFT workers.
+- The rerun `2505944.pbs1` (`0390_l3sft2`, commit `a460d4e6`) completed in 2m03s
+  with exit status 0. Its log confirms CUDA Toolkit 12.4.1, DeepSpeed 0.16.2,
+  PyTorch CUDA 12.4, eight training ranks and NCCL initialization. Losses were
+  4.8771 and 4.5173; `TRAINING_COMPLETE.json` reports `global_step: 2` and the
+  saved final model under `llama3b/gpu-sft-smoke-v2/final`. This verifies the
+  Llama full-SFT/ZeRO-2 execution and save path, not knowledge-injection quality.
 - Two local shell integration tests pass (`python tests/0390/test_abci_env.py -v`).
   They execute the batch wrapper with a simulated module environment, checking
   that the toolkit, venv and project-local caches reach Python, and that a missing
@@ -66,7 +71,8 @@ added to ABCI scripts and does not verify CUDA or DeepSpeed execution.
 The two-process Gloo test is skipped only when this execution host specifically
 rejects the socket setup with `Operation not permitted`; other failures still fail
 the test. The server Llama 3B smoke above covers NCCL and the eight-rank
-contrastive gather/backward. ZeRO-2 SFT and Qwen 7B GPU execution remain unverified.
+contrastive gather/backward; the SFT rerun covers Llama's ZeRO-2 execution.
+Qwen 7B GPU execution and completed full-length training remain unverified.
 
 The local checkout contains Git LFS pointers; the user materialized the original
 assets on ABCI and ran PMC preparation as recorded above. Selected SFT quality,

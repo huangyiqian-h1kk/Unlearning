@@ -32,7 +32,9 @@ sft:
   warmup_ratio: 0.05
   weight_decay: 0.01
   gradient_checkpointing: true
-  save_steps: 250
+  # PMC injection has ~470 optimizer steps over five epochs at global batch 32.
+  # Retain early checkpoints for the QA/MMLU-based stopping-point selection.
+  save_steps: 50
   logging_steps: 5
   deepspeed: configs/0390/zero2.json
 lora:

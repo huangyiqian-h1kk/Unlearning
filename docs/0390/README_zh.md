@@ -140,7 +140,9 @@ smoke 会检查依赖、数据、chat template、GPU all-reduce，然后在原�
 ## 4. 知识注入与停止点
 
 SFT 是标准 full-parameter causal LM 训练，5 epochs、LR `1e-5`，8 GPU 下有效 batch 32，
-最大长度 1024，ZeRO-2；保存间隔 250 optimizer steps，并保留最终模型。
+最大长度 1024，ZeRO-2；每 50 optimizer steps 保存一次，并保留最终模型。
+PMC 的 3,000 条注入数据训练 5 epochs 约需 470 次更新；较密的保存间隔用于保留
+早期的 QA/MMLU 候选停止点。最终步数以 Trainer 的记录为准。
 Wiki 不混入这一步。参数是首轮起点，实际配置写入每个 run 的 `resolved_config.json`。
 
 ```bash
