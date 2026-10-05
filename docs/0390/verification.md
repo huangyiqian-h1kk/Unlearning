@@ -1,6 +1,6 @@
 # Implementation verification — 0390
 
-Verification date: 2026-10-04. This records code checks, not experiment results.
+Verification date: 2026-10-05. This records code and execution checks, not experiment results.
 
 ## Completed locally
 
@@ -41,21 +41,41 @@ therefore used `DS_ACCELERATOR=cuda` solely to select its import implementation;
 all model tensors and tested updates remained on CPU. This setting is **not**
 added to ABCI scripts and does not verify CUDA or DeepSpeed execution.
 
+## ABCI evidence supplied by the user (2026-10-05)
+
+- The server venv passes 16 CPU tests (the distributed test was deselected).
+- Both backbone downloads and local tokenizer/data preflight completed. PMC data
+  counts are forget 100, retain 900, injection 3,000, retain-only injection 2,700,
+  with zero unresolved injection rows; the deduplicated general pool has 49,959 rows.
+- Job `2505727.pbs1` (`0390_l3smk1`) completed in 1m45s with exit status 0.
+  Its eight-rank Llama 3B ConRep smoke reports `all_reduce: passed` and two updates;
+  this execution includes adapter/checkpoint saving. The tail also contains a
+  non-fatal warning about process-group destruction during exit.
+- Job `2505728.pbs1` (`0390_l3sft1`) exited with status 1 during DeepSpeed import,
+  before training, because the launch script had not initialized `CUDA_HOME`.
+  The startup now loads ABCI's CUDA 12.4.1 module (matching PyTorch cu124), checks
+  `nvcc`, and imports DeepSpeed once before spawning SFT workers. Its actual
+  GPU/ZeRO-2 validation still requires a new SFT smoke job.
+- Two local shell integration tests pass (`python tests/0390/test_abci_env.py -v`).
+  They execute the batch wrapper with a simulated module environment, checking
+  that the toolkit, venv and project-local caches reach Python, and that a missing
+  compiler prevents Python startup. These tests do not execute CUDA or DeepSpeed.
+
 ## Not yet verified
 
 The two-process Gloo test is skipped only when this execution host specifically
 rejects the socket setup with `Operation not permitted`; other failures still fail
-the test. NCCL, the eight-rank contrastive gather/backward and ZeRO-2 SFT must be
-tested on ABCI. The supplied `0390_smoke` performs dependency/data/tokenizer checks,
-GPU all-reduce and two actual ConRep updates on the selected 3B/7B backbone.
+the test. The server Llama 3B smoke above covers NCCL and the eight-rank
+contrastive gather/backward. ZeRO-2 SFT and Qwen 7B GPU execution remain unverified.
 
-The checkout contains Git LFS pointers for the released ClinicIA assets. Actual
-PMC parsing, metadata joins, selected SFT quality, FALCON MI selection and ReLearn
-teacher-generated augmentation have not been validated here. Tiny-model tests
-use synthetic fixtures and are not evidence of data coverage or baseline quality.
+The local checkout contains Git LFS pointers; the user materialized the original
+assets on ABCI and ran PMC preparation as recorded above. Selected SFT quality,
+FALCON MI selection and ReLearn teacher-generated augmentation remain unverified.
+Tiny-model tests use synthetic fixtures and are not evidence of baseline quality.
 
-No ABCI login, environment installation, GPU allocation, `qsub`, real-backbone
-training or new benchmark measurement has been performed. The walltimes are initial
-requests to adjust after the first server logs. Baseline ports preserve the named
-core algorithms with adaptations listed in [baselines.md](baselines.md); their
-numeric equivalence and final hyperparameter tuning remain experimental work.
+No new scientific benchmark results have been measured. ABCI commands and jobs
+are executed by the user; the server evidence above comes from their supplied logs.
+The walltimes remain initial requests to adjust from server measurements. Baseline
+ports preserve the named core algorithms with adaptations listed in
+[baselines.md](baselines.md); their numeric equivalence and final hyperparameter
+tuning remain experimental work.

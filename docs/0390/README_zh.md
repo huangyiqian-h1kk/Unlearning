@@ -37,6 +37,12 @@ Transformers 4.48.3、PEFT 0.14.0、Accelerate 1.3.0；SFT 使用 DeepSpeed 0.16
 采用 SDPA，不要求 FlashAttention 编译。安装脚本运行 `pip check` 并保存实际 freeze。
 CPU 验证与 ABCI GPU 验证的范围见 [verification.md](verification.md)。
 
+GPU 启动脚本会加载 ABCI 的 `cuda/12.4/12.4.1` 模块，设置 `CUDA_HOME` 并检查
+`nvcc`，随后激活本项目 venv。PyTorch wheel 自带的 CUDA runtime 不包含这套
+工具链；DeepSpeed 在 GPU 节点上的导入检查需要它。已有 `local.env` 不必重建，
+启动脚本默认使用上述模块，也可通过 `CONREP_CUDA_MODULE` 显式指定。
+Torch 扩展与 Triton 缓存均放在 `$CONREP_WORK_ROOT/cache/` 下。
+
 若此前已创建 bootstrap，但没有安装 Git LFS，可在加载 `local.env` 和上述
 Miniforge 初始化脚本后补装：
 
@@ -124,6 +130,12 @@ smoke 会检查依赖、数据、chat template、GPU all-reduce，然后在原�
 上运行两步 ConRep 和 checkpoint 保存。它只验证执行，不作为实验结果。
 第二个任务用原 injection 数据执行两步标准 SFT，输出同样仅用于验证。
 提交器统计当前用户所有排队/运行中的作业，包括其他项目；已有两个时不会提交第三个。
+
+若 SFT 在初始化时报 `CUDA_HOME does not exist`，先拉取包含 CUDA 模块初始化的
+最新版启动脚本，再以新的 `--run-id` 和 `run.output_dir` 重跑 SFT smoke。
+例如使用 `--run-id l3sft2` 和 `.../llama3b/gpu-sft-smoke-v2`，其余两步配置保持不变。
+已通过的 ConRep smoke 无需重复提交。SFT 作业会在启动 8 个训练进程之前先导入
+一次 DeepSpeed，并打印 `DeepSpeed import passed`。
 
 ## 4. 知识注入与停止点
 

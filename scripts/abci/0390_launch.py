@@ -20,6 +20,15 @@ if not torch.cuda.is_available() or torch.cuda.device_count() < args.nproc:
     raise RuntimeError(
         f"Requested {args.nproc} GPU processes, visible GPUs={torch.cuda.device_count()}"
     )
+if argv[0] == "sft":
+    # Check the GPU-only DeepSpeed import path once before spawning workers or
+    # loading model weights; CPU dependency tests cannot exercise this path.
+    import deepspeed
+
+    print(
+        f"DeepSpeed import passed: {deepspeed.__version__}; PyTorch CUDA: {torch.version.cuda}",
+        flush=True,
+    )
 command = [
     sys.executable,
     "-m",
