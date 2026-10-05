@@ -2,6 +2,29 @@
 
 Verification date: 2026-10-05. This records code and execution checks, not experiment results.
 
+## Job-log management checks (2026-10-05)
+
+- Nine new CPU-only tests in `tests/0390/test_joblogs.py` pass. They exercise the
+  actual PBS shell wrapper with a simulated module/venv and real child processes:
+  merged live stdout/stderr, successful exit, a child exit of 7, CUDA setup failure,
+  SIGTERM forwarding and exit 143, and lightweight artifact/config capture.
+- Archive tests cover historical `$HOME` log recovery without deleting originals,
+  filtered PBS JSON, unavailable scheduler history, immutable result snapshots,
+  distinct PBS IDs for repeated run labels, a job starting before its submission
+  record is written, and archive failure after successful qsub without inviting a
+  duplicate submission. Environment/PBS secret fields are excluded.
+- The two existing ABCI environment tests and seven submitter tests also pass:
+  18 related tests in total. Shell syntax and patch whitespace checks pass.
+- Private history ledgers can be imported locally. Full raw logs and live PBS
+  records must be collected on ABCI using the command in [logging.md](logging.md);
+  these local tests do not claim server-side recovery or publish private ledgers.
+
+```bash
+python tests/0390/test_joblogs.py -v
+python tests/0390/test_abci_env.py -v
+python tests/0390/test_abci_submit.py -v
+```
+
 ## Completed locally
 
 - A Python 3.11.16 environment was installed with the pinned training dependencies,

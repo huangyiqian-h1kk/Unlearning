@@ -8,7 +8,11 @@ import json
 import re
 import shlex
 import subprocess
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+from experiments.joblogs import record_submission, submission_snapshot
 
 PROFILES = {
     "preflight": ("00:20:00", 8),
@@ -119,12 +123,23 @@ def main(argv=None):
             raise RuntimeError(
                 f"Two-job limit: already {len(jobs)} active/queued jobs. No job submitted."
             )
+        snapshot = submission_snapshot(
+            root, args.stage, args.model, args.run_id, rtype, nproc,
+            args.walltime or walltime, extra,
+        )
         result = subprocess.run(
             ["qsub", str(path)], check=True, text=True, capture_output=True, cwd=root
         )
         job_id = result.stdout.strip()
         (path.with_suffix(".jobid")).write_text(job_id + "\n")
         print(f"Submitted {job_id}: {path}")
+        try:
+            record_submission(root, job_id, snapshot, script)
+            print(f"Job archive: {root / 'logs/0390/runs' / job_id}")
+        except Exception as exc:
+            # qsub already succeeded. Do not encourage an accidental duplicate submission.
+            print(f"WARNING: {job_id} IS SUBMITTED, but archive failed: {exc}. "
+                  "Do not resubmit; use 0390_logs.py collect later.", file=sys.stderr)
 
 
 if __name__ == "__main__":

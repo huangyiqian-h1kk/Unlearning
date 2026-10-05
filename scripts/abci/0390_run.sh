@@ -4,6 +4,11 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 if [[ -f local.env ]]; then source local.env; fi
 : "${CONREP_ENV:?Set CONREP_ENV in local.env}"
 : "${CONREP_WORK_ROOT:?Set CONREP_WORK_ROOT under /groups}"
+# The supervisor starts before CUDA initialization, so setup failures are logged too.
+# Only this outer process writes job metadata; torchrun ranks share its console log.
+if [[ -n "${PBS_JOBID:-}" && "${CONREP_LOG_ACTIVE:-0}" != "1" ]]; then
+    exec "$CONREP_ENV/bin/python" scripts/abci/0390_logs.py run -- "$@"
+fi
 # The PyTorch wheel includes CUDA runtime libraries, but DeepSpeed also probes
 # the system toolkit when imported on a GPU node. Initialize it before Python.
 if ! type module >/dev/null 2>&1; then

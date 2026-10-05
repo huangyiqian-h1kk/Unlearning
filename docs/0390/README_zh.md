@@ -17,6 +17,7 @@ LUNAR、SAGO、ReLearn。默认先执行 PMC；原 celebrity 数据也可通过 
 | `scripts/abci/0390_*.py`、`0390_*.sh` | PBS 生成、提交、GPU 启动、环境安装 |
 | `jobs/0390_*.pbs` | 可直接检查的短验证 PBS 样本 |
 | `results/validated_v2/0390/` | 新训练、验证和分析输出；不提交模型或运行结果 |
+| `logs/0390/INDEX.md`、`logs/0390/runs/<PBS job ID>/` | 作业索引、实时日志、提交/启动配置与版本、结果快照 |
 
 服务器工作根目录固定为 `/groups/gcg51557/experiments/0390_rlsd/unlearning`，
 仓库目录为其下的 `Unlearning/`。环境、模型和下载缓存均放在这个工作根目录下。
@@ -86,6 +87,11 @@ Retain-only 对照只适用于当前 PMC 按 patient ID 划分的设定。若身
 它仍从原始 backbone 开始，不能从已注入 forget 的 SFT checkpoint 开始。
 
 ## 3. ABCI 短验证
+
+所有经 `0390_run.sh` 启动的 PBS 作业现在自动归档日志。现有提交命令保持原样；
+作业结束后执行 `python scripts/abci/0390_logs.py collect` 补收 PBS 最终状态与原始输出。
+`collect` 会发现已有 `.jobid` 文件并回收历史作业及登录节点日志；另可导入本地历史台账。
+详见 [日志管理与历史补收](logging.md)。
 
 提交器生成的 PBS 保留项目、预约队列和 `0390` 作业前缀。以 HF 为例：
 
