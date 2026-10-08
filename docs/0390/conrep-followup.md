@@ -156,6 +156,55 @@ norms and cosines. Their full per-example/per-parameter records live under
 `experiments/<id>/training/diagnostics/`. Live optimizer progress is in
 `experiments/<id>/training/train.jsonl`; the worker console reports task transitions.
 
+## Export both campaigns while jobs are running
+
+The stdlib-only `scripts/abci/0390_collect_conrep_results.py` reads both
+`conrep-night-20261008` and `conrep-followup-20261008` by default. It checks each
+checkpoint's `NIGHT_VALIDATED.json`, training identity, metrics hash and prediction
+file sizes directly, so it does not depend on a previously refreshed summary CSV
+or a job's eventual `logs/0390/runs/<job>/artifacts` copy. It never invokes the
+scheduler or writes into either source campaign.
+
+```bash
+(
+set -euo pipefail
+cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
+source local.env
+source "$CONREP_ENV/bin/activate"
+git fetch origin codex/0390-conrep-night-20261008
+collect_ref="$(git rev-parse FETCH_HEAD)"
+collect_dir="$(mktemp -d /tmp/0390_conrep_collect.XXXXXX)"
+git show "${collect_ref}:scripts/abci/0390_collect_conrep_results.py" > "$collect_dir/collect.py"
+python -I "$collect_dir/collect.py" --root "$PWD"
+)
+```
+
+The command prints per-campaign completion counts and `BUNDLE=<absolute ZIP path>`.
+Every invocation creates a new timestamped directory under
+`results/validated_v2/0390/conrep-exports/`. Upload that ZIP for consolidated
+analysis. No model weights, optimizer state, or environment files are copied.
+Add `--include-predictions` only when per-example outputs are needed; the default
+bundle already contains raw metrics, configs, plans, states, train logs and
+diagnostic records/probe definitions.
+
+| Export | Contents |
+|---|---|
+| `all-validated-checkpoints.csv` | Every committed checkpoint across both campaigns, including completed validations from experiments still in progress |
+| `completed-experiment-results.csv` | All planned checkpoints from experiments whose training and every validation have finished |
+| `experiment-status.csv` | Every planned task, completion flags, latest logged step, validated/missing steps and recorded job ID |
+| `diagnostic-results.csv` | Sparse representation and training-answer-probability observations |
+| `gradient-diagnostics.csv` | Sampled component-gradient norms and cosines |
+| `manifest.json` | Capture interval, counts, protocol hashes, skipped invalid results, and hashes of archived files |
+
+The tables retain campaign/model/variant/seed/step and validation protocol identity.
+Repeated configuration labels from different campaigns are kept as separate runs.
+This is a raw export: it does not choose checkpoints, average seeds, derive paper
+scores or re-run baselines. A running capture spans the interval recorded in the
+manifest; `state_status` can lag completion markers, so use `experiment_complete`
+for fully finished experiments. A validation lacking its committed marker is
+omitted until the next export. A malformed or mismatched committed result is
+reported in the manifest warnings and excluded from completion counts.
+
 ## Local validation
 
 The follow-up tests cover the exact 27-run matrix, single-factor overrides,
