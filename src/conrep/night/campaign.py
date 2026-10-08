@@ -1,4 +1,4 @@
-"""Four single-node PBS workers, a persistent supervisor, and a durable task queue.
+"""Three single-node PBS workers, a persistent supervisor, and a durable task queue.
 
 The entry point is additive: existing trainers, validators and submitters are
 not overwritten. Prepare freezes the *actual* server source tree, including
@@ -25,6 +25,7 @@ import time
 from .io import read, write, sha, file_sha, locked, latest_checkpoint, complete_checkpoint, training_identity
 
 NAME = "0390-conrep-night-v1"
+MAX_NODES = 3
 PAUSE = 75
 ENTRY = "scripts/abci/0390_conrep_night.py"
 SHELL = "scripts/abci/0390_conrep_night_worker.sh"
@@ -44,7 +45,7 @@ VARIANTS = {
     "K": {"conrep.forget_cl_weight": 5.0, "lora.r": 128, "lora.lora_alpha": 256},
     "L": {"conrep.forget_cl_weight": 5.0, "conrep.corruption_rate": 0.5},
 }
-PREFERRED = {v: worker for worker, values in enumerate(("AGJ", "BEK", "CHI", "DFL")) for v in values}
+PREFERRED = {v: worker for worker, values in enumerate(("ADGJ", "BEHK", "CFIL")) for v in values}
 
 
 def specs():
@@ -180,7 +181,7 @@ def prepare(args):
                           identity=training_identity(cfg), config_hash=file_sha(config_file)))
     plan = {"schema": NAME, "project_root": str(project), "campaign": str(campaign),
             "python": sys.executable, "entry": str(campaign / "code" / ENTRY),
-            "shell": str(campaign / "code" / SHELL), "workers": 4, "world_size": 8,
+            "shell": str(campaign / "code" / SHELL), "workers": MAX_NODES, "world_size": 8,
             "queue": "R9920261000", "account": "gcg51557", "rtype": "rt_HF",
             "hours": args.hours, "walltime": "06:00:00", "poll_seconds": 60,
             "max_attempts": 3, "source_hash": source_hash, "tasks": tasks,
@@ -189,8 +190,9 @@ def prepare(args):
     write(campaign / "state.json", {"status": "prepared", "started_at": None, "deadline": None,
           "tasks": {t["id"]: {"status": "pending", "attempts": 0, "failures": 0} for t in tasks},
           "workers": {str(i): {"job_id": None, "status": "new", "allocations": 0,
-                               "recovery_failures": 0} for i in range(4)}})
+                               "recovery_failures": 0} for i in range(MAX_NODES)}})
     print(json.dumps({"campaign": str(campaign), "experiments": len(tasks),
+                      "workers": MAX_NODES,
                       "protected_coverage": {m: a["eligible_fraction"] for m, a in audits.items()},
                       "status": "prepared; no PBS jobs submitted"}, ensure_ascii=False, indent=2))
 
@@ -210,7 +212,14 @@ def event(campaign, **values):
             stream.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def check_worker_limit(plan):
+    if plan.get("workers") != MAX_NODES:
+        raise ValueError(f"Campaign worker limit is {plan.get('workers')}; expected {MAX_NODES}. "
+                         "Prepare a new three-node campaign; old frozen campaigns keep their original limit.")
+
+
 def verify_snapshot(campaign, plan):
+    check_worker_limit(plan)
     for name, expected in read(campaign / "source.json")["files"].items():
         if file_sha(campaign / "code" / name) != expected:
             raise ValueError(f"Frozen source changed: {name}")
@@ -238,7 +247,7 @@ def claim(campaign, plan, worker_id, allocation_end):
         candidates = sorted(plan["tasks"], key=lambda t: (t["priority"], t["preferred_worker"] != worker_id, t["id"]))
         for task in candidates:
             record = state["tasks"][task["id"]]
-            if record["status"] not in {"pending", "paused"}:
+            if not ready_to_claim(record):
                 continue
             # Allow incomplete validation to finish near the end, but never
             # knowingly begin a new hour-long training+validation run there.
@@ -255,6 +264,13 @@ def claim(campaign, plan, worker_id, allocation_end):
             state["workers"][str(worker_id)]["task"] = task["id"]
             return task
     return None
+
+
+def ready_to_claim(record):
+    # A worker may checkpoint and return before PBS records a user's qdel.
+    # Wait for final scheduler evidence before any worker resumes that task.
+    return record["status"] == "pending" or (record["status"] == "paused" and (
+        not record.get("job_id") or record.get("reconciled_job") == record["job_id"]))
 
 
 def expected_checkpoints(cfg):
@@ -526,11 +542,12 @@ def allocated_nodes(job):
         return sum(int(chunk.split(":")[0]) for chunk in str(selection).split("+"))
     except ValueError:
         # Unknown resource requests never create artificial free slots.
-        return 4
+        return MAX_NODES
 
 
 def qstat(*args):
-    result = subprocess.run(["qstat", *args, "-f", "-F", "json"], text=True, capture_output=True)
+    result = subprocess.run(["qstat", *args, "-f", "-F", "json"], text=True,
+                            capture_output=True, timeout=30)
     if result.returncode:
         raise RuntimeError(f"qstat failed; refusing to infer free slots: {result.stderr.strip()}")
     return json.loads(result.stdout)
@@ -541,9 +558,20 @@ def classify_end(job):
     text = " ".join(str(job.get(k, "")) for k in ("comment", "reason", "Exit_reason", "description")).lower()
     if re.search(r"qdel|deleted by|delete request|user request|cancelled by|canceled by", text):
         return "cancelled"
+    # Resource-policy or administrator stops are not transient node failures.
+    # Preserve these distinctions without changing queues or retrying around them.
+    if re.search(r"placement set is too small|node_group.*!=|queue.*(?:disabled|not enabled)", text):
+        return "resource_rejected"
     if re.search(r"walltime|wall time|time limit|node fail|node down|mom.*lost|preempt", text):
         return "recoverable"
-    code = int(job.get("Exit_status", -99999))
+    if re.search(r"terminated by|killed by (?:root|admin)|administrat", text):
+        owner = job.get("Job_Owner", "").split("@")[0].lower()
+        actor = re.search(r"terminated by\s+([^@\s]+)", text)
+        return "cancelled" if actor and owner and actor[1] == owner else "admin_stopped"
+    try:
+        code = int(job.get("Exit_status"))
+    except (TypeError, ValueError):
+        code = -99999
     if code == 0:
         return "completed"
     try:
@@ -648,8 +676,9 @@ def reconcile(campaign, plan, active):
                                 and worker["recovery_failures"] < plan["max_attempts"] else
                                 "retry_exhausted" if outcome == "recoverable" else outcome)
             for name, task in state["tasks"].items():
-                if task.get("job_id") != job_id or task["status"] not in {"running", "interrupted"}:
+                if task.get("job_id") != job_id or task["status"] not in {"running", "interrupted", "paused"}:
                     continue
+                task["reconciled_job"] = job_id
                 if outcome == "recoverable":
                     task["failures"] += 1
                     task["status"] = "paused" if task["failures"] < plan["max_attempts"] else "failed"
@@ -671,7 +700,7 @@ def admissible_pending(campaign, plan, state, *, count=False):
     eligible = 0
     for spec in plan["tasks"]:
         task = state["tasks"][spec["id"]]
-        if task["status"] not in {"pending", "paused"}:
+        if not ready_to_claim(task):
             continue
         trained = training_done(spec, read(spec["config"]))
         allowed = (trained and remaining > 1500) or (
@@ -684,24 +713,32 @@ def admissible_pending(campaign, plan, state, *, count=False):
 
 
 def submit_available(campaign, plan):
+    check_worker_limit(plan)
     # Same lock path as the existing single-job submitter. All current user's
     # active jobs count, including other projects and held/queued jobs.
     with locked(Path(plan["project_root"]) / "logs/0390/jobs/submit.lock"):
         jobs = active_jobs(qstat(), getpass.getuser())
-        free = min(4 - len(jobs), 4 - sum(allocated_nodes(job) for job in jobs.values()))
         state = read(campaign / "state.json")
         if any(w["status"] == "submitting" and not w.get("job_id")
                for w in state["workers"].values()):
             # An accepted submission can briefly be absent from qstat. Until
             # reconcile adopts it, its account-slot usage is unknown.
             return
-        active_owned = sum(w.get("job_id") in jobs for w in state["workers"].values())
+        # A successful qsub can be invisible to qstat for a short time. A known
+        # ID holds its slot until PBS history confirms that allocation ended.
+        unseen = {w["job_id"] for w in state["workers"].values()
+                  if w.get("job_id") and w["job_id"] not in jobs
+                  and w.get("reconciled_job") != w["job_id"]}
+        free = min(MAX_NODES - len(jobs) - len(unseen),
+                   MAX_NODES - sum(allocated_nodes(job) for job in jobs.values()) - len(unseen))
+        active_owned = sum(w.get("job_id") in jobs or w.get("job_id") in unseen
+                           for w in state["workers"].values())
         already_claimed = sum(t["status"] == "running" for t in state["tasks"].values())
         free = min(free, admissible_pending(campaign, plan, state, count=True)
                    + already_claimed - active_owned)
         if free <= 0:
             return
-        for worker_id in range(4):
+        for worker_id in range(MAX_NODES):
             state = read(campaign / "state.json")
             if state["status"] != "running" or not admissible_pending(campaign, plan, state):
                 return
@@ -719,7 +756,7 @@ def submit_available(campaign, plan):
                     job_name=job_name, allocations=allocation, submission_script=str(path),
                     planned_stop=False)
             result = subprocess.run(["qsub", str(path)], text=True, capture_output=True,
-                                    cwd=plan["project_root"])
+                                    cwd=plan["project_root"], timeout=30)
             if result.returncode:
                 # A failed/ambiguous qsub is not automatically retried: a response
                 # can be lost after PBS accepts a job. Reconcile by unique name.
@@ -731,7 +768,13 @@ def submit_available(campaign, plan):
                 event(campaign, event="qsub-ambiguous", worker=worker_id, stdout=job_id)
                 return
             with state_transaction(campaign) as state:
-                state["workers"][str(worker_id)].update(job_id=job_id, status="queued")
+                worker_state = state["workers"][str(worker_id)]
+                # PBS may start the worker before qsub returns. Never overwrite
+                # its running/drained state with the older queued observation.
+                if worker_state["status"] == "submitting":
+                    worker_state.update(job_id=job_id, status="queued")
+                elif worker_state.get("job_id") != job_id:
+                    raise RuntimeError("PBS submission and worker job IDs disagree")
             archive = Path(plan["project_root"]) / "logs/0390/runs" / job_id
             archive.mkdir(parents=True, exist_ok=True)
             (archive / "submission.pbs").write_text(script)
@@ -775,12 +818,15 @@ def summarize(campaign):
             counts[task["status"]] = counts.get(task["status"], 0) + 1
         write(campaign / "summary.json", {"state": state["status"], "task_counts": counts,
               "validated_checkpoints": len(rows), "deadline": state["deadline"],
+              "workers": {i: {k: w[k] for k in ("job_id", "status", "task", "last_outcome") if k in w}
+                          for i, w in state["workers"].items()},
               "updated_at": time.time(), "selection": "disabled", "test": "not run"})
 
 
 def supervise(args):
     campaign = Path(args.campaign).resolve()
     plan = read(campaign / "plan.json")
+    check_worker_limit(plan)
     # Held for the lifetime of this supervisor; start/resume cannot duplicate it.
     with locked(campaign / "supervisor.lock", blocking=False):
         write(campaign / "supervisor.json", {"pid": os.getpid(), "host": os.uname().nodename,
@@ -808,31 +854,39 @@ def supervise(args):
                 reconcile(campaign, plan, active)
                 current = read(campaign / "state.json")
                 owned_active = any(w.get("job_id") in active for w in current["workers"].values())
+                owned_unsettled = any(w["status"] == "submitting" or (
+                    w.get("job_id") and w.get("reconciled_job") != w["job_id"])
+                    for w in current["workers"].values())
                 pending = any(t["status"] in {"pending", "paused", "running", "interrupted"}
                               for t in current["tasks"].values())
-                if not pending and not owned_active:
+                if not pending and not owned_active and not owned_unsettled:
                     with state_transaction(campaign) as state:
                         state["status"] = "finished"
                     break
-                if not owned_active and all(w["status"] in {
-                        "cancelled", "unknown_failure", "retry_exhausted"}
+                if not owned_active and not owned_unsettled and all(w["status"] in {
+                        "cancelled", "unknown_failure", "retry_exhausted",
+                        "resource_rejected", "admin_stopped"}
                         for w in current["workers"].values()):
                     with state_transaction(campaign) as state:
                         state["status"] = "blocked"
                     event(campaign, event="all-workers-blocked", detail="See per-job console logs; no blind retry")
                     break
-                if not owned_active and not admissible_pending(campaign, plan, current):
+                if not owned_active and not owned_unsettled and not admissible_pending(campaign, plan, current):
                     with state_transaction(campaign) as state:
                         state["status"] = "budget_paused"
                     break
                 submit_available(campaign, plan)
                 summarize(campaign)
                 write(campaign / "heartbeat.json", {"time": time.time(), "pid": os.getpid()})
+                if time.time() - state.get("last_progress_at", 0) >= 300:
+                    print(json.dumps(read(campaign / "summary.json"), ensure_ascii=False), flush=True)
+                    with state_transaction(campaign) as state:
+                        state["last_progress_at"] = time.time()
             except Exception as exc:
                 # Scheduler query/parse failures must never become duplicate submissions.
                 event(campaign, event="supervisor-error", error=repr(exc))
                 print(f"Supervisor error (no unsafe retry): {exc}", flush=True)
-            time.sleep(plan["poll_seconds"])
+            time.sleep(min(plan["poll_seconds"], max(0, read(campaign / "state.json")["deadline"] - time.time())))
         summarize(campaign)
         event(campaign, event="supervisor-ended", status=read(campaign / "state.json")["status"])
     return 0
@@ -842,22 +896,26 @@ def start(args, *, resume=False):
     campaign = Path(args.campaign).resolve()
     plan = read(campaign / "plan.json")
     verify_snapshot(campaign, plan)
-    try:
-        with locked(campaign / "supervisor.lock", blocking=False):
-            pass
-    except BlockingIOError:
-        if resume:
-            if args.hours <= 0:
-                raise ValueError("Explicit resume requires positive --hours")
-            with state_transaction(campaign) as state:
-                state["deadline"] = time.time() + args.hours * 3600
-                state["status"] = "running"
-            (campaign / "STOP").unlink(missing_ok=True)
-            print("Extended the existing supervisor; current PBS jobs remain adopted.")
-            return 0
-        print("Supervisor is already running; existing jobs are adopted, no duplicate start.")
-        return 0
+    if resume and (not args.hours or args.hours <= 0):
+        raise ValueError("Explicit resume requires positive --hours")
     with locked(campaign / "start.lock"):
+        # Serialize the liveness check with launch; two simultaneous starts
+        # must not both decide that a supervisor is absent.
+        try:
+            with locked(campaign / "supervisor.lock", blocking=False):
+                pass
+        except BlockingIOError:
+            if resume:
+                with state_transaction(campaign) as state:
+                    state["deadline"] = time.time() + args.hours * 3600
+                    state["status"] = "running"
+                (campaign / "STOP").unlink(missing_ok=True)
+                print("Extended the existing supervisor; current PBS jobs remain adopted.")
+                return 0
+            print("Supervisor is already running; existing jobs are adopted, no duplicate start.")
+            return 0
+        # A login-node scheduler failure does not consume the ten-hour budget.
+        qstat()
         with state_transaction(campaign) as state:
             if state["started_at"] is None:
                 state["started_at"] = time.time()
@@ -865,8 +923,6 @@ def start(args, *, resume=False):
             elif state["status"] != "running" and not resume:
                 raise ValueError("Campaign was stopped/finished. Use resume --hours to explicitly extend it.")
             if resume:
-                if not args.hours or args.hours <= 0:
-                    raise ValueError("Explicit resume requires a positive --hours")
                 state["deadline"] = time.time() + args.hours * 3600
                 for worker in state["workers"].values():
                     if worker["status"] in {"drained", "available"}:
@@ -874,8 +930,6 @@ def start(args, *, resume=False):
             state["status"] = "running"
         if resume:
             (campaign / "STOP").unlink(missing_ok=True)
-        # Check scheduler access before claiming the background service started.
-        qstat()
         with (campaign / "supervisor.log").open("a") as stream:
             process = subprocess.Popen([plan["python"], plan["entry"], "supervise", "--campaign", str(campaign)],
                                        cwd=plan["project_root"], stdout=stream, stderr=subprocess.STDOUT,
@@ -883,7 +937,7 @@ def start(args, *, resume=False):
         time.sleep(0.5)
         if process.poll() is not None:
             raise RuntimeError("Supervisor failed to start; inspect supervisor.log")
-        print(f"Supervisor PID {process.pid}; campaign {campaign}; at most 4 active account jobs/nodes.")
+        print(f"Supervisor PID {process.pid}; campaign {campaign}; at most {MAX_NODES} active account jobs/nodes.")
     return 0
 
 
@@ -903,7 +957,7 @@ def main(argv=None):
         if name == "resume":
             p.add_argument("--hours", type=float, required=True)
         if name == "worker":
-            p.add_argument("--worker", type=int, choices=range(4), required=True)
+            p.add_argument("--worker", type=int, choices=range(MAX_NODES), required=True)
         if name == "stop":
             p.add_argument("--cancel-jobs", action="store_true")
     p = commands.add_parser("train")

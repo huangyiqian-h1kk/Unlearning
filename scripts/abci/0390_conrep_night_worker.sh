@@ -9,6 +9,7 @@ archive_root="$project_root/logs/0390/runs/$PBS_JOBID"
 mkdir -p "$archive_root"
 exec >>"$archive_root/console.log" 2>&1
 trap 'status=$?; printf "{\"exit_code\":%s}\n" "$status" >"$archive_root/launcher-exit.json"' EXIT
+printf '[0390] worker=%s job=%s host=%s starting environment setup\n' "$worker_id" "$PBS_JOBID" "$(hostname)"
 source "$project_root/local.env"
 : "${CONREP_ENV:?Set CONREP_ENV in local.env}"
 : "${CONREP_WORK_ROOT:?Set CONREP_WORK_ROOT in local.env}"
@@ -24,5 +25,6 @@ export TRITON_CACHE_DIR="$CONREP_WORK_ROOT/cache/triton"
 export TMPDIR="$CONREP_WORK_ROOT/tmp"
 mkdir -p "$TMPDIR" "$TORCH_EXTENSIONS_DIR" "$TRITON_CACHE_DIR"
 python -m pip freeze >"$archive_root/environment.txt"
+printf '[0390] environment ready; campaign=%s\n' "$campaign_root"
 python "$campaign_root/code/scripts/abci/0390_conrep_night.py" worker \
     --campaign "$campaign_root" --worker "$worker_id"

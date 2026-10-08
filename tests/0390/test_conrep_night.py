@@ -140,6 +140,7 @@ def test_matrix_and_single_change_controls():
     assert len(tasks) == 32 and len({x["id"] for x in tasks}) == 32
     assert sum(x["model"] == "llama8b" for x in tasks) == 8
     assert [x["variant"] for x in tasks[:4]] == list("ABCD")
+    assert {x["preferred_worker"] for x in tasks} == {0, 1, 2}
     assert c.VARIANTS["H"] == {**c.VARIANTS["D"], "conrep.specified_lm_weight": 0.0}
     assert c.expected_checkpoints({"unlearn": {"max_steps": 125, "save_steps": 10}}) == list(range(10, 121, 10)) + [125]
 
@@ -160,23 +161,28 @@ def test_scheduler_counts_all_user_jobs_and_nodes():
     ({"Exit_status": 1, "comment": "node failure"}, "recoverable"),
     ({"Exit_status": 0}, "completed"),
     ({"Exit_status": 1}, "unknown_failure"),
+    ({"Exit_status": 271, "comment": "terminated by root@controller"}, "admin_stopped"),
+    ({"Exit_status": 271, "Job_Owner": "me@login", "comment": "terminated by me@controller"}, "cancelled"),
+    ({"comment": "Not Running: Placement set is too small: node_group (group_a != group_b) and terminated"}, "resource_rejected"),
+    ({"Exit_status": None}, "unknown_failure"),
 ])
 def test_only_confirmed_scheduler_interruptions_retry(record, outcome):
     assert c.classify_end(record) == outcome
 
 
-def scheduler_fixture(tmp_path):
+def scheduler_fixture(tmp_path, task_count=1):
     cfg = {"unlearn": {"max_steps": 125, "save_steps": 10}, "run": {"output_dir": str(tmp_path / "training")}}
     write(tmp_path / "config.json", cfg)
     task = {"id": "x", "identity": "i", "priority": 0, "config": str(tmp_path / "config.json"),
             "output": str(tmp_path / "output"), "preferred_worker": 0}
+    tasks = [dict(task, id="x" if i == 0 else f"x{i}") for i in range(task_count)]
     plan = {"project_root": str(tmp_path), "campaign": str(tmp_path), "shell": "/snapshot/worker.sh",
             "walltime": "06:00:00", "initial_task_seconds": 3600, "max_attempts": 3,
-            "source_hash": "s", "queue": "R9920261000", "rtype": "rt_HF", "tasks": [task]}
+            "workers": 3, "source_hash": "s", "queue": "R9920261000", "rtype": "rt_HF", "tasks": tasks}
     state = {"status": "running", "deadline": __import__('time').time() + 36000,
-             "tasks": {"x": {"status": "pending", "attempts": 0, "failures": 0}},
+             "tasks": {t["id"]: {"status": "pending", "attempts": 0, "failures": 0} for t in tasks},
              "workers": {str(i): {"status": "new", "allocations": 0, "job_id": None,
-                                    "recovery_failures": 0} for i in range(4)}}
+                                    "recovery_failures": 0} for i in range(3)}}
     write(tmp_path / "state.json", state)
     write(tmp_path / "plan.json", plan)
     return plan
@@ -185,7 +191,7 @@ def scheduler_fixture(tmp_path):
 def test_submit_respects_existing_jobs_and_does_not_duplicate(tmp_path, monkeypatch):
     plan = scheduler_fixture(tmp_path)
     monkeypatch.setattr(c.getpass, "getuser", lambda: "me")
-    jobs = {str(i): {"Job_Owner": "me@h", "job_state": "R"} for i in range(3)}
+    jobs = {str(i): {"Job_Owner": "me@h", "job_state": "R"} for i in range(2)}
     monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": jobs})
     submitted = []
     def run(command, **kwargs):
@@ -197,6 +203,56 @@ def test_submit_respects_existing_jobs_and_does_not_duplicate(tmp_path, monkeypa
     c.submit_available(tmp_path, plan)
     assert len(submitted) == 1
     assert read(tmp_path / "state.json")["workers"]["0"]["job_id"] == "99.pbs"
+
+
+@pytest.mark.parametrize("selections,expected", [
+    ([], 3), (["1"], 2), (["2:ncpus=96"], 1), (["1", "1"], 1),
+    (["3:ncpus=96"], 0), (["2", "1"], 0), (["1", "1", "1"], 0),
+    (["4"], 0), (["1:ncpus=96+2:ncpus=96"], 0), (["unknown"], 0),
+])
+def test_three_node_cap_with_backlog_and_existing_allocations(tmp_path, monkeypatch, selections, expected):
+    plan = scheduler_fixture(tmp_path, task_count=5)
+    monkeypatch.setattr(c.getpass, "getuser", lambda: "me")
+    jobs = {f"external-{i}": {"Job_Owner": "me@h", "job_state": ("R", "Q", "H")[i % 3],
+            "Resource_List": {"select": value}} for i, value in enumerate(selections)}
+    # Keep the query stale across polls to also exercise newly accepted IDs.
+    monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": jobs})
+    submitted = []
+    def submit(command, **kwargs):
+        submitted.append(command)
+        return subprocess.CompletedProcess(command, 0, f"{100 + len(submitted)}.pbs\n", "")
+    monkeypatch.setattr(c.subprocess, "run", submit)
+    c.submit_available(tmp_path, plan)
+    c.submit_available(tmp_path, plan)
+    assert len(submitted) == expected
+    assert sum(w["allocations"] for w in read(tmp_path / "state.json")["workers"].values()) == expected
+
+
+def test_three_workers_claim_d_before_lower_priority_variants(tmp_path):
+    plan = scheduler_fixture(tmp_path)
+    plan["tasks"] = [dict(plan["tasks"][0], **spec) for spec in c.specs()[:8]]
+    with c.state_transaction(tmp_path) as state:
+        state["tasks"] = {t["id"]: {"status": "pending", "attempts": 0, "failures": 0}
+                          for t in plan["tasks"]}
+    end = __import__('time').time() + 20000
+    claimed = [c.claim(tmp_path, plan, i, end) for i in range(3)]
+    assert [t["variant"] for t in claimed] == list("ABC")
+    with c.state_transaction(tmp_path) as state:
+        state["tasks"][claimed[2]["id"]]["status"] = "completed"
+        state["workers"]["2"]["task"] = None
+    assert c.claim(tmp_path, plan, 2, end)["variant"] == "D"
+
+
+def test_new_launcher_rejects_four_worker_frozen_plan(tmp_path, monkeypatch):
+    import argparse
+    plan = scheduler_fixture(tmp_path)
+    plan["workers"] = 4
+    write(tmp_path / "plan.json", plan)
+    monkeypatch.setattr(c, "qstat", lambda *a: pytest.fail("Old plan must be rejected before scheduler access"))
+    with pytest.raises(ValueError, match="Prepare a new three-node campaign"):
+        c.start(argparse.Namespace(campaign=str(tmp_path)))
+    with pytest.raises(ValueError, match="Prepare a new three-node campaign"):
+        c.submit_available(tmp_path, plan)
 
 
 def test_qstat_failure_never_submits(tmp_path, monkeypatch):
@@ -211,7 +267,7 @@ def test_qstat_failure_never_submits(tmp_path, monkeypatch):
 def test_ambiguous_submission_blocks_other_submissions(tmp_path, monkeypatch, returncode, stdout):
     plan = scheduler_fixture(tmp_path)
     monkeypatch.setattr(c.getpass, "getuser", lambda: "me")
-    jobs = {str(i): {"Job_Owner": "me@h", "job_state": "R"} for i in range(3)}
+    jobs = {str(i): {"Job_Owner": "me@h", "job_state": "R"} for i in range(2)}
     monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": jobs})
     submitted = []
     def run(command, **kwargs):
@@ -252,6 +308,7 @@ def test_confirmed_walltime_requeues_same_task(tmp_path, monkeypatch):
     state = read(tmp_path / "state.json")
     assert state["tasks"]["x"]["status"] == "paused"
     assert state["workers"]["0"]["status"] == "available"
+    assert c.ready_to_claim(state["tasks"]["x"])
 
 
 def test_pbs_has_reserved_queue_single_node_and_prefix():
@@ -316,6 +373,8 @@ def test_prepare_freezes_uncommitted_server_source_and_full_matrix(tmp_path):
                gemma_config="config.json",llama_config="config.json",hours=10,reserve_gb=100))
     plan = read(campaign / "plan.json")
     assert len(plan["tasks"]) == 32
+    assert plan["workers"] == 3
+    assert set(read(campaign / "state.json")["workers"]) == {"0", "1", "2"}
     assert (campaign / "code/src/experiments/validation.py").read_text() == "# local server changes\n"
     c.verify_snapshot(campaign, plan)
     (campaign / "code/src/experiments/validation.py").write_text("# modified during run\n")
@@ -343,3 +402,115 @@ def test_installer_preserves_dirty_server_files_and_refuses_collisions(tmp_path)
     (repo/"src/conrep/night/__init__.py").write_text("local night changes\n")
     with pytest.raises(FileExistsError,match="preserved"):
         installer.install(repo,"HEAD")
+
+
+def test_accepted_but_temporarily_invisible_jobs_reserve_capacity(tmp_path, monkeypatch):
+    plan = scheduler_fixture(tmp_path, task_count=5)
+    with c.state_transaction(tmp_path) as state:
+        for index in range(2):
+            state["workers"][str(index)].update(job_id=f"{index}.pbs", status="queued")
+    monkeypatch.setattr(c.getpass, "getuser", lambda: "me")
+    monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {
+        "external.pbs": {"Job_Owner": "me@h", "job_state": "R"}}})
+    # Two invisible accepted jobs plus one external job exhaust three nodes,
+    # even with enough pending tasks and an otherwise idle third worker.
+    monkeypatch.setattr(c.subprocess, "run", lambda *a, **kw: pytest.fail("Invisible accepted jobs must hold slots"))
+    c.submit_available(tmp_path, plan)
+    assert read(tmp_path / "state.json")["workers"]["2"]["status"] == "new"
+
+
+def test_qsub_return_cannot_overwrite_already_running_worker(tmp_path, monkeypatch):
+    plan = scheduler_fixture(tmp_path)
+    monkeypatch.setattr(c.getpass, "getuser", lambda: "me")
+    monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {}})
+    def submit(command, **kwargs):
+        with c.state_transaction(tmp_path) as state:
+            state["workers"]["0"].update(job_id="99.pbs", status="running")
+        return subprocess.CompletedProcess(command, 0, "99.pbs\n", "")
+    monkeypatch.setattr(c.subprocess, "run", submit)
+    c.submit_available(tmp_path, plan)
+    assert read(tmp_path / "state.json")["workers"]["0"]["status"] == "running"
+
+
+@pytest.mark.parametrize("comment,expected", [("deleted by user", "cancelled"),
+                                                ("walltime limit", "paused")])
+def test_graceful_pause_waits_for_pbs_reason_before_reclaim(tmp_path, monkeypatch, comment, expected):
+    plan = scheduler_fixture(tmp_path)
+    with c.state_transaction(tmp_path) as state:
+        state["workers"]["0"].update(job_id="99.pbs", status="drained")
+        state["tasks"]["x"].update(job_id="99.pbs", status="paused")
+    assert c.claim(tmp_path, plan, 1, __import__('time').time() + 20000) is None
+    assert not c.admissible_pending(tmp_path, plan, read(tmp_path / "state.json"))
+    monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {"99.pbs": {
+        "job_state": "F", "Exit_status": 271, "comment": comment}}})
+    monkeypatch.setattr(c, "archive_job", lambda *a: None)
+    c.reconcile(tmp_path, plan, {})
+    task = read(tmp_path / "state.json")["tasks"]["x"]
+    assert task["status"] == expected
+    assert c.ready_to_claim(task) == (expected == "paused")
+
+
+def test_failed_scheduler_preflight_does_not_start_budget(tmp_path, monkeypatch):
+    import argparse
+    scheduler_fixture(tmp_path)
+    with c.state_transaction(tmp_path) as state:
+        state.update(status="prepared", started_at=None, deadline=None)
+    monkeypatch.setattr(c, "verify_snapshot", lambda *a: None)
+    monkeypatch.setattr(c, "qstat", lambda *a: (_ for _ in ()).throw(RuntimeError("scheduler unavailable")))
+    with pytest.raises(RuntimeError, match="scheduler unavailable"):
+        c.start(argparse.Namespace(campaign=str(tmp_path)))
+    state = read(tmp_path / "state.json")
+    assert state["status"] == "prepared" and state["started_at"] is None and state["deadline"] is None
+
+
+def test_supervisor_keeps_waiting_for_unsettled_paused_allocation(tmp_path, monkeypatch):
+    import argparse
+    plan = scheduler_fixture(tmp_path)
+    plan["poll_seconds"] = 60
+    write(tmp_path / "plan.json", plan)
+    with c.state_transaction(tmp_path) as state:
+        state["workers"]["0"].update(job_id="99.pbs", status="drained")
+        state["tasks"]["x"].update(job_id="99.pbs", status="paused")
+    monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {}})
+    observed = []
+    def stop_after_poll(_):
+        with c.state_transaction(tmp_path) as state:
+            observed.append(state["status"])
+            state["status"] = "stopped"
+    monkeypatch.setattr(c.time, "sleep", stop_after_poll)
+    c.supervise(argparse.Namespace(campaign=str(tmp_path)))
+    assert observed == ["running"]
+    assert read(tmp_path / "state.json")["tasks"]["x"]["status"] == "paused"
+
+
+def test_installer_upgrade_matches_previous_bytes_and_keeps_backup(tmp_path):
+    spec = importlib.util.spec_from_file_location("night_installer_upgrade", ROOT / "scripts/abci/0390_install_conrep_night.py")
+    installer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(installer)
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+    names = installer.EXACT | {"src/conrep/night/__init__.py", "src/conrep/v2/trainer.py"}
+    for name in names:
+        path = repo / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("old\n")
+    def commit(message):
+        subprocess.run(["git", "add", "."], cwd=repo, check=True)
+        subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                        "commit", "-qm", message], cwd=repo, check=True)
+    commit("old package")
+    for name in names:
+        (repo / name).write_text("new\n")
+    commit("new package")
+    for name in names:
+        (repo / name).write_text("old\n")
+    (repo / "src/conrep/v2/trainer.py").write_text("server changes\n")
+    installer.install(repo, "HEAD", "HEAD~1")
+    assert (repo / "src/conrep/night/__init__.py").read_text() == "new\n"
+    assert (repo / "src/conrep/v2/trainer.py").read_text() == "server changes\n"
+    backups = list((repo / "logs/0390/installations").glob("*/src/conrep/night/__init__.py"))
+    assert len(backups) == 1 and backups[0].read_text() == "old\n"
+    (repo / "src/conrep/night/__init__.py").write_text("user modified package\n")
+    with pytest.raises(FileExistsError, match="preserved"):
+        installer.install(repo, "HEAD", "HEAD~1")

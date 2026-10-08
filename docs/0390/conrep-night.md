@@ -1,4 +1,4 @@
-# ConRep overnight campaign: four nodes, ten hours
+# ConRep overnight campaign: three nodes, ten hours
 
 This is an additive entry for the existing ABCI server checkout. It freezes
 the server's current `src/` tree and the new launcher, including uncommitted
@@ -22,16 +22,46 @@ source "$CONREP_ENV/bin/activate"
 
 git fetch origin codex/0390-conrep-night-20261008
 night_ref="$(git rev-parse FETCH_HEAD)"
-night_installer="$(mktemp /tmp/0390_conrep_install_XXXXXX.py)"
+night_install_dir="$(mktemp -d /tmp/0390_conrep_install.XXXXXX)"
+night_installer="$night_install_dir/install.py"
 git show "$night_ref:scripts/abci/0390_install_conrep_night.py" > "$night_installer"
-python "$night_installer" --root "$PWD" --ref "$night_ref"
+python -I "$night_installer" --root "$PWD" --ref "$night_ref" \
+  --upgrade-from 33d5f9c22106d43bbaa88cc3bc57ee23afbc4ac9
 
-campaign="$PWD/results/validated_v2/0390/conrep-night-20261008"
+campaign="$PWD/results/validated_v2/0390/conrep-night-20261008-3nodes"
 python scripts/abci/0390_conrep_night.py prepare --campaign "$campaign" --hours 10
-python scripts/abci/0390_conrep_night.py start --campaign "$campaign"
 python scripts/abci/0390_conrep_night.py status --campaign "$campaign"
 )
 ```
+
+The installer uses only the standard library. `python -I` and a separate
+temporary directory prevent unrelated `/tmp/math.py` files from shadowing
+standard Python modules. The `--upgrade-from` option is also safe for a first
+installation: existing package files may only be replaced when their bytes
+exactly match that old revision. Replaced files are backed up under
+`logs/0390/installations/`. Other server modifications are refused, not overwritten.
+Already frozen campaigns retain their original worker limit; installing this
+revision does not lower a running four-node campaign's limit. Prepare the new
+`-3nodes` campaign above to use this revision. If an old supervisor is running,
+stop it before starting the new one so it cannot keep submitting under its old
+limit. Stopping it does not remove its checkpoints or results. The updated
+launcher refuses to start/resume an old plan whose worker limit is not three.
+
+The commands above prepare the complete plan **without submitting jobs**.
+Start with the following command once the existing reservation permits the
+planned allocation:
+
+```bash
+python scripts/abci/0390_conrep_night.py start --campaign "$PWD/results/validated_v2/0390/conrep-night-20261008-3nodes"
+```
+
+Administrator stops and scheduler placement rejections do not identify a
+training exception or establish permission for three nodes. This revision
+reports `admin_stopped` / `resource_rejected` and
+does not automatically retry, switch queues, or change placement restrictions.
+Do not use a new campaign to bypass an unresolved administrator or allocation
+restriction. Queue access must be resolved with the reservation administrator
+before another submission; preparation and local tests remain usable meanwhile.
 
 The defaults read the two **existing server-resolved** configs:
 
@@ -76,9 +106,10 @@ only retries of the *same* experiment resume an unlearning checkpoint.
 | L | B + forget corruption.50 |
 
 The 32 task entries are ordered as Gemma A-D/42, E-H/42, I-L/42, A-H/43,
-A-D/44, Llama A-D/42, A-D/43. Each worker initially prefers A→G→J,
-B→E→K, C→H→I, or D→F→L; an idle worker can claim another pending entry.
-Priority wins over preference. More seeds are unlearning repeats with the same
+A-D/44, Llama A-D/42, A-D/43. The three workers prefer A→D→G→J,
+B→E→H→K, or C→F→I→L; an idle worker can claim another pending entry.
+Priority wins over preference: after A/B/C start, the first available worker
+takes D before moving to E-H. More seeds are unlearning repeats with the same
 SFT checkpoint, not repeated SFT training. A is intentionally rerun because the
 new execution path must have a contemporary control.
 
@@ -97,9 +128,11 @@ and positive cosine similarity so low effective coverage is visible.
 ## Scheduling and stopping
 
 Each PBS allocation requests `-P gcg51557`, `-q R9920261000`,
-`RTYPE=rt_HF`, `select=1`, six hours, and a `0390` job name. Four slots are
+`RTYPE=rt_HF`, `select=1`, six hours, and a `0390` job name. Three slots are
 available, with **all active/queued/held account jobs and requested nodes**
-counted. Existing jobs are not cancelled. This launcher uses the existing
+counted. For example, two existing single-node jobs leave one slot; one
+three-node job leaves none. Worker IDs are 0, 1 and 2. Existing jobs are not
+cancelled. This launcher uses the existing
 single-job submitter's submission lock. Independently running external
 submitters must also respect the shared account limit.
 
@@ -109,14 +142,21 @@ configuration on eight GPUs, then uses eight independent GPU processes for its
 next checkpoint, without a wave barrier. Completed experiments are skipped.
 There is no dependence on a ChatGPT window remaining open.
 
-The ten-hour deadline starts at the first `start`, including queue wait. The
+The ten-hour deadline starts after the first `start` successfully checks the
+scheduler, including subsequent queue wait. Failed scheduler access during
+startup does not consume the budget. Accepted jobs temporarily missing from
+`qstat` continue to reserve their account slots until PBS confirms termination. The
 initial per-run estimate is one hour and is updated conservatively using
 completed runs. New runs need time for training and validation; after the last
 90 minutes only the highest-priority fresh runs or unfinished validation are
 eligible. Workers pause before the shorter of PBS allocation end and campaign
 deadline. A new six-hour allocation can continue the same task list. At the
 campaign deadline remaining owned PBS jobs are cancelled; no new work is added.
-32 is a task-pool target, not a promise of throughput.
+The three-node, ten-hour budget is at most 30 node-hours (240 GPU-hours),
+including startup, validation and recovery. The 32 experiments remain a
+prioritized task pool; at the initial one-node-hour estimate they exceed this
+budget. Later seed/model repeats run only when measured throughput leaves
+enough time. Unfinished entries remain recorded for an explicit later resume.
 
 Each allocation first runs a real two-step, eight-GPU save/resume smoke: stop
 after step1, load its checkpoint, finish step2. Failure blocks that worker and
@@ -147,6 +187,9 @@ automatically deleted to make room.
   is not enough to infer walltime. Unknown scheduler state, ambiguous qsub
   responses, deterministic configuration failures, OOM and NaN do not cause
   blind submissions or hidden hyperparameter changes.
+- A paused task remains unclaimable until PBS confirms its previous allocation's
+  ending reason. This also covers a graceful checkpoint saved just before qdel.
+  Administrator termination and resource-placement rejection remain blocked.
 - An interrupted supervisor adopts recorded PBS IDs. A unique job name helps
   recover a qsub response lost before its job ID was recorded. If no reliable
   scheduler evidence exists, it waits rather than risk duplicate training.
@@ -159,14 +202,16 @@ automatically deleted to make room.
 Run these from the existing server checkout after activating its environment:
 
 ```bash
-campaign="$PWD/results/validated_v2/0390/conrep-night-20261008"
+campaign="$PWD/results/validated_v2/0390/conrep-night-20261008-3nodes"
 python scripts/abci/0390_conrep_night.py status --campaign "$campaign"
 tail -n 40 "$campaign/supervisor.log"
 tail -n 40 "$campaign/events.jsonl"
 qstat -u "$USER"
 ```
 
-`status` also regenerates `checkpoint-results.csv` and `summary.json`. The CSV
+`status` also shows each worker's PBS ID, status and final outcome, and regenerates
+`checkpoint-results.csv` and `summary.json`. A progress summary is printed to
+`supervisor.log` every five minutes. The CSV
 keeps every configuration/seed/checkpoint and the evaluator's original metrics
 and scalar MMLU diagnostics; it does not choose a winner. Review Llama's raw
 MMLU outputs and strict/main discrepancy before drawing cross-model utility
