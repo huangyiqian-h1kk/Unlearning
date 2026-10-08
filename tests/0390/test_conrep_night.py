@@ -161,9 +161,9 @@ def test_scheduler_counts_all_user_jobs_and_nodes():
     ({"Exit_status": 1, "comment": "node failure"}, "recoverable"),
     ({"Exit_status": 0}, "completed"),
     ({"Exit_status": 1}, "unknown_failure"),
-    ({"Exit_status": 271, "comment": "terminated by root@controller"}, "admin_stopped"),
+    ({"Exit_status": 271, "comment": "terminated by root@controller"}, "admin_terminated"),
     ({"Exit_status": 271, "Job_Owner": "me@login", "comment": "terminated by me@controller"}, "cancelled"),
-    ({"comment": "Not Running: Placement set is too small: node_group (group_a != group_b) and terminated"}, "resource_rejected"),
+    ({"comment": "Not Running: Placement set is too small: node_group (group_a != group_b) and terminated"}, "placement_failure"),
     ({"Exit_status": None}, "unknown_failure"),
 ])
 def test_only_confirmed_scheduler_interruptions_retry(record, outcome):
@@ -313,9 +313,9 @@ def test_confirmed_walltime_requeues_same_task(tmp_path, monkeypatch):
 
 def test_pbs_has_reserved_queue_single_node_and_prefix():
     plan = {"shell": "/a b/worker.sh", "project_root": "/project", "campaign": "/campaign", "walltime": "06:00:00"}
-    script = c.render_pbs(plan, 2, "0390nabc2001")
+    script = c.render_pbs(plan, 2, "0390_nabc2001")
     assert "#PBS -q R9920261000" in script and "#PBS -v RTYPE=rt_HF" in script
-    assert "#PBS -l select=1" in script and "#PBS -N 0390" in script
+    assert "#PBS -l select=1" in script and "#PBS -N 0390_" in script
     assert "'/a b/worker.sh'" in script
 
 

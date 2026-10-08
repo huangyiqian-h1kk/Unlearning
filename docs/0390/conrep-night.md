@@ -40,28 +40,16 @@ standard Python modules. The `--upgrade-from` option is also safe for a first
 installation: existing package files may only be replaced when their bytes
 exactly match that old revision. Replaced files are backed up under
 `logs/0390/installations/`. Other server modifications are refused, not overwritten.
-Already frozen campaigns retain their original worker limit; installing this
-revision does not lower a running four-node campaign's limit. Prepare the new
-`-3nodes` campaign above to use this revision. If an old supervisor is running,
-stop it before starting the new one so it cannot keep submitting under its old
-limit. Stopping it does not remove its checkpoints or results. The updated
-launcher refuses to start/resume an old plan whose worker limit is not three.
+For an existing campaign, use the controller-only recovery procedure below.
+It preserves its task/checkpoint identity and applies the current three-node
+account cap. Installing checkout files alone does not update a frozen controller.
 
-The commands above prepare the complete plan **without submitting jobs**.
-Start with the following command once the existing reservation permits the
-planned allocation:
+The commands above prepare the plan without submitting jobs. Start a new
+campaign with:
 
 ```bash
 python scripts/abci/0390_conrep_night.py start --campaign "$PWD/results/validated_v2/0390/conrep-night-20261008-3nodes"
 ```
-
-Administrator stops and scheduler placement rejections do not identify a
-training exception or establish permission for three nodes. This revision
-reports `admin_stopped` / `resource_rejected` and
-does not automatically retry, switch queues, or change placement restrictions.
-Do not use a new campaign to bypass an unresolved administrator or allocation
-restriction. Queue access must be resolved with the reservation administrator
-before another submission; preparation and local tests remain usable meanwhile.
 
 The defaults read the two **existing server-resolved** configs:
 
@@ -128,10 +116,12 @@ and positive cosine similarity so low effective coverage is visible.
 ## Scheduling and stopping
 
 Each PBS allocation requests `-P gcg51557`, `-q R9920261000`,
-`RTYPE=rt_HF`, `select=1`, six hours, and a `0390` job name. Three slots are
+`RTYPE=rt_HF`, `select=1`, six hours, and a `0390_` job name. Three slots are
 available, with **all active/queued/held account jobs and requested nodes**
 counted. For example, two existing single-node jobs leave one slot; one
-three-node job leaves none. Worker IDs are 0, 1 and 2. Existing jobs are not
+three-node job leaves none. New campaigns use worker IDs 0, 1 and 2. Recovered
+legacy campaigns retain their four logical worker records but can still hold
+at most three account jobs/nodes at once. Existing jobs are not
 cancelled. This launcher uses the existing
 single-job submitter's submission lock. Independently running external
 submitters must also respect the shared account limit.
@@ -182,14 +172,25 @@ automatically deleted to make room.
 - Validation resumes at checkpoint granularity. A valid completion includes the
   metrics and raw prediction files. An unfinished checkpoint is reevaluated;
   there is no claim of per-example inference resume.
-- Confirmed PBS walltime/preemption/node failure can retry, at most three
-  failure attempts. Manual qdel is never automatically revived. Exit143 alone
-  is not enough to infer walltime. Unknown scheduler state, ambiguous qsub
-  responses, deterministic configuration failures, OOM and NaN do not cause
-  blind submissions or hidden hyperparameter changes.
+- Confirmed PBS walltime/preemption/node failure can retry. The approved
+  recovery policy also retries administrator termination, which is an expected
+  interruption in this environment. A terminal queued job with no start/exit
+  record and a retained placement comment followed by `terminated` gets the
+  same bounded retry without changing its reservation or resource request.
+  An active queued placement comment is not treated as a failed allocation.
+- There are at most three automatic retries per interrupted task and per
+  consecutive failed-allocation streak, with waits of 60, 120, and 240 seconds.
+  A completed experiment resets the worker's allocation-failure streak; task
+  retry counts remain recorded. Manual user cancellation, explicit stop, access
+  denial and deterministic training failures are not automatically revived.
+  Exit143 or Exit271 alone is not sufficient to infer the reason. Unknown
+  scheduler state and ambiguous qsub responses never create duplicate jobs.
+- A replacement worker prioritizes paused tasks and loads the latest complete
+  checkpoint of the same experiment. Finished validations remain reusable.
+  Events and PBS reasons are printed to the supervisor/worker console as well
+  as recorded in JSON; exhausted or unclassified failures produce `BLOCKED.json`.
 - A paused task remains unclaimable until PBS confirms its previous allocation's
-  ending reason. This also covers a graceful checkpoint saved just before qdel.
-  Administrator termination and resource-placement rejection remain blocked.
+  ending reason, including a graceful checkpoint saved just before qdel.
 - An interrupted supervisor adopts recorded PBS IDs. A unique job name helps
   recover a qsub response lost before its job ID was recorded. If no reliable
   scheduler evidence exists, it waits rather than risk duplicate training.
@@ -227,6 +228,44 @@ python scripts/abci/0390_conrep_night.py resume --campaign "$campaign" --hours 4
 
 Cancelled or deterministically failed experiments are preserved for inspection,
 not reset automatically. Changed code/configuration needs a new campaign.
+
+## Recover a campaign prepared with the original launcher
+
+The original launcher classified administrator interruption as unknown and
+left its workers blocked. Fetch the updated branch and run the dedicated
+upgrader instead of rerunning `prepare` or the additive installer:
+
+```bash
+(
+set -euo pipefail
+cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
+source local.env
+source "$CONREP_ENV/bin/activate"
+git fetch origin codex/0390-conrep-night-20261008
+recovery_ref="$(git rev-parse FETCH_HEAD)"
+recovery_dir="$(mktemp -d /tmp/0390_conrep_recovery.XXXXXX)"
+git show "${recovery_ref}:scripts/abci/0390_recover_conrep_night.py" > "$recovery_dir/recover.py"
+campaign="$PWD/results/validated_v2/0390/conrep-night-20261008"
+python -I "$recovery_dir/recover.py" --root "$PWD" --ref "$recovery_ref" --campaign "$campaign" --restart
+)
+```
+
+This preserves the original deadline. To explicitly grant a fresh time budget,
+append `--hours 10` to the recovery command. Without `--restart`, the upgrader
+only installs the controller and does not submit jobs or change task states.
+
+The upgrader refuses active campaign allocations or edited package-owned
+launcher files. It backs up the existing plan/state and the three launcher
+files it replaces. The original `code/` snapshot, source hash, task configs,
+data, and checkpoint identities are unchanged. The new controller lives in
+`controllers/<commit>/` with its own hashes; model training/validation still
+use the original frozen entry. Normal checkout `status/start/resume/stop`
+commands dispatch to that controller. Repeating the same upgrade is harmless.
+
+Recovery reassesses the old final PBS records under the approved policy once,
+reopens only recoverable workers/tasks, and keeps completed results, manual
+cancellations, failure evidence, and retry counters. It does not switch queue,
+alter `node_group`, change batch sizes, or relabel a failed training run as done.
 
 ## Verification boundary
 

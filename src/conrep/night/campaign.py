@@ -29,6 +29,13 @@ MAX_NODES = 3
 PAUSE = 75
 ENTRY = "scripts/abci/0390_conrep_night.py"
 SHELL = "scripts/abci/0390_conrep_night_worker.sh"
+BLOCKED_WORKER_STATES = {"cancelled", "unknown_failure", "retry_exhausted",
+                         "admin_terminated", "placement_failure", "policy_denied",
+                         "admin_stopped", "resource_rejected"}
+RECOVERY_VERSION = "0390-night-recovery-v2"
+RECOVERY_DEFAULTS = {"version": RECOVERY_VERSION, "retry_admin_termination": True,
+                     "retry_terminated_queued": True, "max_retries": 3,
+                     "backoff_seconds": 60, "backoff_max_seconds": 300}
 BASE_CAMPAIGN = "results/validated_v2/0390/final-unlearn-v5-parallel3-seed42"
 VARIANTS = {
     "A": {},
@@ -184,7 +191,8 @@ def prepare(args):
             "shell": str(campaign / "code" / SHELL), "workers": MAX_NODES, "world_size": 8,
             "queue": "R9920261000", "account": "gcg51557", "rtype": "rt_HF",
             "hours": args.hours, "walltime": "06:00:00", "poll_seconds": 60,
-            "max_attempts": 3, "source_hash": source_hash, "tasks": tasks,
+            "max_attempts": 3, "recovery_policy": dict(RECOVERY_DEFAULTS),
+            "source_hash": source_hash, "tasks": tasks,
             "initial_task_seconds": 3600, "reserve_bytes": int(args.reserve_gb * 10**9)}
     write(campaign / "plan.json", plan)
     write(campaign / "state.json", {"status": "prepared", "started_at": None, "deadline": None,
@@ -207,15 +215,24 @@ def state_transaction(campaign):
 
 def event(campaign, **values):
     row = {"time": dt.datetime.now(dt.timezone.utc).isoformat(), **values}
+    line = json.dumps(row, ensure_ascii=False)
     with locked(campaign / "events.lock"):
         with (campaign / "events.jsonl").open("a") as stream:
-            stream.write(json.dumps(row, ensure_ascii=False) + "\n")
+            stream.write(line + "\n")
+    # PBS console and supervisor.log must show progress and terminal failures,
+    # even when the child trainer's detailed output lives in a separate file.
+    print(line, flush=True)
 
 
 def check_worker_limit(plan):
+    # Legacy logical workers keep their history/config preferences. The new
+    # controller still enforces MAX_NODES across all account allocations.
+    if (plan.get("workers") == 4 and plan.get("controller_ref")
+            and plan.get("recovery_policy", {}).get("version") == RECOVERY_VERSION):
+        return
     if plan.get("workers") != MAX_NODES:
         raise ValueError(f"Campaign worker limit is {plan.get('workers')}; expected {MAX_NODES}. "
-                         "Prepare a new three-node campaign; old frozen campaigns keep their original limit.")
+                         "Prepare a new three-node campaign or use the controller-only recovery upgrader.")
 
 
 def verify_snapshot(campaign, plan):
@@ -223,6 +240,11 @@ def verify_snapshot(campaign, plan):
     for name, expected in read(campaign / "source.json")["files"].items():
         if file_sha(campaign / "code" / name) != expected:
             raise ValueError(f"Frozen source changed: {name}")
+    # A controller-only repair has separate provenance. Training still runs
+    # through the original entry/source hash, so old checkpoints remain valid.
+    for name, expected in plan.get("controller_files", {}).items():
+        if file_sha(name) != expected:
+            raise ValueError(f"Recovery controller changed: {name}")
     for name, expected in read(campaign / "inputs.json").items():
         if file_sha(name) != expected:
             raise ValueError(f"Frozen input changed: {name}")
@@ -244,7 +266,9 @@ def claim(campaign, plan, worker_id, allocation_end):
         completed = [t.get("elapsed_seconds", 0) for t in state["tasks"].values()
                      if t["status"] == "completed" and t.get("elapsed_seconds", 0) > 0]
         estimate = max(2700, max(completed[-8:], default=plan["initial_task_seconds"]))
-        candidates = sorted(plan["tasks"], key=lambda t: (t["priority"], t["preferred_worker"] != worker_id, t["id"]))
+        candidates = sorted(plan["tasks"], key=lambda t: (
+            state["tasks"][t["id"]]["status"] != "paused", t["priority"],
+            t["preferred_worker"] != worker_id, t["id"]))
         for task in candidates:
             record = state["tasks"][task["id"]]
             if not ready_to_claim(record):
@@ -348,7 +372,9 @@ def run_child(command, log, *, project, deadline, stop_file, interrupted, env=No
                 if time.time() - requested > 60 or time.time() >= deadline - 5:
                     terminate(process, signal.SIGKILL)
             time.sleep(1)
-        if requested is not None:
+        # PBS can terminate the child before this loop observes the parent's
+        # signal. Do not turn that ordering into a deterministic task failure.
+        if requested is not None or interrupted():
             return PAUSE
         if pause_marker and Path(pause_marker).exists():
             marker = read(pause_marker)
@@ -368,6 +394,8 @@ def train_command(plan, config, *, resume=None, deadline=None, stop_file=None, s
 
 
 def gpu_smoke(campaign, plan, worker_id, deadline, interrupted):
+    event(campaign, event="smoke-start", worker=worker_id,
+          job_id=os.environ.get("PBS_JOBID"))
     import torch
     if not torch.cuda.is_available() or torch.cuda.device_count() < 8:
         raise RuntimeError("Each worker requires one allocated HF node with 8 visible GPUs")
@@ -379,6 +407,7 @@ def gpu_smoke(campaign, plan, worker_id, deadline, interrupted):
     write(config, cfg)
     stop_file = root / "STOP"
     command = train_command(plan, config, deadline=deadline - 30, stop_file=stop_file, stop_after=1)
+    event(campaign, event="smoke-save", worker=worker_id, log=str(root / "first.log"))
     code = run_child(command, root / "first.log", project=plan["project_root"], deadline=deadline,
                      stop_file=stop_file, interrupted=interrupted,
                      pause_marker=root / "training/PAUSED.json")
@@ -388,12 +417,14 @@ def gpu_smoke(campaign, plan, worker_id, deadline, interrupted):
     if checkpoint is None:
         raise RuntimeError("GPU smoke did not produce a complete all-rank checkpoint")
     command = train_command(plan, config, resume=checkpoint, deadline=deadline - 30, stop_file=stop_file)
+    event(campaign, event="smoke-resume", worker=worker_id, log=str(root / "resume.log"))
     code = run_child(command, root / "resume.log", project=plan["project_root"], deadline=deadline,
                      stop_file=stop_file, interrupted=interrupted,
                      pause_marker=root / "training/PAUSED.json")
     if code != 0 or not (root / "training/TRAINING_COMPLETE.json").exists():
         raise RuntimeError(f"GPU resume smoke failed: {code}")
     write(root / "PASSED.json", {"world_size": 8, "resume_from_step": 1, "final_step": 2})
+    event(campaign, event="smoke-passed", worker=worker_id, path=str(root / "PASSED.json"))
 
 
 def validate_all(campaign, plan, task, cfg, *, deadline, interrupted):
@@ -454,6 +485,8 @@ def worker(args):
     plan = read(campaign / "plan.json")
     verify_snapshot(campaign, plan)
     worker_id = args.worker
+    if worker_id not in range(plan["workers"]):
+        raise ValueError("Worker ID is not present in this campaign")
     signalled = [False]
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, lambda *_: signalled.__setitem__(0, True))
@@ -468,7 +501,14 @@ def worker(args):
         current["workers"][str(worker_id)].update(status="running", pid=os.getpid(),
             host=os.uname().nodename, started_at=start, job_id=os.environ.get("PBS_JOBID"))
     event(campaign, worker=worker_id, event="worker-start", job_id=os.environ.get("PBS_JOBID"))
-    gpu_smoke(campaign, plan, worker_id, min(allocation_end, time.time() + 900), interrupted)
+    try:
+        gpu_smoke(campaign, plan, worker_id, min(allocation_end, time.time() + 900), interrupted)
+    except Exception as exc:
+        with state_transaction(campaign) as current:
+            current["workers"][str(worker_id)].update(stage="smoke-failed", error=repr(exc))
+        event(campaign, event="smoke-error", worker=worker_id,
+              job_id=os.environ.get("PBS_JOBID"), error=repr(exc))
+        raise
     while not interrupted() and time.time() < allocation_end - 90:
         if shutil.disk_usage(campaign).free < plan["reserve_bytes"]:
             event(campaign, worker=worker_id, event="storage-reserve-reached")
@@ -506,12 +546,16 @@ def worker(args):
         except Exception as exc:
             code = 1
             event(campaign, task=task["id"], event="task-error", error=repr(exc))
+        if code != 0 and interrupted():
+            code = PAUSE
         with state_transaction(campaign) as current:
             record = current["tasks"][task["id"]]
             record.update(exit_code=code, elapsed_seconds=record.get("elapsed_seconds", 0) + time.time() - task_start)
             record["status"] = ("interrupted" if signalled[0] else "paused") if code == PAUSE else (
                 "completed" if code == 0 else "failed")
             current["workers"][str(worker_id)]["task"] = None
+            if code == 0:
+                current["workers"][str(worker_id)]["recovery_failures"] = 0
         event(campaign, task=task["id"], event="task-end", exit_code=code)
         summarize(campaign)
         if code == PAUSE:
@@ -556,18 +600,20 @@ def qstat(*args):
 def classify_end(job):
     """Do not infer walltime from a launcher SIGTERM/exit 143 alone."""
     text = " ".join(str(job.get(k, "")) for k in ("comment", "reason", "Exit_reason", "description")).lower()
-    if re.search(r"qdel|deleted by|delete request|user request|cancelled by|canceled by", text):
+    if re.search(r"qdel|delete request|user request|cancelled by|canceled by", text):
         return "cancelled"
-    # Resource-policy or administrator stops are not transient node failures.
-    # Preserve these distinctions without changing queues or retrying around them.
-    if re.search(r"placement set is too small|node_group.*!=|queue.*(?:disabled|not enabled)", text):
-        return "resource_rejected"
+    if re.search(r"permission denied|unauthori[sz]ed|not authorized|access denied|"
+                 r"policy violation|quota violation|reservation (?:expired|ended)|queue.*(?:disabled|not enabled)", text):
+        return "policy_denied"
+    admin = bool(re.search(r"(?:terminated|killed|deleted) by root(?:@|\b)", text))
+    if not admin and re.search(r"(?:deleted|terminated|killed) by (?:user\b|[a-z0-9_-]+@)", text):
+        return "cancelled"
     if re.search(r"walltime|wall time|time limit|node fail|node down|mom.*lost|preempt", text):
         return "recoverable"
-    if re.search(r"terminated by|killed by (?:root|admin)|administrat", text):
-        owner = job.get("Job_Owner", "").split("@")[0].lower()
-        actor = re.search(r"terminated by\s+([^@\s]+)", text)
-        return "cancelled" if actor and owner and actor[1] == owner else "admin_stopped"
+    if re.search(r"placement set is too small|insufficient.*node_group", text):
+        return "placement_failure"
+    if admin:
+        return "admin_terminated"
     try:
         code = int(job.get("Exit_status"))
     except (TypeError, ValueError):
@@ -584,8 +630,33 @@ def classify_end(job):
     return "unknown_failure"
 
 
+def recovery_outcome(job, plan):
+    """Apply this campaign's approved interruption policy to PBS evidence."""
+    reason = classify_end(job)
+    policy = plan.get("recovery_policy", {})
+    if reason == "admin_terminated" and policy.get("retry_admin_termination"):
+        return "recoverable", reason
+    text = str(job.get("comment", "")).lower()
+    if (reason == "placement_failure" and policy.get("retry_terminated_queued")
+            and job.get("job_state") in {"F", "C"} and "terminated" in text
+            and not job.get("stime") and not job.get("exec_host")
+            and job.get("Exit_status") is None):
+        # PBS can retain its last placement comment when a queued job is
+        # terminated. Retry the same reservation/resources with a finite budget;
+        # never change node_group or pretend this proves a permanent mismatch.
+        return "recoverable", "terminated_while_queued"
+    return reason, reason
+
+
+def retry_limit(plan):
+    return int(plan.get("recovery_policy", {}).get("max_retries", plan.get("max_attempts", 3)))
+
+
 def render_pbs(plan, worker_id, job_name):
-    command = ["bash", plan["shell"], plan["project_root"], plan["campaign"], str(worker_id)]
+    if not re.fullmatch(r"0390_[A-Za-z0-9_-]{1,10}", job_name):
+        raise ValueError("PBS job names must use the established 0390_ prefix and fit 15 characters")
+    command = ["bash", plan.get("controller_shell", plan["shell"]),
+               plan["project_root"], plan["campaign"], str(worker_id)]
     return ("#!/bin/bash\n#PBS -P gcg51557\n#PBS -q R9920261000\n#PBS -v RTYPE=rt_HF\n"
             f"#PBS -l select=1\n#PBS -l walltime={plan['walltime']}\n#PBS -N {job_name}\n"
             "#PBS -j oe\n#PBS -k oe\nset -euo pipefail\n" + shlex.join(command) + "\n")
@@ -629,7 +700,7 @@ def archive_job(campaign, plan, job_id, pbs=None):
                 stream.write(f"\n- [{job_id}](runs/{job_id}/job.json): ConRep night, {campaign.name}\n")
 
 
-def reconcile(campaign, plan, active):
+def reconcile(campaign, plan, active, *, reassess=False):
     snapshot = read(campaign / "state.json")
     for worker_id, old in snapshot["workers"].items():
         job_id = old.get("job_id")
@@ -645,7 +716,9 @@ def reconcile(campaign, plan, active):
             continue
         if job_id in active:
             continue
-        if old.get("reconciled_job") == job_id:
+        already = old.get("reconciled_job") == job_id
+        if already and not (reassess and old.get("last_outcome") in {
+                "unknown_failure", "admin_terminated", "placement_failure", "admin_stopped", "resource_rejected"}):
             continue
         try:
             payload = qstat("-x", job_id)
@@ -660,34 +733,66 @@ def reconcile(campaign, plan, active):
             if record.get("job_state") not in {"F", "C"}:
                 continue
         except Exception as exc:
-            event(campaign, event="pbs-status-unknown", job_id=job_id, error=str(exc))
-            continue
-        outcome = classify_end(record)
+            cached = Path(plan["project_root"]) / "logs/0390/runs" / job_id / "pbs-final.json"
+            if reassess and cached.is_file():
+                record = read(cached)
+                if record.get("job_state") not in {"F", "C"}:
+                    raise ValueError(f"Archived job has no final state: {job_id}")
+            else:
+                event(campaign, event="pbs-status-unknown", job_id=job_id, error=str(exc))
+                continue
+        outcome, reason = recovery_outcome(record, plan)
         with state_transaction(campaign) as state:
             worker = state["workers"][worker_id]
+            # status and supervisor may reconcile concurrently. Count each
+            # finished allocation once, including migration from the old policy.
+            counted = worker.get("reconciled_job") == job_id and worker.get("last_outcome") == "recoverable"
+            if worker.get("reconciled_job") == job_id and not reassess:
+                continue
             if worker.get("planned_stop"):
                 outcome = "planned_stop"
             elif outcome == "unknown_failure" and worker.get("status") == "drained" and int(record.get("Exit_status", -1)) == 0:
                 outcome = "completed"
-            worker.update(reconciled_job=job_id, last_outcome=outcome)
-            if outcome == "recoverable":
-                worker["recovery_failures"] += 1
+            worker.update(reconciled_job=job_id, last_outcome=outcome,
+                          last_reason=reason, reconciled_policy=RECOVERY_VERSION,
+                          pbs_exit_status=record.get("Exit_status"),
+                          pbs_comment=record.get("comment"),
+                          pbs_started_at=record.get("stime"))
+            if outcome == "recoverable" and not counted:
+                worker["recovery_failures"] = worker.get("recovery_failures", 0) + 1
+                policy = plan.get("recovery_policy", {})
+                delay = min(policy.get("backoff_max_seconds", 300),
+                            policy.get("backoff_seconds", 60) * 2 ** min(worker["recovery_failures"] - 1, 10))
+                ended = record.get("history_timestamp", time.time())
+                worker["retry_after"] = max(float(ended), 0) + delay
             worker["status"] = ("available" if outcome in {"completed", "recoverable", "planned_stop"}
-                                and worker["recovery_failures"] < plan["max_attempts"] else
+                                and (outcome != "recoverable" or worker["recovery_failures"] <= retry_limit(plan)) else
                                 "retry_exhausted" if outcome == "recoverable" else outcome)
             for name, task in state["tasks"].items():
-                if task.get("job_id") != job_id or task["status"] not in {"running", "interrupted", "paused"}:
+                legacy_failure = reassess and task.get("failure_reason") in {
+                    "unknown_failure", "admin_terminated", "placement_failure", "admin_stopped", "resource_rejected"}
+                # A killed child can exit before the worker receives SIGTERM.
+                # These exits become retryable only with independent final PBS
+                # evidence; ordinary training errors remain failed.
+                killed_child = outcome == "recoverable" and task.get("exit_code") in {
+                    -signal.SIGTERM, -signal.SIGKILL, 128 + signal.SIGTERM, 128 + signal.SIGKILL}
+                if task.get("job_id") != job_id or not (
+                        task["status"] in {"running", "interrupted", "paused"}
+                        or (task["status"] == "failed" and (legacy_failure or killed_child))):
                     continue
                 task["reconciled_job"] = job_id
                 if outcome == "recoverable":
-                    task["failures"] += 1
-                    task["status"] = "paused" if task["failures"] < plan["max_attempts"] else "failed"
+                    if not counted:
+                        task["failures"] = task.get("failures", 0) + 1
+                    task["status"] = "paused" if task["failures"] <= retry_limit(plan) else "failed"
+                    task.pop("failure_reason", None)
                 elif outcome in {"completed", "planned_stop"}:
                     task["status"] = "paused"
                 else:
                     task["status"] = "cancelled" if outcome == "cancelled" else "failed"
                     task["failure_reason"] = outcome
-        event(campaign, event="pbs-finished", job_id=job_id, outcome=outcome)
+        event(campaign, event="pbs-finished", job_id=job_id, outcome=outcome, reason=reason,
+              exit_status=record.get("Exit_status"), comment=record.get("comment"))
         archive_job(campaign, plan, job_id, record)
 
 
@@ -738,15 +843,17 @@ def submit_available(campaign, plan):
                    + already_claimed - active_owned)
         if free <= 0:
             return
-        for worker_id in range(MAX_NODES):
+        for worker_id in range(plan["workers"]):
             state = read(campaign / "state.json")
             if state["status"] != "running" or not admissible_pending(campaign, plan, state):
                 return
             old = state["workers"][str(worker_id)]
             if old.get("job_id") in jobs or old["status"] not in {"new", "available"}:
                 continue
+            if time.time() < old.get("retry_after", 0):
+                continue
             allocation = old["allocations"] + 1
-            job_name = f"0390n{sha(str(campaign))[:3]}{worker_id}{allocation:03d}"
+            job_name = f"0390_n{sha(str(campaign))[:3]}{worker_id}{allocation:03d}"
             script = render_pbs(plan, worker_id, job_name)
             path = campaign / "jobs" / f"{job_name}.pbs"
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -818,8 +925,10 @@ def summarize(campaign):
             counts[task["status"]] = counts.get(task["status"], 0) + 1
         write(campaign / "summary.json", {"state": state["status"], "task_counts": counts,
               "validated_checkpoints": len(rows), "deadline": state["deadline"],
-              "workers": {i: {k: w[k] for k in ("job_id", "status", "task", "last_outcome") if k in w}
-                          for i, w in state["workers"].items()},
+              "workers": {key: {field: worker[field] for field in (
+                  "job_id", "status", "task", "stage", "last_outcome", "pbs_exit_status",
+                  "pbs_comment", "error", "last_reason", "recovery_failures", "retry_after") if field in worker}
+                  for key, worker in state["workers"].items()},
               "updated_at": time.time(), "selection": "disabled", "test": "not run"})
 
 
@@ -863,13 +972,16 @@ def supervise(args):
                     with state_transaction(campaign) as state:
                         state["status"] = "finished"
                     break
-                if not owned_active and not owned_unsettled and all(w["status"] in {
-                        "cancelled", "unknown_failure", "retry_exhausted",
-                        "resource_rejected", "admin_stopped"}
+                if not owned_active and not owned_unsettled and all(w["status"] in BLOCKED_WORKER_STATES
                         for w in current["workers"].values()):
                     with state_transaction(campaign) as state:
                         state["status"] = "blocked"
-                    event(campaign, event="all-workers-blocked", detail="See per-job console logs; no blind retry")
+                    detail = {key: {field: w.get(field) for field in (
+                        "job_id", "status", "pbs_exit_status", "pbs_comment")}
+                        for key, w in current["workers"].items()}
+                    write(campaign / "BLOCKED.json", {"time": time.time(), "workers": detail})
+                    event(campaign, event="all-workers-blocked", workers=detail,
+                          detail="No eligible workers: inspect BLOCKED.json and retry counts")
                     break
                 if not owned_active and not owned_unsettled and not admissible_pending(campaign, plan, current):
                     with state_transaction(campaign) as state:
@@ -896,6 +1008,16 @@ def start(args, *, resume=False):
     campaign = Path(args.campaign).resolve()
     plan = read(campaign / "plan.json")
     verify_snapshot(campaign, plan)
+    if resume and plan.get("recovery_policy"):
+        reconcile(campaign, plan, active_jobs(qstat(), getpass.getuser()), reassess=True)
+    state = read(campaign / "state.json")
+    if state["workers"] and all(w["status"] in BLOCKED_WORKER_STATES
+                                 for w in state["workers"].values()):
+        reasons = {key: {field: w.get(field) for field in (
+            "job_id", "status", "pbs_comment")} for key, w in state["workers"].items()}
+        raise ValueError("All workers are blocked; no jobs submitted or deadline changed. "
+                         "Resolve the scheduler/administrator failure before retrying: "
+                         + json.dumps(reasons, ensure_ascii=False))
     if resume and (not args.hours or args.hours <= 0):
         raise ValueError("Explicit resume requires positive --hours")
     with locked(campaign / "start.lock"):
@@ -931,7 +1053,8 @@ def start(args, *, resume=False):
         if resume:
             (campaign / "STOP").unlink(missing_ok=True)
         with (campaign / "supervisor.log").open("a") as stream:
-            process = subprocess.Popen([plan["python"], plan["entry"], "supervise", "--campaign", str(campaign)],
+            process = subprocess.Popen([plan["python"], plan.get("controller_entry", plan["entry"]),
+                                        "supervise", "--campaign", str(campaign)],
                                        cwd=plan["project_root"], stdout=stream, stderr=subprocess.STDOUT,
                                        stdin=subprocess.DEVNULL, start_new_session=True)
         time.sleep(0.5)
@@ -939,6 +1062,44 @@ def start(args, *, resume=False):
             raise RuntimeError("Supervisor failed to start; inspect supervisor.log")
         print(f"Supervisor PID {process.pid}; campaign {campaign}; at most {MAX_NODES} active account jobs/nodes.")
     return 0
+
+
+def recover(args):
+    """Reassess old scheduler failures and start without resetting experiments."""
+    campaign = Path(args.campaign).resolve()
+    plan = read(campaign / "plan.json")
+    verify_snapshot(campaign, plan)
+    hours = getattr(args, "hours", None)
+    if hours is not None and hours <= 0:
+        raise ValueError("--hours must be positive")
+    try:
+        with locked(campaign / "supervisor.lock", blocking=False):
+            pass
+    except BlockingIOError:
+        return start(args, resume=hours is not None)
+    with locked(campaign / "start.lock"), locked(campaign / "supervisor.lock", blocking=False):
+        before = read(campaign / "state.json")
+        if before["status"] == "stopped" or ((campaign / "STOP").exists()
+                and before["status"] != "deadline_reached"):
+            raise ValueError("Explicitly stopped campaign preserved; use resume for an intentional restart")
+        if hours is None and before.get("deadline") is not None and time.time() >= before["deadline"]:
+            raise ValueError("Original deadline passed; recover --hours HOURS explicitly grants more time")
+        jobs = active_jobs(qstat(), getpass.getuser())
+        reconcile(campaign, plan, jobs, reassess=True)
+        with state_transaction(campaign) as state:
+            eligible = any(w["status"] in {"new", "available"} or w.get("job_id") in jobs
+                           for w in state["workers"].values())
+            if not eligible:
+                raise ValueError("No recoverable worker; inspect final PBS reasons and retry counts")
+            if hours is not None:
+                state["deadline"] = time.time() + hours * 3600
+            state["status"] = "running"
+        if before["status"] == "deadline_reached" and hours is not None:
+            (campaign / "STOP").unlink(missing_ok=True)
+        event(campaign, event="recovery-enabled", policy=plan.get("recovery_policy"),
+              deadline=read(campaign / "state.json")["deadline"],
+              detail="Original task configs, trainer snapshot and checkpoints retained")
+    return start(args)
 
 
 def main(argv=None):
@@ -951,13 +1112,15 @@ def main(argv=None):
     p.add_argument("--llama-config", default=BASE_CAMPAIGN + "/llama8b/config.json")
     p.add_argument("--hours", type=float, default=10)
     p.add_argument("--reserve-gb", type=float, default=100)
-    for name in ("start", "resume", "supervise", "worker", "status", "stop", "summarize"):
+    for name in ("start", "resume", "recover", "supervise", "worker", "status", "stop", "summarize"):
         p = commands.add_parser(name)
         p.add_argument("--campaign", required=True)
         if name == "resume":
             p.add_argument("--hours", type=float, required=True)
+        if name == "recover":
+            p.add_argument("--hours", type=float, help="Explicitly extend the budget; default keeps the original deadline")
         if name == "worker":
-            p.add_argument("--worker", type=int, choices=range(MAX_NODES), required=True)
+            p.add_argument("--worker", type=int, choices=range(4), required=True)
         if name == "stop":
             p.add_argument("--cancel-jobs", action="store_true")
     p = commands.add_parser("train")
@@ -986,6 +1149,8 @@ def main(argv=None):
         validate_one(args.config, args.checkpoint, args.output)
     elif args.command in {"start", "resume"}:
         return start(args, resume=args.command == "resume")
+    elif args.command == "recover":
+        return recover(args)
     elif args.command == "supervise":
         return supervise(args)
     elif args.command == "worker":

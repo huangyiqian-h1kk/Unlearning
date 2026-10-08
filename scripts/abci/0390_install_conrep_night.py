@@ -9,9 +9,9 @@ import shutil
 import subprocess
 import uuid
 
-PREFIXES = ("src/conrep/night/", "tests/0390/test_conrep_night.py", "docs/0390/conrep-night.md")
+PREFIXES = ("src/conrep/night/", "tests/0390/test_conrep_night", "docs/0390/conrep-night.md")
 EXACT = {"scripts/abci/0390_conrep_night.py", "scripts/abci/0390_conrep_night_worker.sh",
-         "scripts/abci/0390_install_conrep_night.py"}
+         "scripts/abci/0390_install_conrep_night.py", "scripts/abci/0390_recover_conrep_night.py"}
 
 
 def install(root, ref, upgrade_from=None):
