@@ -101,6 +101,22 @@ takes D before moving to E-H. More seeds are unlearning repeats with the same
 SFT checkpoint, not repeated SFT training. A is intentionally rerun because the
 new execution path must have a contemporary control.
 
+The submission plan has exactly three persistent worker slots. Each allocation
+uses one HF node (eight GPUs) and runs training plus checkpoint validation
+serially across multiple experiments:
+
+| Job slot | First fresh experiment | Same-priority preferences |
+|---|---|---|
+| 0 | Gemma A, seed42: control | A, D, G, J |
+| 1 | Gemma B, seed42: forget CL weight5 | B, E, H, K |
+| 2 | Gemma C, seed42: protected retain positive | C, F, I, L |
+
+D (weight5 plus protected positive) goes to the first free slot after A/B/C
+are claimed. Paused experiments take precedence, then the original task-group
+priority, then slot preference. This is a shared queue: a slow experiment does
+not force another node to idle. Checkpoint identities and the 32-task pool are
+unchanged. Retries receive new PBS IDs but reuse these same three slots.
+
 Protected positives are a conservative, reproducible **single article deletion**
 before the value-introducing boundary. Supplied protected spans and entity,
 attribute and value fields are preserved. All text from the first is/has/colon
@@ -119,9 +135,11 @@ Each PBS allocation requests `-P gcg51557`, `-q R9920261000`,
 `RTYPE=rt_HF`, `select=1`, six hours, and a `0390_` job name. Three slots are
 available, with **all active/queued/held account jobs and requested nodes**
 counted. For example, two existing single-node jobs leave one slot; one
-three-node job leaves none. New campaigns use worker IDs 0, 1 and 2. Recovered
-legacy campaigns retain their four logical worker records but can still hold
-at most three account jobs/nodes at once. Existing jobs are not
+three-node job leaves none. Both new and recovered campaigns use worker IDs
+0, 1 and 2. The upgrader moves the old fourth worker into `retired_workers`,
+retaining its PBS evidence and making its interrupted task available to the
+three remaining workers after reconciliation and the retry wait. It cannot
+submit another fourth-worker job. Existing jobs are not
 cancelled. This launcher uses the existing
 single-job submitter's submission lock. Independently running external
 submitters must also respect the shared account limit.
@@ -176,12 +194,18 @@ automatically deleted to make room.
   recovery policy also retries administrator termination, which is an expected
   interruption in this environment. A terminal queued job with no start/exit
   record and a retained placement comment followed by `terminated` gets the
-  same bounded retry without changing its reservation or resource request.
+  same retry schedule without changing its reservation or resource request.
   An active queued placement comment is not treated as a failed allocation.
-- There are at most three automatic retries per interrupted task and per
-  consecutive failed-allocation streak, with waits of 60, 120, and 240 seconds.
-  A completed experiment resets the worker's allocation-failure streak; task
-  retry counts remain recorded. Manual user cancellation, explicit stop, access
+- Administrator and terminated-before-start interruptions wait **20 minutes
+  from each allocation's termination**, with **no retry-count limit**. This
+  continues while the campaign budget admits work, until its deadline or an
+  explicit stop. The same waiting time follows the interrupted task so another
+  slot cannot bypass it. Polling or lack of a free account slot can delay the
+  next submission; an already queued job is not resubmitted every 20 minutes.
+- Other confirmed scheduler failures retain their separate bounded budget
+  (three retries, with 60/120/240-second allocation backoff). Administrator
+  interruptions do not consume that budget. All retry counts remain recorded.
+  Manual user cancellation, explicit stop, access
   denial and deterministic training failures are not automatically revived.
   Exit143 or Exit271 alone is not sufficient to infer the reason. Unknown
   scheduler state and ambiguous qsub responses never create duplicate jobs.
@@ -232,7 +256,9 @@ not reset automatically. Changed code/configuration needs a new campaign.
 ## Recover a campaign prepared with the original launcher
 
 The original launcher classified administrator interruption as unknown and
-left its workers blocked. Fetch the updated branch and run the dedicated
+left its workers blocked. The previous repair still imposed three retries;
+this revision removes that limit for the two expected interruption types and
+migrates old four-worker campaigns to exactly three slots. Fetch the updated branch and run the dedicated
 upgrader instead of rerunning `prepare` or the additive installer:
 
 ```bash
@@ -252,7 +278,8 @@ python -I "$recovery_dir/recover.py" --root "$PWD" --ref "$recovery_ref" --campa
 
 This preserves the original deadline. To explicitly grant a fresh time budget,
 append `--hours 10` to the recovery command. Without `--restart`, the upgrader
-only installs the controller and does not submit jobs or change task states.
+installs the controller and migrates scheduler metadata without submitting jobs
+or changing experiment progress. An old fourth worker is retained as history.
 
 The upgrader refuses active campaign allocations or edited package-owned
 launcher files. It backs up the existing plan/state and the three launcher
@@ -263,6 +290,7 @@ use the original frozen entry. Normal checkout `status/start/resume/stop`
 commands dispatch to that controller. Repeating the same upgrade is harmless.
 
 Recovery reassesses the old final PBS records under the approved policy once,
+including tasks blocked only by the previous administrator-interruption retry limit,
 reopens only recoverable workers/tasks, and keeps completed results, manual
 cancellations, failure evidence, and retry counters. It does not switch queue,
 alter `node_group`, change batch sizes, or relabel a failed training run as done.

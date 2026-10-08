@@ -32,10 +32,12 @@ SHELL = "scripts/abci/0390_conrep_night_worker.sh"
 BLOCKED_WORKER_STATES = {"cancelled", "unknown_failure", "retry_exhausted",
                          "admin_terminated", "placement_failure", "policy_denied",
                          "admin_stopped", "resource_rejected"}
-RECOVERY_VERSION = "0390-night-recovery-v2"
+RECOVERY_VERSION = "0390-night-recovery-v3-20min"
 RECOVERY_DEFAULTS = {"version": RECOVERY_VERSION, "retry_admin_termination": True,
-                     "retry_terminated_queued": True, "max_retries": 3,
+                     "retry_terminated_queued": True, "interruption_retry_seconds": 1200,
+                     "interruption_max_retries": None, "other_max_retries": 3,
                      "backoff_seconds": 60, "backoff_max_seconds": 300}
+UNLIMITED_INTERRUPTION_REASONS = {"admin_terminated", "terminated_while_queued"}
 BASE_CAMPAIGN = "results/validated_v2/0390/final-unlearn-v5-parallel3-seed42"
 VARIANTS = {
     "A": {},
@@ -225,11 +227,6 @@ def event(campaign, **values):
 
 
 def check_worker_limit(plan):
-    # Legacy logical workers keep their history/config preferences. The new
-    # controller still enforces MAX_NODES across all account allocations.
-    if (plan.get("workers") == 4 and plan.get("controller_ref")
-            and plan.get("recovery_policy", {}).get("version") == RECOVERY_VERSION):
-        return
     if plan.get("workers") != MAX_NODES:
         raise ValueError(f"Campaign worker limit is {plan.get('workers')}; expected {MAX_NODES}. "
                          "Prepare a new three-node campaign or use the controller-only recovery upgrader.")
@@ -293,8 +290,9 @@ def claim(campaign, plan, worker_id, allocation_end):
 def ready_to_claim(record):
     # A worker may checkpoint and return before PBS records a user's qdel.
     # Wait for final scheduler evidence before any worker resumes that task.
-    return record["status"] == "pending" or (record["status"] == "paused" and (
-        not record.get("job_id") or record.get("reconciled_job") == record["job_id"]))
+    return record["status"] == "pending" or (record["status"] == "paused"
+        and time.time() >= record.get("retry_after", 0)
+        and (not record.get("job_id") or record.get("reconciled_job") == record["job_id"]))
 
 
 def expected_checkpoints(cfg):
@@ -556,6 +554,7 @@ def worker(args):
             current["workers"][str(worker_id)]["task"] = None
             if code == 0:
                 current["workers"][str(worker_id)]["recovery_failures"] = 0
+                current["workers"][str(worker_id)]["bounded_failures"] = 0
         event(campaign, task=task["id"], event="task-end", exit_code=code)
         summarize(campaign)
         if code == PAUSE:
@@ -637,19 +636,34 @@ def recovery_outcome(job, plan):
     if reason == "admin_terminated" and policy.get("retry_admin_termination"):
         return "recoverable", reason
     text = str(job.get("comment", "")).lower()
-    if (reason == "placement_failure" and policy.get("retry_terminated_queued")
+    if (reason in {"placement_failure", "unknown_failure"} and policy.get("retry_terminated_queued")
             and job.get("job_state") in {"F", "C"} and "terminated" in text
             and not job.get("stime") and not job.get("exec_host")
             and job.get("Exit_status") is None):
         # PBS can retain its last placement comment when a queued job is
-        # terminated. Retry the same reservation/resources with a finite budget;
+        # terminated. Retry the same reservation/resources at the approved interval;
         # never change node_group or pretend this proves a permanent mismatch.
         return "recoverable", "terminated_while_queued"
     return reason, reason
 
 
-def retry_limit(plan):
-    return int(plan.get("recovery_policy", {}).get("max_retries", plan.get("max_attempts", 3)))
+def retry_limit(plan, reason):
+    policy = plan.get("recovery_policy", {})
+    if reason in UNLIMITED_INTERRUPTION_REASONS and "interruption_max_retries" in policy:
+        return policy["interruption_max_retries"]
+    return int(policy.get("other_max_retries", policy.get("max_retries", plan.get("max_attempts", 3))))
+
+
+def all_workers(state):
+    """Keep retired allocation evidence without making a fourth submission slot."""
+    return [*state["workers"].values(), *state.get("retired_workers", {}).values()]
+
+
+def pbs_exit_code(job):
+    try:
+        return int(job.get("Exit_status"))
+    except (TypeError, ValueError):
+        return None
 
 
 def render_pbs(plan, worker_id, job_name):
@@ -673,7 +687,7 @@ def archive_job(campaign, plan, job_id, pbs=None):
           "queue": plan["queue"], "rtype": plan["rtype"], "nproc": 8,
           "campaign": str(campaign), "tasks": ids, "source_hash": plan["source_hash"],
           "updated_at": time.time(), "pbs": pbs,
-          "status": "completed" if pbs and int(pbs.get("Exit_status", -1)) == 0 else "recorded"})
+          "status": "completed" if pbs and pbs_exit_code(pbs) == 0 else "recorded"})
     write(archive / "artifacts" / "campaign-state.json", state)
     shutil.copy2(campaign / "plan.json", archive / "artifacts" / "plan.json")
     for task in plan["tasks"]:
@@ -702,7 +716,9 @@ def archive_job(campaign, plan, job_id, pbs=None):
 
 def reconcile(campaign, plan, active, *, reassess=False):
     snapshot = read(campaign / "state.json")
-    for worker_id, old in snapshot["workers"].items():
+    entries = [(group, key, value) for group in ("workers", "retired_workers")
+               for key, value in snapshot.get(group, {}).items()]
+    for group, worker_id, old in entries:
         job_id = old.get("job_id")
         if not job_id:
             if old["status"] == "submitting":
@@ -710,19 +726,21 @@ def reconcile(campaign, plan, active, *, reassess=False):
                            if job.get("Job_Name") == old["job_name"]]
                 if len(matches) == 1:
                     with state_transaction(campaign) as state:
-                        state["workers"][worker_id].update(job_id=matches[0], status="queued")
+                        state[group][worker_id].update(job_id=matches[0], status="queued")
                     event(campaign, event="adopt-submission", worker=worker_id, job_id=matches[0])
                 # An ambiguous submission stays blocked rather than duplicating qsub.
             continue
         if job_id in active:
             continue
         already = old.get("reconciled_job") == job_id
-        if already and not (reassess and old.get("last_outcome") in {
-                "unknown_failure", "admin_terminated", "placement_failure", "admin_stopped", "resource_rejected"}):
+        changed_policy = old.get("reconciled_policy") != RECOVERY_VERSION
+        if already and not (reassess and (old.get("last_outcome") in {
+                "unknown_failure", "admin_terminated", "placement_failure", "admin_stopped", "resource_rejected"}
+                or (changed_policy and old.get("last_outcome") == "recoverable"))):
             continue
         try:
             payload = qstat("-x", job_id)
-            records = payload.get("Jobs", {})
+            records = payload.get("Jobs") or {}
             record = records.get(job_id)
             if record is None:
                 matches = [value for name, value in records.items()
@@ -743,7 +761,7 @@ def reconcile(campaign, plan, active, *, reassess=False):
                 continue
         outcome, reason = recovery_outcome(record, plan)
         with state_transaction(campaign) as state:
-            worker = state["workers"][worker_id]
+            worker = state[group][worker_id]
             # status and supervisor may reconcile concurrently. Count each
             # finished allocation once, including migration from the old policy.
             counted = worker.get("reconciled_job") == job_id and worker.get("last_outcome") == "recoverable"
@@ -751,26 +769,38 @@ def reconcile(campaign, plan, active, *, reassess=False):
                 continue
             if worker.get("planned_stop"):
                 outcome = "planned_stop"
-            elif outcome == "unknown_failure" and worker.get("status") == "drained" and int(record.get("Exit_status", -1)) == 0:
+            elif outcome == "unknown_failure" and worker.get("status") == "drained" and pbs_exit_code(record) == 0:
                 outcome = "completed"
             worker.update(reconciled_job=job_id, last_outcome=outcome,
                           last_reason=reason, reconciled_policy=RECOVERY_VERSION,
                           pbs_exit_status=record.get("Exit_status"),
                           pbs_comment=record.get("comment"),
                           pbs_started_at=record.get("stime"))
-            if outcome == "recoverable" and not counted:
-                worker["recovery_failures"] = worker.get("recovery_failures", 0) + 1
+            limit = retry_limit(plan, reason)
+            if outcome == "recoverable":
+                if not counted:
+                    worker["recovery_failures"] = worker.get("recovery_failures", 0) + 1
+                    if limit is not None:
+                        worker["bounded_failures"] = worker.get("bounded_failures", 0) + 1
                 policy = plan.get("recovery_policy", {})
-                delay = min(policy.get("backoff_max_seconds", 300),
-                            policy.get("backoff_seconds", 60) * 2 ** min(worker["recovery_failures"] - 1, 10))
-                ended = record.get("history_timestamp", time.time())
-                worker["retry_after"] = max(float(ended), 0) + delay
+                delay = (policy.get("interruption_retry_seconds", 1200) if limit is None else
+                         min(policy.get("backoff_max_seconds", 300), policy.get("backoff_seconds", 60)
+                             * 2 ** min(max(worker.get("bounded_failures", 1) - 1, 0), 10)))
+                try:
+                    ended = float(record.get("history_timestamp"))
+                except (TypeError, ValueError):
+                    ended = worker.get("interruption_ended_at", time.time()) if counted else time.time()
+                worker["interruption_ended_at"] = ended
+                worker["retry_after"] = max(ended, 0) + delay
             worker["status"] = ("available" if outcome in {"completed", "recoverable", "planned_stop"}
-                                and (outcome != "recoverable" or worker["recovery_failures"] <= retry_limit(plan)) else
+                                and (outcome != "recoverable" or limit is None
+                                     or worker.get("bounded_failures", 0) <= limit) else
                                 "retry_exhausted" if outcome == "recoverable" else outcome)
             for name, task in state["tasks"].items():
                 legacy_failure = reassess and task.get("failure_reason") in {
                     "unknown_failure", "admin_terminated", "placement_failure", "admin_stopped", "resource_rejected"}
+                old_retry_exhausted = (reassess and counted and limit is None
+                    and task.get("reconciled_job") == job_id and task.get("failures", 0) > 0)
                 # A killed child can exit before the worker receives SIGTERM.
                 # These exits become retryable only with independent final PBS
                 # evidence; ordinary training errors remain failed.
@@ -778,14 +808,20 @@ def reconcile(campaign, plan, active, *, reassess=False):
                     -signal.SIGTERM, -signal.SIGKILL, 128 + signal.SIGTERM, 128 + signal.SIGKILL}
                 if task.get("job_id") != job_id or not (
                         task["status"] in {"running", "interrupted", "paused"}
-                        or (task["status"] == "failed" and (legacy_failure or killed_child))):
+                        or (task["status"] == "failed" and (legacy_failure or killed_child or old_retry_exhausted))):
                     continue
                 task["reconciled_job"] = job_id
                 if outcome == "recoverable":
                     if not counted:
                         task["failures"] = task.get("failures", 0) + 1
-                    task["status"] = "paused" if task["failures"] <= retry_limit(plan) else "failed"
-                    task.pop("failure_reason", None)
+                        if limit is not None:
+                            task["bounded_failures"] = task.get("bounded_failures", 0) + 1
+                    task["retry_after"] = worker["retry_after"] if limit is None else 0
+                    task["status"] = "paused" if limit is None or task.get("bounded_failures", 0) <= limit else "failed"
+                    if task["status"] == "failed":
+                        task["failure_reason"] = "retry_exhausted"
+                    else:
+                        task.pop("failure_reason", None)
                 elif outcome in {"completed", "planned_stop"}:
                     task["status"] = "paused"
                 else:
@@ -825,19 +861,19 @@ def submit_available(campaign, plan):
         jobs = active_jobs(qstat(), getpass.getuser())
         state = read(campaign / "state.json")
         if any(w["status"] == "submitting" and not w.get("job_id")
-               for w in state["workers"].values()):
+               for w in all_workers(state)):
             # An accepted submission can briefly be absent from qstat. Until
             # reconcile adopts it, its account-slot usage is unknown.
             return
         # A successful qsub can be invisible to qstat for a short time. A known
         # ID holds its slot until PBS history confirms that allocation ended.
-        unseen = {w["job_id"] for w in state["workers"].values()
+        unseen = {w["job_id"] for w in all_workers(state)
                   if w.get("job_id") and w["job_id"] not in jobs
                   and w.get("reconciled_job") != w["job_id"]}
         free = min(MAX_NODES - len(jobs) - len(unseen),
                    MAX_NODES - sum(allocated_nodes(job) for job in jobs.values()) - len(unseen))
         active_owned = sum(w.get("job_id") in jobs or w.get("job_id") in unseen
-                           for w in state["workers"].values())
+                           for w in all_workers(state))
         already_claimed = sum(t["status"] == "running" for t in state["tasks"].values())
         free = min(free, admissible_pending(campaign, plan, state, count=True)
                    + already_claimed - active_owned)
@@ -925,6 +961,8 @@ def summarize(campaign):
             counts[task["status"]] = counts.get(task["status"], 0) + 1
         write(campaign / "summary.json", {"state": state["status"], "task_counts": counts,
               "validated_checkpoints": len(rows), "deadline": state["deadline"],
+              "worker_count": plan.get("workers"), "max_account_nodes": MAX_NODES,
+              "recovery_policy": plan.get("recovery_policy", {}),
               "workers": {key: {field: worker[field] for field in (
                   "job_id", "status", "task", "stage", "last_outcome", "pbs_exit_status",
                   "pbs_comment", "error", "last_reason", "recovery_failures", "retry_after") if field in worker}
@@ -949,7 +987,7 @@ def supervise(args):
                 with state_transaction(campaign) as state:
                     state["status"] = "deadline_reached"
                     owned = []
-                    for worker in state["workers"].values():
+                    for worker in all_workers(state):
                         worker["planned_stop"] = True
                         if worker.get("job_id"):
                             owned.append(worker["job_id"])
@@ -962,10 +1000,10 @@ def supervise(args):
                 active = active_jobs(qstat(), getpass.getuser())
                 reconcile(campaign, plan, active)
                 current = read(campaign / "state.json")
-                owned_active = any(w.get("job_id") in active for w in current["workers"].values())
+                owned_active = any(w.get("job_id") in active for w in all_workers(current))
                 owned_unsettled = any(w["status"] == "submitting" or (
                     w.get("job_id") and w.get("reconciled_job") != w["job_id"])
-                    for w in current["workers"].values())
+                    for w in all_workers(current))
                 pending = any(t["status"] in {"pending", "paused", "running", "interrupted"}
                               for t in current["tasks"].values())
                 if not pending and not owned_active and not owned_unsettled:
@@ -983,7 +1021,9 @@ def supervise(args):
                     event(campaign, event="all-workers-blocked", workers=detail,
                           detail="No eligible workers: inspect BLOCKED.json and retry counts")
                     break
-                if not owned_active and not owned_unsettled and not admissible_pending(campaign, plan, current):
+                waiting_retry = any(t["status"] == "paused" and t.get("retry_after", 0) > time.time()
+                                    for t in current["tasks"].values())
+                if not owned_active and not owned_unsettled and not waiting_retry and not admissible_pending(campaign, plan, current):
                     with state_transaction(campaign) as state:
                         state["status"] = "budget_paused"
                     break
@@ -1120,7 +1160,7 @@ def main(argv=None):
         if name == "recover":
             p.add_argument("--hours", type=float, help="Explicitly extend the budget; default keeps the original deadline")
         if name == "worker":
-            p.add_argument("--worker", type=int, choices=range(4), required=True)
+            p.add_argument("--worker", type=int, choices=range(MAX_NODES), required=True)
         if name == "stop":
             p.add_argument("--cancel-jobs", action="store_true")
     p = commands.add_parser("train")
@@ -1161,7 +1201,7 @@ def main(argv=None):
         with state_transaction(campaign) as state:
             state["status"] = "stopped"
             jobs = []
-            for worker_state in state["workers"].values():
+            for worker_state in all_workers(state):
                 worker_state["planned_stop"] = True
                 if worker_state.get("job_id"):
                     jobs.append(worker_state["job_id"])

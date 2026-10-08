@@ -25,16 +25,16 @@ spec.loader.exec_module(upgrade)
 def queued_end():
     return {"job_state": "F", "comment": "Not Running: Placement set is too small: "
         "Insufficient amount of resource: node_group (group_a != group_b) and terminated",
-        "history_timestamp": time.time() - 600}
+        "history_timestamp": time.time() - 1800}
 
 
 def admin_end():
     return {"job_state": "F", "Exit_status": 271,
         "comment": "Job run and terminated by root@admin.example.invalid",
-        "history_timestamp": time.time() - 600, "stime": "started"}
+        "history_timestamp": time.time() - 1800, "stime": "started"}
 
 
-def fixture(root, count=4):
+def fixture(root, count=4, workers=3):
     tasks = []
     for i in range(count):
         cfg = {"unlearn": {"max_steps": 125, "save_steps": 10},
@@ -42,26 +42,29 @@ def fixture(root, count=4):
         config = root / f"config-{i}.json"
         write(config, cfg)
         tasks.append({"id": str(i), "identity": "test", "priority": 0,
-                      "preferred_worker": i % 4, "config": str(config), "output": str(root / f"output-{i}")})
+                      "preferred_worker": i % workers, "config": str(config), "output": str(root / f"output-{i}")})
     plan = {"project_root": str(root), "campaign": str(root), "tasks": tasks,
             "shell": "/original/worker", "controller_shell": "/patched/worker",
             "walltime": "06:00:00", "initial_task_seconds": 3600, "source_hash": "original",
             "queue": "R9920261000", "rtype": "rt_HF", "max_attempts": 3,
-            "workers": 4, "controller_ref": "test-approved-upgrade",
+            "workers": workers, "controller_ref": "test-approved-upgrade",
             "recovery_policy": dict(c.RECOVERY_DEFAULTS)}
     state = {"status": "blocked", "started_at": time.time() - 100,
              "deadline": time.time() + 36000,
              "tasks": {task["id"]: {"status": "pending", "attempts": 0, "failures": 0} for task in tasks},
              "workers": {str(i): {"status": "unknown_failure", "job_id": f"old{i}.pbs",
                  "reconciled_job": f"old{i}.pbs", "last_outcome": "unknown_failure",
-                 "allocations": 1, "recovery_failures": 0} for i in range(4)}}
+                 "allocations": 1, "recovery_failures": 0} for i in range(workers)}}
     write(root / "plan.json", plan)
     write(root / "state.json", state)
     return plan, state
 
 
 def test_actual_four_failure_shapes_recover_and_submit_once(tmp_path, monkeypatch):
-    plan, before = fixture(tmp_path, count=32)
+    plan, before = fixture(tmp_path, count=32, workers=4)
+    plan, migrated = upgrade.migrate_three_workers(plan, before)
+    write(tmp_path / "plan.json", plan)
+    write(tmp_path / "state.json", migrated)
     records = {f"old{i}.pbs": admin_end() if i < 2 else queued_end() for i in range(4)}
     active, submissions = {}, []
     def qstat(*args):
@@ -73,6 +76,8 @@ def test_actual_four_failure_shapes_recover_and_submit_once(tmp_path, monkeypatc
     monkeypatch.setattr(c, "start", lambda *a, **k: starts.append(True) or 0)
     assert c.recover(argparse.Namespace(campaign=str(tmp_path), hours=None)) == 0
     state = read(tmp_path / "state.json")
+    assert set(state["workers"]) == {"0", "1", "2"}
+    assert state["retired_workers"]["3"]["last_reason"] == "terminated_while_queued"
     assert state["status"] == "running" and state["deadline"] == before["deadline"]
     assert state["tasks"] == before["tasks"]
     assert all(w["status"] == "available" and w["recovery_failures"] == 1 for w in state["workers"].values())
@@ -94,14 +99,15 @@ def test_actual_four_failure_shapes_recover_and_submit_once(tmp_path, monkeypatc
         assert "node_group=" not in script
 
 
-def test_retry_budget_counts_allocations_once_and_preserves_task(tmp_path, monkeypatch):
+@pytest.mark.parametrize("ending", [admin_end, queued_end])
+def test_interruptions_retry_every_twenty_minutes_without_attempt_limit(tmp_path, monkeypatch, ending):
     plan, state = fixture(tmp_path)
     records = {}
     monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {a[1]: records[a[1]]}})
     monkeypatch.setattr(c, "archive_job", lambda *a: None)
-    for attempt in range(1, 5):
+    for attempt in range(1, 9):
         job = f"new{attempt}.pbs"
-        records[job] = admin_end()
+        records[job] = ending()
         records[job]["history_timestamp"] = time.time()
         with c.state_transaction(tmp_path) as current:
             current["workers"] = {"0": {**current["workers"]["0"], "status": "running", "job_id": job}}
@@ -111,9 +117,11 @@ def test_retry_budget_counts_allocations_once_and_preserves_task(tmp_path, monke
         current = read(tmp_path / "state.json")
         assert current["workers"]["0"]["recovery_failures"] == attempt
         assert current["tasks"]["0"]["failures"] == attempt
-        assert current["tasks"]["0"]["status"] == ("paused" if attempt <= 3 else "failed")
-        assert current["workers"]["0"]["status"] == ("available" if attempt <= 3 else "retry_exhausted")
-        assert current["workers"]["0"]["retry_after"] > time.time() + 50
+        assert current["tasks"]["0"]["status"] == "paused"
+        assert current["workers"]["0"]["status"] == "available"
+        assert current["workers"]["0"]["retry_after"] == records[job]["history_timestamp"] + 1200
+        assert current["tasks"]["0"]["retry_after"] == current["workers"]["0"]["retry_after"]
+        assert not c.ready_to_claim(current["tasks"]["0"])
 
 
 def test_backoff_prevents_premature_resubmission(tmp_path, monkeypatch):
@@ -125,6 +133,104 @@ def test_backoff_prevents_premature_resubmission(tmp_path, monkeypatch):
     monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {}})
     monkeypatch.setattr(c.subprocess, "run", lambda *a, **k: pytest.fail("Backoff must defer qsub"))
     c.submit_available(tmp_path, plan)
+
+
+def test_twenty_minute_boundary_controls_actual_resubmission(tmp_path, monkeypatch):
+    plan, _ = fixture(tmp_path)
+    clock = [time.time()]
+    monkeypatch.setattr(c.time, "time", lambda: clock[0])
+    ended = clock[0]
+    record = admin_end()
+    record["history_timestamp"] = ended
+    active, submitted = {}, []
+    with c.state_transaction(tmp_path) as state:
+        state["status"] = "running"
+        for i, worker in state["workers"].items():
+            worker.update(status="running", job_id=f"new{i}.pbs")
+    monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {a[1]: record}} if a else {"Jobs": active})
+    monkeypatch.setattr(c, "archive_job", lambda *a: None)
+    c.reconcile(tmp_path, plan, {})
+    def submit(command, **kwargs):
+        submitted.append(command)
+        job = f"{100 + len(submitted)}.pbs"
+        active[job] = {"Job_Owner": getpass.getuser() + "@test", "job_state": "Q"}
+        return subprocess.CompletedProcess(command, 0, job + "\n", "")
+    monkeypatch.setattr(c.subprocess, "run", submit)
+    clock[0] = ended + 1199
+    c.submit_available(tmp_path, plan)
+    assert submitted == []
+    clock[0] = ended + 1200
+    c.submit_available(tmp_path, plan)
+    c.submit_available(tmp_path, plan)
+    assert len(submitted) == 3
+
+
+def test_upgrade_reopens_old_admin_retry_exhaustion_once(tmp_path, monkeypatch):
+    plan, _ = fixture(tmp_path)
+    with c.state_transaction(tmp_path) as state:
+        state["workers"]["0"].update(status="retry_exhausted", last_outcome="recoverable",
+            last_reason="admin_terminated", reconciled_policy="0390-night-recovery-v2",
+            recovery_failures=4, retry_after=time.time() + 60)
+        state["tasks"]["0"].update(status="failed", job_id="old0.pbs", reconciled_job="old0.pbs",
+                                   failures=4, exit_code=c.PAUSE)
+        state["tasks"]["1"].update(status="failed", job_id="old0.pbs", exit_code=1)
+    monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {a[1]: admin_end()}})
+    monkeypatch.setattr(c, "archive_job", lambda *a: None)
+    c.reconcile(tmp_path, plan, {}, reassess=True)
+    first = read(tmp_path / "state.json")
+    assert first["workers"]["0"]["status"] == "available"
+    assert first["workers"]["0"]["recovery_failures"] == 4
+    assert first["tasks"]["0"]["status"] == "paused" and first["tasks"]["0"]["failures"] == 4
+    assert first["tasks"]["1"]["status"] == "failed"
+    c.reconcile(tmp_path, plan, {}, reassess=True)
+    assert read(tmp_path / "state.json") == first
+
+
+def test_retired_fourth_workers_task_is_resumed_by_a_remaining_worker(tmp_path, monkeypatch):
+    plan, state = fixture(tmp_path, workers=4)
+    state["status"] = "running"
+    state["tasks"]["3"].update(status="interrupted", worker=3, job_id="old3.pbs")
+    before = copy.deepcopy(state)
+    plan, state = upgrade.migrate_three_workers(plan, state)
+    assert state["tasks"] == before["tasks"] and state["deadline"] == before["deadline"]
+    assert state["retired_workers"]["3"] == before["workers"]["3"]
+    assert {t["preferred_worker"] for t in plan["tasks"]} <= {0, 1, 2}
+    write(tmp_path / "plan.json", plan)
+    write(tmp_path / "state.json", state)
+    monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {a[1]: admin_end()}})
+    monkeypatch.setattr(c, "archive_job", lambda *a: None)
+    c.reconcile(tmp_path, plan, {}, reassess=True)
+    monkeypatch.setenv("PBS_JOBID", "replacement.pbs")
+    assert c.claim(tmp_path, plan, 0, time.time() + 20000)["id"] == "3"
+    assert read(tmp_path / "state.json")["tasks"]["3"]["worker"] == 0
+    assert set(read(tmp_path / "state.json")["workers"]) == {"0", "1", "2"}
+
+
+def test_supervisor_waits_through_twenty_minute_cooldown(tmp_path, monkeypatch):
+    plan, _ = fixture(tmp_path, count=1)
+    plan["poll_seconds"] = 60
+    write(tmp_path / "plan.json", plan)
+    with c.state_transaction(tmp_path) as state:
+        state["status"] = "running"
+        for worker in state["workers"].values():
+            worker.update(status="available", last_outcome="recoverable", retry_after=time.time() + 1200)
+        state["tasks"]["0"].update(status="paused", retry_after=time.time() + 1200)
+    monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {}})
+    monkeypatch.setattr(c.subprocess, "run", lambda *a, **k: pytest.fail("Must wait before submitting"))
+    observed = []
+    def after_poll(_):
+        with c.state_transaction(tmp_path) as state:
+            observed.append(state["status"])
+            state["status"] = "stopped"
+    monkeypatch.setattr(c.time, "sleep", after_poll)
+    c.supervise(argparse.Namespace(campaign=str(tmp_path)))
+    assert observed == ["running"]
+
+
+def test_upgrade_policy_and_three_worker_preferences_match_controller():
+    assert upgrade.POLICY == c.RECOVERY_DEFAULTS
+    assert upgrade.PREFERRED == c.PREFERRED
+    assert upgrade.MAX_WORKERS == c.MAX_NODES == 3
 
 
 @pytest.mark.parametrize("comment", ["qdel requested by user", "terminated by someone@host",
@@ -246,10 +352,14 @@ def test_controller_upgrade_keeps_frozen_source_dirty_server_code_and_checkpoint
     config_before = Path(old["tasks"][0]["config"]).read_bytes()
     state_before = (campaign / "state.json").read_bytes()
     new = upgrade.upgrade(root, campaign, ref)
-    assert all(new[key] == old[key] for key in ("entry", "shell", "source_hash", "tasks"))
+    assert all(new[key] == old[key] for key in ("entry", "shell", "source_hash"))
+    assert new["workers"] == 3
+    assert {k: v for k, v in new["tasks"][0].items() if k != "preferred_worker"} == old["tasks"][0]
     assert (campaign / "source.json").read_bytes() == source_before
     assert Path(old["tasks"][0]["config"]).read_bytes() == config_before
-    assert (campaign / "state.json").read_bytes() == state_before
+    assert read(campaign / "state.json")["tasks"] == json.loads(state_before)["tasks"]
+    assert read(campaign / "state.json")["deadline"] == json.loads(state_before)["deadline"]
+    assert set(read(campaign / "state.json")["workers"]) == {"0", "1", "2"}
     assert (root / "src/server_only.py").read_text() == "server_local_value = 42\n"
     assert latest_checkpoint(checkpoint.parent, identity=old["tasks"][0]["identity"], world=8) == checkpoint
     c.verify_snapshot(campaign, new)
@@ -261,7 +371,7 @@ def test_controller_upgrade_keeps_frozen_source_dirty_server_code_and_checkpoint
                             env={**os.environ, "PATH": "/nonexistent"},
                             text=True, capture_output=True, timeout=15)
     assert result.returncode == 0, result.stderr
-    assert json.loads(result.stdout)["workers"] == {}
+    assert set(json.loads(result.stdout)["workers"]) == {"0", "1", "2"}
     Path(new["controller_entry"]).write_text("changed")
     with pytest.raises(ValueError, match="Recovery controller changed"):
         c.verify_snapshot(campaign, new)
