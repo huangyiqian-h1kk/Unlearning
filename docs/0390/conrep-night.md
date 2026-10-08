@@ -132,7 +132,7 @@ and positive cosine similarity so low effective coverage is visible.
 ## Scheduling and stopping
 
 Each PBS allocation requests `-P gcg51557`, `-q R9920261000`,
-`RTYPE=rt_HF`, `select=1`, six hours, and a `0390_` job name. Three slots are
+`RTYPE=rt_HF`, `select=1`, twelve hours (`walltime=12:00:00`), and a `0390_` job name. Three slots are
 available, with **all active/queued/held account jobs and requested nodes**
 counted. For example, two existing single-node jobs leave one slot; one
 three-node job leaves none. Both new and recovered campaigns use worker IDs
@@ -158,8 +158,12 @@ initial per-run estimate is one hour and is updated conservatively using
 completed runs. New runs need time for training and validation; after the last
 90 minutes only the highest-priority fresh runs or unfinished validation are
 eligible. Workers pause before the shorter of PBS allocation end and campaign
-deadline. A new six-hour allocation can continue the same task list. At the
+deadline. A new twelve-hour allocation can continue the same task list. At the
 campaign deadline remaining owned PBS jobs are cancelled; no new work is added.
+The PBS walltime and campaign budget are independent: `--hours 10` still sets a
+ten-hour campaign, even though each PBS request allows twelve hours. Changing
+walltime does not extend the campaign deadline. Use an explicit `--hours 12`
+on recovery to grant a fresh twelve-hour campaign budget when intended.
 The three-node, ten-hour budget is at most 30 node-hours (240 GPU-hours),
 including startup, validation and recovery. The 32 experiments remain a
 prioritized task pool; at the initial one-node-hour estimate they exceed this
@@ -257,8 +261,9 @@ not reset automatically. Changed code/configuration needs a new campaign.
 
 The original launcher classified administrator interruption as unknown and
 left its workers blocked. The previous repair still imposed three retries;
-this revision removes that limit for the two expected interruption types and
-migrates old four-worker campaigns to exactly three slots. Fetch the updated branch and run the dedicated
+this revision removes that limit for the two expected interruption types,
+migrates old four-worker campaigns to exactly three slots, and sets new PBS
+requests to twelve hours. Fetch the updated branch and run the dedicated
 upgrader instead of rerunning `prepare` or the additive installer:
 
 ```bash
@@ -294,6 +299,26 @@ including tasks blocked only by the previous administrator-interruption retry li
 reopens only recoverable workers/tasks, and keeps completed results, manual
 cancellations, failure evidence, and retry counters. It does not switch queue,
 alter `node_group`, change batch sizes, or relabel a failed training run as done.
+
+If you deliberately cancelled jobs to change the allocation settings, first
+stop the old supervisor and then explicitly name those finished PBS IDs with
+`--requeue-jobs`. For example, after fetching and extracting the upgrader as
+above, replace the three example IDs with the actual cancelled allocation IDs:
+
+```bash
+python scripts/abci/0390_conrep_night.py stop --campaign "$campaign"
+python -I "$recovery_dir/recover.py" \
+  --root "$PWD" --ref "$recovery_ref" --campaign "$campaign" \
+  --restart --requeue-jobs 1234561.pbs1 1234562.pbs1 1234563.pbs1
+```
+
+This waits up to 90 seconds for the stopped supervisor to release its lock.
+Only the named, confirmed-finished campaign allocations are reopened; active
+jobs and allocations blocked by other failures are rejected. Other cancelled
+experiments, completed results, deterministic training failures, and the
+existing deadline are preserved. `explicit_requeues` records the previous PBS
+outcome and comment. This explicit action does not change automatic handling
+of future manual cancellations. Add `--hours` only to grant a fresh time budget.
 
 ## Verification boundary
 

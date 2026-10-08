@@ -17,16 +17,19 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import time
 import uuid
 
 BASE_REF = "33d5f9c22106d43bbaa88cc3bc57ee23afbc4ac9"
 PREVIOUS_REFS = ("da02594fdf973b4ef26d522c11ec128dc2c5b6aa",
-                 "07cb3864f3874d3be7ec8d2cf956511ffb80aa2f")
+                 "07cb3864f3874d3be7ec8d2cf956511ffb80aa2f",
+                 "2651a830761bc2811e1129429e5ad0314fc26815")
 ENTRY = "scripts/abci/0390_conrep_night.py"
 SHELL = "scripts/abci/0390_conrep_night_worker.sh"
 CONTROLLER = "src/conrep/night/campaign.py"
 OWNED = (ENTRY, SHELL, CONTROLLER)
 MAX_WORKERS = 3
+WALLTIME = "12:00:00"
 PREFERRED = {v: worker for worker, values in enumerate(("ADGJ", "BEHK", "CFIL")) for v in values}
 POLICY = {"version": "0390-night-recovery-v3-20min", "retry_admin_termination": True,
           "retry_terminated_queued": True, "interruption_retry_seconds": 1200,
@@ -64,9 +67,17 @@ def digest(path):
 
 
 @contextlib.contextmanager
-def lock(path):
+def lock(path, wait_seconds=0):
     with Path(path).open("a+") as stream:
-        fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        until = time.monotonic() + wait_seconds
+        while True:
+            try:
+                fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if time.monotonic() >= until:
+                    raise
+                time.sleep(min(0.2, max(0, until - time.monotonic())))
         yield
 
 
@@ -117,6 +128,7 @@ def migrate_three_workers(plan, state):
     """Change scheduling metadata only; preserve every task and allocation record."""
     revised, migrated = copy.deepcopy(plan), copy.deepcopy(state)
     revised["workers"] = MAX_WORKERS
+    revised["walltime"] = WALLTIME
     revised["recovery_policy"] = dict(POLICY)
     for task in revised["tasks"]:
         task["preferred_worker"] = PREFERRED.get(task.get("variant"), task.get("preferred_worker", 0) % MAX_WORKERS)
@@ -132,7 +144,7 @@ def migrate_three_workers(plan, state):
     return revised, migrated
 
 
-def upgrade(root, campaign, ref):
+def upgrade(root, campaign, ref, *, wait_for_supervisor=0):
     root, campaign = Path(root).resolve(), Path(campaign).resolve()
     commit = git(root, "rev-parse", "--verify", ref + "^{commit}").decode().strip()
     payloads = {name: git(root, "show", f"{commit}:{name}") for name in OWNED}
@@ -140,12 +152,12 @@ def upgrade(root, campaign, ref):
     if Path(plan["project_root"]).resolve() != root:
         raise ValueError("Campaign belongs to another checkout")
     verify_original(campaign, plan)
-    if (plan.get("controller_ref") == commit and plan.get("workers") == MAX_WORKERS
+    if (plan.get("controller_ref") == commit and plan.get("workers") == MAX_WORKERS and plan.get("walltime") == WALLTIME
             and set(read(campaign / "state.json")["workers"]) == {str(i) for i in range(MAX_WORKERS)}
             and all((root / n).read_bytes() == p for n, p in payloads.items())):
         print("Controller already installed; all original source/configuration checks passed.")
         return plan
-    with lock(campaign / "start.lock"), lock(campaign / "supervisor.lock"), lock(campaign / "state.lock"):
+    with lock(campaign / "start.lock"), lock(campaign / "supervisor.lock", wait_for_supervisor), lock(campaign / "state.lock"):
         state = read(campaign / "state.json")
         assert_no_live_workers(state)
         plan = read(campaign / "plan.json")
@@ -195,7 +207,7 @@ def upgrade(root, campaign, ref):
               "previous_workers": plan.get("workers"), "workers": MAX_WORKERS})
         print(json.dumps({"controller": str(destination), "backup": str(backup),
               "original_deadline": state.get("deadline"), "training_source_unchanged": True,
-              "workers": MAX_WORKERS, "interruption_retry_seconds": 1200,
+              "workers": MAX_WORKERS, "pbs_walltime": WALLTIME, "interruption_retry_seconds": 1200,
               "interruption_max_retries": None,
               "task_count": len(plan["tasks"]), "status": "upgraded; no PBS submitted"}, indent=2))
         return revised
@@ -208,14 +220,19 @@ def main():
     parser.add_argument("--ref", required=True)
     parser.add_argument("--restart", action="store_true")
     parser.add_argument("--hours", type=float)
+    parser.add_argument("--requeue-jobs", nargs="+", help="Explicitly restart named final PBS jobs after stopping the supervisor")
     args = parser.parse_args()
     if args.hours is not None and (args.hours <= 0 or not args.restart):
         parser.error("A positive --hours requires --restart")
-    plan = upgrade(args.root, args.campaign, args.ref)
+    if args.requeue_jobs and not args.restart:
+        parser.error("--requeue-jobs requires --restart")
+    plan = upgrade(args.root, args.campaign, args.ref, wait_for_supervisor=90 if args.requeue_jobs else 0)
     if args.restart:
         command = [plan["python"], plan["controller_entry"], "recover", "--campaign", str(args.campaign.resolve())]
         if args.hours is not None:
             command += ["--hours", str(args.hours)]
+        if args.requeue_jobs:
+            command += ["--requeue-jobs", *args.requeue_jobs]
         subprocess.run(command, cwd=args.root, check=True)
         subprocess.run([plan["python"], plan["controller_entry"], "status", "--campaign",
                         str(args.campaign.resolve())], cwd=args.root, check=True)

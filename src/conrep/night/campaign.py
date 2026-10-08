@@ -26,6 +26,7 @@ from .io import read, write, sha, file_sha, locked, latest_checkpoint, complete_
 
 NAME = "0390-conrep-night-v1"
 MAX_NODES = 3
+DEFAULT_WALLTIME = "12:00:00"
 PAUSE = 75
 ENTRY = "scripts/abci/0390_conrep_night.py"
 SHELL = "scripts/abci/0390_conrep_night_worker.sh"
@@ -192,7 +193,7 @@ def prepare(args):
             "python": sys.executable, "entry": str(campaign / "code" / ENTRY),
             "shell": str(campaign / "code" / SHELL), "workers": MAX_NODES, "world_size": 8,
             "queue": "R9920261000", "account": "gcg51557", "rtype": "rt_HF",
-            "hours": args.hours, "walltime": "06:00:00", "poll_seconds": 60,
+            "hours": args.hours, "walltime": DEFAULT_WALLTIME, "poll_seconds": 60,
             "max_attempts": 3, "recovery_policy": dict(RECOVERY_DEFAULTS),
             "source_hash": source_hash, "tasks": tasks,
             "initial_task_seconds": 3600, "reserve_bytes": int(args.reserve_gb * 10**9)}
@@ -962,6 +963,7 @@ def summarize(campaign):
         write(campaign / "summary.json", {"state": state["status"], "task_counts": counts,
               "validated_checkpoints": len(rows), "deadline": state["deadline"],
               "worker_count": plan.get("workers"), "max_account_nodes": MAX_NODES,
+              "pbs_walltime": plan.get("walltime"),
               "recovery_policy": plan.get("recovery_policy", {}),
               "workers": {key: {field: worker[field] for field in (
                   "job_id", "status", "task", "stage", "last_outcome", "pbs_exit_status",
@@ -1104,28 +1106,58 @@ def start(args, *, resume=False):
     return 0
 
 
+def requeue_explicit_jobs(campaign, requested, active):
+    """Explicitly restart named final allocations; automatic qdel policy stays unchanged."""
+    with state_transaction(campaign) as state:
+        history = state.setdefault("explicit_requeues", {})
+        pending = set(requested) - set(history)
+        selected = {w.get("job_id"): w for w in state["workers"].values()
+                    if w.get("job_id") in pending}
+        if set(selected) != pending:
+            raise ValueError(f"Requested jobs are not this campaign's current allocations: {sorted(pending - set(selected))}")
+        for job_id, worker in selected.items():
+            if job_id in active or worker.get("reconciled_job") != job_id:
+                raise ValueError(f"Job has not been confirmed finished: {job_id}")
+            if worker.get("last_outcome") not in {"cancelled", "planned_stop", "completed", "recoverable"}:
+                raise ValueError(f"Job is blocked by another failure: {job_id}: {worker.get('last_outcome')}")
+        for job_id, worker in selected.items():
+            history[job_id] = {"time": time.time(), "previous_outcome": worker["last_outcome"],
+                               "pbs_comment": worker.get("pbs_comment"), "action": "explicit-user-requeue"}
+            worker.update(status="available", planned_stop=False, retry_after=0)
+            for task in state["tasks"].values():
+                if task.get("job_id") == job_id and task["status"] in {"cancelled", "paused", "interrupted"}:
+                    task.update(status="paused", reconciled_job=job_id, retry_after=0)
+                    task.pop("failure_reason", None)
+    event(campaign, event="explicit-requeue", job_ids=sorted(pending))
+
+
 def recover(args):
     """Reassess old scheduler failures and start without resetting experiments."""
     campaign = Path(args.campaign).resolve()
     plan = read(campaign / "plan.json")
     verify_snapshot(campaign, plan)
     hours = getattr(args, "hours", None)
+    requeue_jobs = getattr(args, "requeue_jobs", None) or []
     if hours is not None and hours <= 0:
         raise ValueError("--hours must be positive")
     try:
         with locked(campaign / "supervisor.lock", blocking=False):
             pass
     except BlockingIOError:
+        if requeue_jobs:
+            raise ValueError("Stop the existing supervisor before explicitly requeueing cancelled jobs")
         return start(args, resume=hours is not None)
     with locked(campaign / "start.lock"), locked(campaign / "supervisor.lock", blocking=False):
         before = read(campaign / "state.json")
-        if before["status"] == "stopped" or ((campaign / "STOP").exists()
-                and before["status"] != "deadline_reached"):
+        if not requeue_jobs and (before["status"] == "stopped" or ((campaign / "STOP").exists()
+                and before["status"] != "deadline_reached")):
             raise ValueError("Explicitly stopped campaign preserved; use resume for an intentional restart")
         if hours is None and before.get("deadline") is not None and time.time() >= before["deadline"]:
             raise ValueError("Original deadline passed; recover --hours HOURS explicitly grants more time")
         jobs = active_jobs(qstat(), getpass.getuser())
         reconcile(campaign, plan, jobs, reassess=True)
+        if requeue_jobs:
+            requeue_explicit_jobs(campaign, requeue_jobs, jobs)
         with state_transaction(campaign) as state:
             eligible = any(w["status"] in {"new", "available"} or w.get("job_id") in jobs
                            for w in state["workers"].values())
@@ -1134,7 +1166,7 @@ def recover(args):
             if hours is not None:
                 state["deadline"] = time.time() + hours * 3600
             state["status"] = "running"
-        if before["status"] == "deadline_reached" and hours is not None:
+        if requeue_jobs or (before["status"] == "deadline_reached" and hours is not None):
             (campaign / "STOP").unlink(missing_ok=True)
         event(campaign, event="recovery-enabled", policy=plan.get("recovery_policy"),
               deadline=read(campaign / "state.json")["deadline"],
@@ -1159,6 +1191,7 @@ def main(argv=None):
             p.add_argument("--hours", type=float, required=True)
         if name == "recover":
             p.add_argument("--hours", type=float, help="Explicitly extend the budget; default keeps the original deadline")
+            p.add_argument("--requeue-jobs", nargs="+", help="Explicitly restart these finished campaign PBS IDs after manual cancellation")
         if name == "worker":
             p.add_argument("--worker", type=int, choices=range(MAX_NODES), required=True)
         if name == "stop":

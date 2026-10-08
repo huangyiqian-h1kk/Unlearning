@@ -374,6 +374,7 @@ def test_prepare_freezes_uncommitted_server_source_and_full_matrix(tmp_path):
     plan = read(campaign / "plan.json")
     assert len(plan["tasks"]) == 32
     assert plan["workers"] == 3
+    assert plan["walltime"] == "12:00:00"
     assert set(read(campaign / "state.json")["workers"]) == {"0", "1", "2"}
     assert (campaign / "code/src/experiments/validation.py").read_text() == "# local server changes\n"
     c.verify_snapshot(campaign, plan)

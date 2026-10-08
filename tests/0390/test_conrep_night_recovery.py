@@ -231,6 +231,72 @@ def test_upgrade_policy_and_three_worker_preferences_match_controller():
     assert upgrade.POLICY == c.RECOVERY_DEFAULTS
     assert upgrade.PREFERRED == c.PREFERRED
     assert upgrade.MAX_WORKERS == c.MAX_NODES == 3
+    assert upgrade.WALLTIME == c.DEFAULT_WALLTIME == "12:00:00"
+
+
+@pytest.mark.parametrize("planned_stop", [False, True])
+def test_explicit_requeue_after_manual_qdel_submits_three_twelve_hour_jobs(tmp_path, monkeypatch, planned_stop):
+    plan, before = fixture(tmp_path, count=32)
+    plan, state = upgrade.migrate_three_workers(plan, before)
+    state["status"] = "stopped"
+    ids = [f"manual{i}.pbs" for i in range(3)]
+    for i, worker in state["workers"].items():
+        worker.update(job_id=ids[int(i)], status="queued", planned_stop=planned_stop)
+    write(tmp_path / "plan.json", plan)
+    write(tmp_path / "state.json", state)
+    (tmp_path / "STOP").touch()
+    active, submitted = {}, []
+    record = {"job_state": "F", "Exit_status": 271, "comment": "deleted by user"}
+    monkeypatch.setattr(c, "qstat", lambda *a: {"Jobs": {a[1]: record}} if a else {"Jobs": active})
+    monkeypatch.setattr(c, "verify_snapshot", lambda *a: None)
+    monkeypatch.setattr(c, "archive_job", lambda *a: None)
+    monkeypatch.setattr(c, "start", lambda *a, **k: 0)
+    assert c.recover(argparse.Namespace(campaign=str(tmp_path), hours=None, requeue_jobs=ids)) == 0
+    current = read(tmp_path / "state.json")
+    assert current["deadline"] == before["deadline"] and current["tasks"] == before["tasks"]
+    assert not (tmp_path / "STOP").exists()
+    assert set(current["explicit_requeues"]) == set(ids)
+    assert all(w["pbs_comment"] == "deleted by user" for w in current["workers"].values())
+    def submit(command, **kwargs):
+        submitted.append(command)
+        job = f"{200 + len(submitted)}.pbs"
+        active[job] = {"Job_Owner": getpass.getuser() + "@test", "job_state": "Q"}
+        return subprocess.CompletedProcess(command, 0, job + "\n", "")
+    monkeypatch.setattr(c.subprocess, "run", submit)
+    c.submit_available(tmp_path, plan)
+    c.submit_available(tmp_path, plan)
+    assert len(submitted) == 3
+    assert all("#PBS -l walltime=12:00:00" in Path(cmd[1]).read_text() for cmd in submitted)
+
+
+def test_explicit_requeue_preserves_unselected_cancellations_and_training_errors(tmp_path):
+    _, state = fixture(tmp_path, count=4)
+    for worker in state["workers"].values():
+        worker.update(status="cancelled", last_outcome="cancelled")
+    for i, status in enumerate(["cancelled", "failed", "completed", "cancelled"]):
+        state["tasks"][str(i)].update(status=status, job_id="old0.pbs" if i < 3 else "old1.pbs")
+    write(tmp_path / "state.json", state)
+    c.requeue_explicit_jobs(tmp_path, ["old0.pbs"], {})
+    after = read(tmp_path / "state.json")
+    assert [after["tasks"][str(i)]["status"] for i in range(4)] == ["paused", "failed", "completed", "cancelled"]
+    assert after["workers"]["1"]["status"] == "cancelled"
+    c.requeue_explicit_jobs(tmp_path, ["old0.pbs"], {})
+    assert read(tmp_path / "state.json") == after
+
+
+@pytest.mark.parametrize("case", ["foreign", "active", "policy_denied"])
+def test_explicit_requeue_rejects_invalid_scope_without_state_changes(tmp_path, case):
+    _, state = fixture(tmp_path)
+    worker = state["workers"]["0"]
+    worker.update(status="cancelled", last_outcome="cancelled")
+    if case == "policy_denied":
+        worker.update(status="policy_denied", last_outcome="policy_denied")
+    write(tmp_path / "state.json", state)
+    before = (tmp_path / "state.json").read_bytes()
+    with pytest.raises(ValueError):
+        c.requeue_explicit_jobs(tmp_path, ["foreign.pbs" if case == "foreign" else "old0.pbs"],
+                               {"old0.pbs": {"job_state": "Q"}} if case == "active" else {})
+    assert (tmp_path / "state.json").read_bytes() == before
 
 
 @pytest.mark.parametrize("comment", ["qdel requested by user", "terminated by someone@host",
@@ -334,6 +400,7 @@ def make_upgrade_fixture(tmp_path, monkeypatch):
         (checkpoint / name).write_bytes(b"x")
     write(checkpoint / "COMPLETE.json", {"schema": c.NAME, "identity": identity, "world_size": 8, "files": files})
     plan = {"project_root": str(root), "campaign": str(campaign), "python": sys.executable, "workers": 4,
+            "walltime": "06:00:00",
             "source_hash": source_hash, "entry": str(snapshot / c.ENTRY), "shell": str(snapshot / c.SHELL),
             "tasks": [{"id": "example", "config": str(config), "config_hash": file_sha(config),
                        "identity": identity, "output": str(checkpoint.parent.parent)}]}
@@ -354,6 +421,7 @@ def test_controller_upgrade_keeps_frozen_source_dirty_server_code_and_checkpoint
     new = upgrade.upgrade(root, campaign, ref)
     assert all(new[key] == old[key] for key in ("entry", "shell", "source_hash"))
     assert new["workers"] == 3
+    assert new["walltime"] == "12:00:00"
     assert {k: v for k, v in new["tasks"][0].items() if k != "preferred_worker"} == old["tasks"][0]
     assert (campaign / "source.json").read_bytes() == source_before
     assert Path(old["tasks"][0]["config"]).read_bytes() == config_before
