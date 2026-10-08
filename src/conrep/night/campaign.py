@@ -278,7 +278,8 @@ def claim(campaign, plan, worker_id, allocation_end):
             needed = 1200 if trained else 1.15 * estimate + 300
             if remaining < needed:
                 continue
-            if task["priority"] >= 2 and now >= state["deadline"] - 5400 and not trained:
+            if (not task.get("late_admission", task["priority"] < 2)
+                    and now >= state["deadline"] - 5400 and not trained):
                 continue
             record.update(status="running", worker=worker_id, job_id=os.environ.get("PBS_JOBID"),
                           attempts=record["attempts"] + 1, claimed_at=now, stage="starting")
@@ -970,6 +971,9 @@ def summarize(campaign):
                   "pbs_comment", "error", "last_reason", "recovery_failures", "retry_after") if field in worker}
                   for key, worker in state["workers"].items()},
               "updated_at": time.time(), "selection": "disabled", "test": "not run"})
+        if plan.get("followup"):
+            from .followup import summarize_diagnostics
+            summarize_diagnostics(campaign, plan)
 
 
 def supervise(args):
@@ -1184,6 +1188,13 @@ def main(argv=None):
     p.add_argument("--llama-config", default=BASE_CAMPAIGN + "/llama8b/config.json")
     p.add_argument("--hours", type=float, default=10)
     p.add_argument("--reserve-gb", type=float, default=100)
+    p = commands.add_parser("prepare-followup")
+    p.add_argument("--project-root", required=True)
+    p.add_argument("--source-campaign", required=True)
+    p.add_argument("--campaign", required=True)
+    p.add_argument("--ref", required=True)
+    p.add_argument("--hours", type=float, default=10)
+    p.add_argument("--reserve-gb", type=float, default=100)
     for name in ("start", "resume", "recover", "supervise", "worker", "status", "stop", "summarize"):
         p = commands.add_parser(name)
         p.add_argument("--campaign", required=True)
@@ -1207,7 +1218,12 @@ def main(argv=None):
     p.add_argument("--checkpoint", required=True)
     p.add_argument("--output", required=True)
     args = parser.parse_args(argv)
-    if args.command == "prepare":
+    if args.command == "prepare-followup":
+        if args.hours <= 0 or args.reserve_gb < 0:
+            parser.error("hours must be positive and reserve-gb nonnegative")
+        from .followup import prepare
+        prepare(args)
+    elif args.command == "prepare":
         if args.hours <= 0 or args.reserve_gb < 0:
             parser.error("hours must be positive and reserve-gb nonnegative")
         prepare(args)

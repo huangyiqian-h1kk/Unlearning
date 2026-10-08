@@ -7,7 +7,13 @@ from conrep.v2.losses import multi_positive
 
 def forget_loss(forget, controls, retain, *, temperature=0.08,
                 retain_weight=2.0, margin=0.1, inter_instance_negatives=True,
-                shared_target=False, negative_views=None):
+                shared_target=False, negative_views=None,
+                stop_gradient_controls=False, stop_gradient_retain=False):
+    # R/S change only these gradient paths, not logits, masks or loss values.
+    if stop_gradient_controls:
+        controls = controls.detach()
+    if stop_gradient_retain:
+        retain = retain.detach()
     n, dim = forget.shape
     k = controls.shape[0]
     budget = k if negative_views is None else int(negative_views)

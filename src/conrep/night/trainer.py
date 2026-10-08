@@ -24,7 +24,7 @@ from conrep.v2.model import embed, load_model, load_tokenizer, text_batch
 from conrep.v2.corruption import corrupt, safe_token_ids
 from conrep.v2.losses import gather, paired_loss
 from .losses import forget_loss
-from .positives import make_positive
+from .positives import make_positive, fact_positive_candidates
 from .io import complete_checkpoint, read, write, training_identity
 
 
@@ -50,7 +50,9 @@ def losses(model, tokenizer, groups, cfg, corruption_rng, positive_rng):
                         margin=options["retain_margin"],
                         inter_instance_negatives=options["inter_instance_negatives"],
                         shared_target=options["shared_target"],
-                        negative_views=options.get("negative_views"))
+                        negative_views=options.get("negative_views"),
+                        stop_gradient_controls=options.get("stop_gradient_controls", False),
+                        stop_gradient_retain=options.get("stop_gradient_retain", False))
     total = options.get("forget_cl_weight", 1.0) * loss_f
     metrics = {"forget_cl": loss_f, "forget_positive_cosine": (f[None] * c).sum(-1).mean().detach()}
     if options["specified_cl_weight"]:
@@ -59,6 +61,10 @@ def losses(model, tokenizer, groups, cfg, corruption_rng, positive_rng):
         for row in groups["retain"]:
             if mode == "dropout":
                 text = row["text"]
+            elif mode == "fact_paraphrase":
+                views = fact_positive_candidates(row)
+                text = views[int(torch.randint(len(views), (), generator=positive_rng))]
+                changed += int(text != row["text"])
             elif mode in {"paraphrase", "views"}:
                 if not row.get("views"):
                     raise ValueError("A paraphrase positive was requested but row.views is empty")
@@ -211,6 +217,13 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
                                              "created_at": time.time()})
             barrier()
             return 75
+        diagnostic = None
+        if cfg.get("diagnostics", {}).get("enabled", False):
+            from .diagnostics import Diagnostics
+            diagnostic = Diagnostics(model, tokenizer, cfg, root, rank, world,
+                                     first_step=first_step)
+            if first_step == 0:
+                diagnostic.observe(0)
         for step in range(first_step, steps):
             begin = time.monotonic()
             optimizer.zero_grad(set_to_none=True)
@@ -227,6 +240,9 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
                                                generators["corruption"], generators["positive"])
                 if not torch.isfinite(loss):
                     raise FloatingPointError(f"Non-finite loss at step {step + 1}")
+                if diagnostic is not None and diagnostic.due(step + 1, gradients=True):
+                    diagnostic.gradients(components, step + 1, micro,
+                                         accumulation=accumulation)
                 (loss / accumulation).backward()
                 for key, value in dict(components, total=loss).items():
                     logged[key] = logged.get(key, 0.0) + value.detach().float().item() / accumulation
@@ -234,6 +250,8 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
             norm = torch.nn.utils.clip_grad_norm_(parameters, options["max_grad_norm"], error_if_nonfinite=True)
             optimizer.step()
             scheduler.step()
+            if diagnostic is not None and diagnostic.due(step + 1):
+                diagnostic.observe(step + 1)
             if rank == 0:
                 record = dict(step=step + 1, **logged, grad_norm=float(norm),
                               learning_rate=scheduler.get_last_lr()[0], elapsed_seconds=time.monotonic() - begin,

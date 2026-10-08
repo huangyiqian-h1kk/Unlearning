@@ -48,11 +48,15 @@ def locked(path, *, blocking=True):
 
 
 def training_identity(cfg):
-    return sha({**{key: cfg[key] for key in ("model", "data", "unlearn", "conrep", "lora")},
+    value = {**{key: cfg[key] for key in ("model", "data", "unlearn", "conrep", "lora")},
                 "seed": cfg["run"]["seed"],
                 "source_hash": cfg.get("night", {}).get("source_hash"),
                 "model_assets_hash": cfg.get("night", {}).get("model_assets_hash"),
-                "data_hashes": cfg.get("night", {}).get("data_hashes")})
+                "data_hashes": cfg.get("night", {}).get("data_hashes")}
+    # Old identities remain byte-for-byte compatible when diagnostics are absent.
+    if "diagnostics" in cfg:
+        value["diagnostics"] = cfg["diagnostics"]
+    return sha(value)
 
 
 def complete_checkpoint(path, *, identity=None, world=None):

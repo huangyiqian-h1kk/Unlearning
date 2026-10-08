@@ -86,3 +86,59 @@ def make_positive(row, *, protected, probability, generator):
         return text, False
     chosen = int(torch.randint(len(options), (), generator=generator))
     return options[chosen], True
+
+
+def fact_fields(row):
+    """Parse a complete training assertion, keeping its entire value clause.
+
+    No probe answers are consulted. Negation, units, time qualifiers and all
+    text following the copula stay verbatim. Unknown grammars fail explicitly.
+    """
+    text = row["text"].strip()
+    match = re.fullmatch(
+        r"(?:The\s+)?(?P<attribute>.+?)\s+of\s+(?P<entity>.+?)\s+"
+        r"(?P<copula>is|are|was|were)\s+(?P<value>.+)", text, re.I | re.S)
+    if match is None:
+        raise ValueError(f"Unsupported complete fact grammar for {row.get('id')}: {text[:180]}")
+    fields = {k: v.strip() for k, v in match.groupdict().items()}
+    if any(not v for v in fields.values()):
+        raise ValueError(f"Incomplete fact: {row.get('id')}")
+    return fields
+
+
+def fact_positive_candidates(row):
+    fields = fact_fields(row)
+    attribute, entity, copula, value = (fields[k] for k in
+                                       ("attribute", "entity", "copula", "value"))
+    # Reuse only existing views whose complete parsed assertion is identical.
+    # Other views are not accepted just because a value string occurs in them.
+    views = []
+    for view in row.get("views", []):
+        if not isinstance(view, str):
+            continue
+        try:
+            same = fact_fields({"text": view}) == fields
+        except ValueError:
+            same = False
+        if same and view.strip() != row["text"].strip():
+            views.append(view.strip())
+    views += [f"For {entity}, the {attribute} {copula} {value}",
+              f"{entity}: the {attribute} {copula} {value}"]
+    return list(dict.fromkeys(x for x in views if x != row["text"].strip()))
+
+
+def fact_positive_audit(rows):
+    examples, errors, changed = [], [], 0
+    for row in rows:
+        try:
+            views = fact_positive_candidates(row)
+            changed += bool(views)
+            if len(examples) < 30:
+                examples.append({"id": row.get("id"), "original": row["text"],
+                                 "fields": fact_fields(row), "positives": views})
+        except ValueError as exc:
+            errors.append(str(exc))
+    return {"policy": "complete-fact-clause-reordering-v1", "rows": len(rows),
+            "eligible_rows": changed, "eligible_fraction": changed / max(1, len(rows)),
+            "unsupported_rows": len(errors), "errors": errors[:30], "examples": examples,
+            "positive_views_per_anchor": 1, "validation_labels_used": False}
