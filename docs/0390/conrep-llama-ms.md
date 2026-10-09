@@ -1,5 +1,9 @@
 # Llama M-S completion, 2026-10-09
 
+For the combined Llama completion + Gemma retain grid, use the
+[mixed-grid campaign](conrep-mixed-grid.md). It includes these same 14 Llama
+runs in one shared three-worker pool; do not also start this standalone campaign.
+
 This campaign adds only Llama-3.1-8B M-S, each at seeds 42 and 43: 14 runs,
 125 optimizer steps per run, and 13 checkpoint validations per run (182 total).
 The previous 32-run night campaign and 27-run follow-up remain unchanged.

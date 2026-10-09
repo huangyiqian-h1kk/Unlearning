@@ -23,7 +23,7 @@ from experiments.runtime import initialize, sync_gradients, barrier, local_batch
 from conrep.v2.model import embed, load_model, load_tokenizer, text_batch
 from conrep.v2.corruption import corrupt, safe_token_ids
 from conrep.v2.losses import gather, paired_loss
-from .losses import forget_loss
+from .losses import forget_loss, retain_loss
 from .positives import make_positive, fact_positive_candidates
 from .io import complete_checkpoint, read, write, training_identity
 
@@ -56,38 +56,63 @@ def losses(model, tokenizer, groups, cfg, corruption_rng, positive_rng):
     total = options.get("forget_cl_weight", 1.0) * loss_f
     metrics = {"forget_cl": loss_f, "forget_positive_cosine": (f[None] * c).sum(-1).mean().detach()}
     if options["specified_cl_weight"]:
-        texts, changed = [], 0
+        count_views = options.get("specified_views", 1)
+        negative_views = options.get("specified_negative_views", 1)
+        if (type(count_views) is not int or type(negative_views) is not int
+                or not 1 <= negative_views <= count_views):
+            raise ValueError("specified_views must be positive with negative budget in [1,views]")
         mode = options.get("specified_positive", "paraphrase")
-        for row in groups["retain"]:
-            if mode == "dropout":
-                text = row["text"]
-            elif mode == "fact_paraphrase":
-                views = fact_positive_candidates(row)
-                text = views[int(torch.randint(len(views), (), generator=positive_rng))]
-                changed += int(text != row["text"])
-            elif mode in {"paraphrase", "views"}:
-                if not row.get("views"):
-                    raise ValueError("A paraphrase positive was requested but row.views is empty")
-                text = row["views"][int(torch.randint(len(row["views"]), (), generator=corruption_rng))]
-            else:
-                raise ValueError(f"Unknown specified_positive: {mode}")
-            if options.get("protected_positive", False):
-                augmented, did_change = make_positive(
-                    row, protected=True,
-                    probability=options.get("protected_positive_probability", 0.5),
-                    generator=positive_rng)
-                if did_change:
-                    text = augmented
-                    changed += 1
-            texts.append(text)
-        second = gather(embed(model, *text_batch(tokenizer, texts, options["max_length"], device)))
-        value = paired_loss(r, second, f, options["temperature_retain"])
+        if count_views > 1 and mode == "dropout" and cfg["lora"]["lora_dropout"] <= 0:
+            raise ValueError("Multiple dropout positives require nonzero LoRA dropout")
+        positives, all_texts, changed = [], [], 0
+        for _ in range(count_views):
+            texts = []
+            for row in groups["retain"]:
+                if mode == "dropout":
+                    text = row["text"]
+                elif mode == "fact_paraphrase":
+                    views = fact_positive_candidates(row)
+                    text = views[int(torch.randint(len(views), (), generator=positive_rng))]
+                    changed += int(text != row["text"])
+                elif mode in {"paraphrase", "views"}:
+                    if not row.get("views"):
+                        raise ValueError("A paraphrase positive was requested but row.views is empty")
+                    text = row["views"][int(torch.randint(len(row["views"]), (), generator=corruption_rng))]
+                else:
+                    raise ValueError(f"Unknown specified_positive: {mode}")
+                if options.get("protected_positive", False):
+                    augmented, did_change = make_positive(
+                        row, protected=True,
+                        probability=options.get("protected_positive_probability", 0.5),
+                        generator=positive_rng)
+                    if did_change:
+                        text = augmented
+                        changed += 1
+                texts.append(text)
+            all_texts.append(texts)
+            positives.append(gather(embed(model, *text_batch(tokenizer, texts, options["max_length"], device))))
+        # Preserve the original scalar/gradient path and forward order at K=1.
+        second = positives[0]
+        value = (paired_loss(r, second, f, options["temperature_retain"]) if count_views == 1
+                 else retain_loss(r, torch.stack(positives), f,
+                    temperature=options["temperature_retain"], negative_views=negative_views))
         metrics["specified_cl"] = value
-        metrics["specified_positive_cosine"] = (r * second).sum(-1).mean().detach()
-        count = torch.tensor([changed, len(texts)], device=device, dtype=torch.float32)
+        metrics["specified_positive_cosine"] = torch.stack([
+            (r * positive).sum(-1).mean().detach() for positive in positives]).mean()
+        if count_views > 1:
+            p = torch.stack(positives).detach().float()
+            metrics["specified_view_pair_cosine"] = (
+                (p.sum(0).square().sum(-1) - p.square().sum((0, 2)))
+                / (count_views * (count_views - 1))).mean()
+        unique_texts = sum(len({texts[i] for texts in all_texts}) for i in range(len(texts)))
+        count = torch.tensor([changed, count_views * len(texts), unique_texts, len(texts)],
+                             device=device, dtype=torch.float32)
         if torch.distributed.is_initialized():
             torch.distributed.all_reduce(count)
         metrics["specified_changed_fraction"] = count[0] / count[1]
+        metrics["specified_unique_texts_per_anchor"] = count[2] / count[3]
+        metrics["specified_views"] = count.new_tensor(count_views)
+        metrics["specified_negatives_per_anchor"] = count.new_tensor((len(r) - 1) * (1 + negative_views) + len(f))
         total = total + options["specified_cl_weight"] * value
     if options["general_cl_weight"]:
         if cfg["lora"]["lora_dropout"] <= 0:
@@ -108,7 +133,7 @@ def losses(model, tokenizer, groups, cfg, corruption_rng, positive_rng):
 
 
 def save_checkpoint(model, tokenizer, optimizer, scheduler, root, step, cfg,
-                    generators, rank, world):
+                    generators, rank, world, sampling=None):
     identity = training_identity(cfg)
     target = root / f"checkpoint-{step}"
     # A completed checkpoint is immutable, including during a repeated resume.
@@ -129,6 +154,8 @@ def save_checkpoint(model, tokenizer, optimizer, scheduler, root, step, cfg,
                 "python": random.getstate(), "numpy": np.random.get_state(),
                 "generators": {key: gen.get_state() for key, gen in generators.items()}},
                temp / f"rng-rank-{rank}.pt")
+    if sampling is not None:
+        sampling.snapshot(temp, step)
     barrier()
     if rank == 0:
         files = {p.name: p.stat().st_size for p in temp.iterdir()
@@ -196,6 +223,11 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
         else:
             torch.manual_seed(cfg["run"]["seed"] + rank)
             np.random.seed(cfg["run"]["seed"] + rank)
+        sampling = None
+        if cfg.get("diagnostics", {}).get("sampling_coverage", False):
+            from .sampling import SamplingAudit
+            sampling = SamplingAudit(data, root, identity, rank=rank,
+                resume=Path(resume) if resume else None, first_step=first_step)
         if rank == 0:
             root.mkdir(parents=True, exist_ok=True)
             write(root / "identity.json", {"identity": identity})
@@ -226,6 +258,8 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
                 diagnostic.observe(0)
         for step in range(first_step, steps):
             begin = time.monotonic()
+            if device.type == "cuda":
+                torch.cuda.reset_peak_memory_stats(device)
             optimizer.zero_grad(set_to_none=True)
             logged = {}
             accumulation = options["gradient_accumulation_steps"]
@@ -234,6 +268,8 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
                 groups = {name: sample_batch(rows, sizes[name], cfg["run"]["seed"] + offset * 10007,
                                              draw, rank, world)
                           for offset, (name, rows) in enumerate(data.items())}
+                if sampling is not None:
+                    sampling.observe(groups, step + 1, micro)
                 context = torch.autocast("cuda", dtype=torch.bfloat16) if device.type == "cuda" and mc["dtype"] == "bfloat16" else nullcontext()
                 with context:
                     loss, components = losses(model, tokenizer, groups, cfg,
@@ -252,9 +288,17 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
             scheduler.step()
             if diagnostic is not None and diagnostic.due(step + 1):
                 diagnostic.observe(step + 1)
+            peak = torch.zeros(2, device=device, dtype=torch.long)
+            if device.type == "cuda":
+                peak[0] = torch.cuda.max_memory_allocated(device)
+                peak[1] = torch.cuda.max_memory_reserved(device)
+            if world > 1:
+                torch.distributed.all_reduce(peak, op=torch.distributed.ReduceOp.MAX)
             if rank == 0:
                 record = dict(step=step + 1, **logged, grad_norm=float(norm),
                               learning_rate=scheduler.get_last_lr()[0], elapsed_seconds=time.monotonic() - begin,
+                              cuda_peak_allocated_bytes_max_rank=int(peak[0]),
+                              cuda_peak_reserved_bytes_max_rank=int(peak[1]),
                               job_id=os.environ.get("PBS_JOBID"), resume_from=first_step)
                 with (root / "train.jsonl").open("a") as stream:
                     stream.write(json.dumps(record, allow_nan=False) + "\n")
@@ -262,7 +306,7 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
             stop = should_stop() or (stop_after_step is not None and step + 1 >= stop_after_step)
             if (step + 1) % options["save_steps"] == 0 or step + 1 == steps or stop:
                 save_checkpoint(model, tokenizer, optimizer, scheduler, root, step + 1, cfg,
-                                generators, rank, world)
+                                generators, rank, world, sampling=sampling)
             if stop and step + 1 < steps:
                 if rank == 0:
                     write(root / "PAUSED.json", {"identity": identity, "step": step + 1,

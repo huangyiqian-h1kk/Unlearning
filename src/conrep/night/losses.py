@@ -5,6 +5,29 @@ import torch
 from conrep.v2.losses import multi_positive
 
 
+def retain_loss(anchor, positives, forget=None, *, temperature=0.1, negative_views=1):
+    """Average per-positive InfoNCE with a fixed other-anchor view budget.
+
+    positives is [K, R, D]. All K views of the anchor are positives. Other
+    anchors contribute their clean representation and only negative_views
+    extra views. K=1/budget=1 has the same target order/masks as paired_loss.
+    """
+    k, n, dim = positives.shape
+    if anchor.shape != (n, dim) or not 1 <= negative_views <= k:
+        raise ValueError("Expected [K,R,D] positives and a negative budget in [1,K]")
+    targets = torch.cat([anchor, positives.reshape(-1, dim)]
+                        + ([] if forget is None else [forget]))
+    positive = torch.zeros(n, len(targets), dtype=torch.bool, device=anchor.device)
+    index = torch.arange(n, device=anchor.device)
+    for view in range(k):
+        positive[index, (view + 1) * n + index] = True
+    allowed = torch.ones_like(positive)
+    allowed[index, index] = False
+    allowed[:, (negative_views + 1) * n:(k + 1) * n] = positive[
+        :, (negative_views + 1) * n:(k + 1) * n]
+    return multi_positive(anchor, targets, positive, allowed, temperature)
+
+
 def forget_loss(forget, controls, retain, *, temperature=0.08,
                 retain_weight=2.0, margin=0.1, inter_instance_negatives=True,
                 shared_target=False, negative_views=None,

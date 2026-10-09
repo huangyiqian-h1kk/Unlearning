@@ -133,6 +133,33 @@ def test_default_cli_includes_llama_ms_only_when_present(tmp_path, monkeypatch):
     assert manifest["completed_experiments"] == 3 and manifest["validated_checkpoints"] == 6
 
 
+def test_mixed_collection_includes_config_and_only_committed_coverage(tmp_path, monkeypatch):
+    base = tmp_path / "results/validated_v2/0390"
+    for name in c.DEFAULT_CAMPAIGNS:
+        campaign(base / name)
+    mixed = base / "conrep-mixed-grid-20261009"
+    root = campaign(mixed)
+    sample = {"identity": "first", "step": 10,
+              "counts": {"forget": [2, 1, 0], "retain": [1, 1, 1, 0]}}
+    checkpoint = root / "training/checkpoint-10"
+    write(checkpoint / "sampling_state.json", sample)
+    write(checkpoint / "COMPLETE.json", {"identity": "first", "step": 10,
+        "files": {"sampling_state.json": (checkpoint / "sampling_state.json").stat().st_size}})
+    # Uncommitted checkpoint and raw observations must not enter the coverage CSV.
+    write(root / "training/checkpoint-20/sampling_state.json", dict(sample, step=20))
+    write(root / "training/sampling/step-000011-micro-0.json", {"identity": "first", "step": 11})
+    output = tmp_path / "export"
+    monkeypatch.setattr(sys, "argv", [str(SCRIPT), "--root", str(tmp_path), "--output-dir", str(output)])
+    c.main()
+    manifest = json.loads((output / "manifest.json").read_text())
+    assert len(manifest["campaigns"]) == 3
+    assert manifest["sampling_coverage_rows"] == 2
+    coverage = rows(output / "sampling-coverage.csv")
+    assert all(row["step"] == "10" and row["committed"] == "True" for row in coverage)
+    assert coverage[1]["coverage"] == "0.75" and coverage[1]["draws"] == "3"
+    assert len(rows(output / "experiment-configurations.csv")) == 3
+
+
 def test_isolated_cli_can_include_verified_predictions(tmp_path):
     source = tmp_path / "source"
     campaign(source)

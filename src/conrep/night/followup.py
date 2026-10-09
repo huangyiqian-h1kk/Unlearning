@@ -4,6 +4,7 @@ import copy
 import csv
 import json
 from pathlib import Path
+import re
 import sys
 
 from . import campaign as c
@@ -11,7 +12,12 @@ from .io import read, write, file_sha, sha, training_identity
 from .positives import audit, fact_positive_audit, fact_fields
 
 NAME = "0390-conrep-followup-v1"
-PROFILES = ("original", "llama-ms")
+PROFILES = ("original", "llama-ms", "mixed-grid")
+# Seven new cells per rank; the eighth (B16/W5/P1) is historical J/M.
+# Start with the largest new batch/view shape so each Gemma worker's GPU
+# save/resume smoke exercises that shape before running full experiments.
+GRID_CELLS = ((32, 2, 4), (16, 2, 1), (32, 5, 1), (16, 5, 4),
+              (32, 2, 1), (16, 2, 4), (32, 5, 4))
 CHANGES = {
     "M": ("K", {"lora.r": 256, "lora.lora_alpha": 512}),
     "N": ("K", {"unlearn.learning_rate": 5e-6}),
@@ -26,6 +32,21 @@ CHANGES = {
 def specs(profile="original"):
     if profile not in PROFILES:
         raise ValueError(f"Unknown follow-up profile: {profile}")
+    if profile == "mixed-grid":
+        llama = specs("llama-ms")
+        result = []
+        for priority, cell in enumerate(GRID_CELLS):
+            result.append(dict(llama[priority], priority=priority, preferred_worker=0))
+            batch, weight, views = cell
+            for worker, rank in ((1, 64), (2, 256)):
+                variant = f"G{rank}B{batch}W{weight}P{views}"
+                result.append({"id": f"gemma2_9b-{variant}-s42", "model": "gemma2_9b",
+                    "variant": variant, "seed": 42, "priority": priority,
+                    "preferred_worker": worker, "late_admission": False,
+                    "stage": "exploration", "grid": {"rank": rank,
+                        "retain_batch": batch, "forget_weight": weight, "retain_views": views}})
+        result.extend(dict(task, priority=7) for task in llama[7:])
+        return result
     if profile == "llama-ms":
         # Admit every seed-42 setting before admitting the seed-43 repeats.
         # Worker preference is only a tie-breaker; all three share this pool.
@@ -51,6 +72,14 @@ def specs(profile="original"):
 
 
 def apply_variant(base, variant, seed, output):
+    grid = re.fullmatch(r"G(64|256)B(16|32|64)W(1|2|5)P(1|2|4|8)", variant)
+    if grid:
+        rank, batch, weight, views = map(int, grid.groups())
+        cfg = apply_variant(base, "J" if rank == 64 else "M", seed, output)
+        cfg["unlearn"]["batch_sizes"]["retain"] = batch
+        cfg["conrep"].update(forget_cl_weight=float(weight), specified_views=views,
+            specified_negative_views=1, specified_positive="dropout")
+        return cfg
     parent, overrides = CHANGES.get(variant, (variant, {}))
     cfg = c.apply_variant(base, parent, seed, output)
     for key, value in overrides.items():
@@ -152,6 +181,8 @@ def prepare(args):
             "gradient_tensors": 4, "gradient_max_tensor_numel": 2000000,
             "fixed_corruption_probability": 0.7, "fixed_corruption_views": 4,
             "seed": 39027, "max_length": cfg["conrep"]["max_length"]}
+        if profile == "mixed-grid":
+            diagnostics[model]["sampling_coverage"] = True
         bases[model] = cfg
     for name, expected in assets.items():
         stat = Path(name).stat()
@@ -167,6 +198,17 @@ def prepare(args):
     write(campaign / "inputs.json", inputs)
     write(campaign / "model-assets.json", assets)
     write(campaign / "positive-audit.json", audits)
+    controls = []
+    if profile == "mixed-grid":
+        from .grid import historical_controls
+        controls = historical_controls(origin, campaign, bases["gemma2_9b"])
+        for control in controls:
+            if not control["reuse"]:
+                variant = control["rerun_variant"]
+                matrix.append({"id": f"gemma2_9b-{variant}-s42", "model": "gemma2_9b",
+                    "variant": variant, "seed": 42, "priority": 0,
+                    "preferred_worker": 1 if control["rank"] == 64 else 2,
+                    "late_admission": False, "stage": "control"})
     tasks = []
     for spec in matrix:
         directory = campaign / "experiments" / spec["id"]
@@ -179,6 +221,14 @@ def prepare(args):
         write(path, cfg)
         tasks.append(dict(spec, config=str(path), config_hash=file_sha(path),
                           output=str(directory), identity=training_identity(cfg)))
+    if profile == "mixed-grid":
+        write(campaign / "grid-design.json", {"schema": "0390-retain-grid-v1",
+            "stage": "screening-seed42", "ranks": [64, 256], "forget_batch": 8,
+            "retain_batches": [16, 32], "general_batch": 32, "forget_weights": [2, 5],
+            "retain_views": [1, 4], "retain_negative_views": 1,
+            "retain_construction": "dropout", "historical_controls": controls,
+            "adaptive_expansion": "Not submitted: choose B64/P8/W1 after reviewing stage one",
+            "sampling_source_sha256": files["src/experiments/data.py"]})
     plan = {"schema": c.NAME, "project_root": str(root), "campaign": str(campaign),
         "python": sys.executable, "entry": str(frozen / c.ENTRY), "shell": str(frozen / c.SHELL),
         "controller_entry": str(frozen / c.ENTRY), "controller_shell": str(frozen / c.SHELL),
@@ -200,6 +250,8 @@ def prepare(args):
         "llama_runs": sum(t["model"] == "llama8b" for t in tasks),
         "gemma_replications": sum(t["model"] == "gemma2_9b" and t["stage"] == "completion-and-replication" for t in tasks),
         "gemma_explorations": sum(t["model"] == "gemma2_9b" and t["stage"] == "exploration" for t in tasks),
+        "gemma_control_reruns": sum(t["stage"] == "control" for t in tasks),
+        "historical_controls_reused": sum(t["reuse"] for t in controls),
         "workers": 3,
         "pbs_walltime": plan["walltime"], "budget_hours": args.hours,
         "diagnostics_every_steps": 25, "status": "prepared; no PBS submitted"}, indent=2))

@@ -1,5 +1,8 @@
 # ConRep follow-up: 27 experiments and sparse diagnostics
 
+The [mixed-grid campaign](conrep-mixed-grid.md) combines Llama M-S completion
+with the Gemma batch/weight/retain-positive grid under one three-job limit.
+
 The additional [Llama M-S campaign](conrep-llama-ms.md) uses the same variant
 definitions with seeds 42/43 through `--profile llama-ms`; the default profile
 below remains the original 27 runs.

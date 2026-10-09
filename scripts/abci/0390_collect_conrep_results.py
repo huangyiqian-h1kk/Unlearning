@@ -14,7 +14,7 @@ import zipfile
 
 
 DEFAULT_CAMPAIGNS = ("conrep-night-20261008", "conrep-followup-20261008")
-OPTIONAL_CAMPAIGNS = ("conrep-llama-ms-20261009",)
+OPTIONAL_CAMPAIGNS = ("conrep-llama-ms-20261009", "conrep-mixed-grid-20261009")
 INDEX = ["campaign", "experiment", "model", "variant", "seed"]
 
 
@@ -128,13 +128,14 @@ def collect(campaigns, output, *, include_predictions=False):
     bundle = output / (output.name + ".zip")
     temporary = bundle.with_suffix(".zip.incomplete")
     metrics, statuses, observations, gradients, counts = [], [], [], [], []
+    configurations, coverage = [], []
     with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         export = Export(archive)
         for campaign in campaigns:
             prefix = "raw/" + campaign.name
             plan = export.read(campaign / "plan.json", prefix + "/plan.json")
             state = export.read(campaign / "state.json", prefix + "/state.json")
-            for name in ("positive-audit.json", "fact-positive-audit.json", "inputs.json", "model-assets.json"):
+            for name in ("positive-audit.json", "fact-positive-audit.json", "inputs.json", "model-assets.json", "grid-design.json"):
                 path = campaign / name
                 if path.exists():
                     export.read(path, prefix + "/" + name)
@@ -160,6 +161,16 @@ def collect(campaigns, output, *, include_predictions=False):
                 if digest(config_data) != task["config_hash"]:
                     raise ValueError(f"Frozen config changed: {config_path}")
                 cfg = json.loads(config_data)
+                options = cfg.get("conrep", {})
+                configurations.append(dict(common,
+                    **flatten(cfg.get("unlearn", {}).get("batch_sizes", {}), "batch."),
+                    rank=cfg.get("lora", {}).get("r"), alpha=cfg.get("lora", {}).get("lora_alpha"),
+                    learning_rate=cfg.get("unlearn", {}).get("learning_rate"),
+                    forget_weight=options.get("forget_cl_weight", 1),
+                    forget_views=options.get("views"), retain_views=options.get("specified_views", 1),
+                    retain_negative_views=options.get("specified_negative_views", 1),
+                    retain_construction=options.get("specified_positive"),
+                    config_hash=task["config_hash"]))
                 task_root = Path(task["output"]).resolve()
                 if not task_root.is_relative_to(campaign):
                     raise ValueError(f"Task output is outside its campaign: {task_root}")
@@ -186,6 +197,44 @@ def collect(campaigns, output, *, include_predictions=False):
                         "checkpoint": report.get("checkpoint"), "state_status": record.get("status")})
                     valid.append(step)
                 training = task_root / "training"
+                for checkpoint in sorted(training.glob("checkpoint-*")):
+                    path = checkpoint / "sampling_state.json"
+                    if not path.is_file() or not (checkpoint / "COMPLETE.json").is_file():
+                        continue
+                    try:
+                        data = path.read_bytes()
+                        sample = json.loads(data)
+                        commit = json.loads((checkpoint / "COMPLETE.json").read_text())
+                        if (sample["identity"] != task["identity"] or commit["identity"] != task["identity"]
+                                or sample["step"] != commit["step"]
+                                or commit["files"].get("sampling_state.json") != len(data)):
+                            raise ValueError("Sampling checkpoint identity/commit mismatch")
+                        expected_groups = cfg.get("unlearn", {}).get("batch_sizes", {})
+                        if expected_groups and set(sample["counts"]) != set(expected_groups):
+                            raise ValueError("Sampling checkpoint groups mismatch")
+                        for group, values in sample["counts"].items():
+                            if not values or any(type(x) is not int or x < 0 for x in values):
+                                raise ValueError("Invalid sampling counts")
+                        for group, values in sample["counts"].items():
+                            unique = sum(x > 0 for x in values)
+                            coverage.append(dict(common, step=sample["step"], group=group,
+                                draws=sum(values), unique=unique, rows=len(values),
+                                coverage=unique / len(values), min_count=min(values), max_count=max(values),
+                                mean_count=sum(values) / len(values), committed=True))
+                        export.add(task_prefix + "/training/" + checkpoint.name + "/sampling_state.json", data, path)
+                        export.add(task_prefix + "/training/" + checkpoint.name + "/COMPLETE.json",
+                                   encode(commit), checkpoint / "COMPLETE.json")
+                    except (OSError, ValueError, KeyError, TypeError) as exc:
+                        export.warn(path, exc)
+                for path in sorted((training / "sampling").glob("step-*.json")):
+                    try:
+                        data = path.read_bytes()
+                        sample = json.loads(data)
+                        if sample["identity"] != task["identity"]:
+                            raise ValueError("Observed sampling identity mismatch")
+                        export.add(task_prefix + "/training/sampling/" + path.name, data, path)
+                    except (OSError, ValueError, KeyError, TypeError) as exc:
+                        export.warn(path, exc)
                 complete = False
                 marker = training / "TRAINING_COMPLETE.json"
                 if marker.exists():
@@ -244,6 +293,8 @@ def collect(campaigns, output, *, include_predictions=False):
         tables = {"all-validated-checkpoints.csv": (metrics, INDEX + ["step", "experiment_complete"]),
             "completed-experiment-results.csv": ([r for r in metrics if r["experiment_complete"]], INDEX + ["step"]),
             "experiment-status.csv": (statuses, INDEX + ["state_status", "experiment_complete"]),
+            "experiment-configurations.csv": (configurations, INDEX),
+            "sampling-coverage.csv": (coverage, INDEX + ["step", "group", "committed"]),
             "diagnostic-results.csv": (observations, INDEX + ["step"]),
             "gradient-diagnostics.csv": (gradients, INDEX + ["step", "microbatch"])}
         for name, (rows, leading) in tables.items():
@@ -254,6 +305,9 @@ def collect(campaigns, output, *, include_predictions=False):
             "all-validated-checkpoints.csv: every committed checkpoint, including partial experiments.\n"
             "completed-experiment-results.csv: all checkpoints of fully completed experiments.\n"
             "experiment-status.csv: every planned experiment and its missing checkpoint validations.\n"
+            "experiment-configurations.csv: batch sizes, rank, weights and positive-view definitions.\n"
+            "sampling-coverage.csv: actual counts saved with committed training checkpoints.\n"
+            "raw/**/training/sampling/: observed row indices; uncommitted/replayed draws may also appear.\n"
             "diagnostic-results.csv / gradient-diagnostics.csv: sparse training observations.\n"
             "raw/: captured plans, states, configs, committed metrics/markers and diagnostic records.\n\n"
             "Collection is read-only and spans started_at to finished_at; jobs may keep progressing.\n"
@@ -268,6 +322,7 @@ def collect(campaigns, output, *, include_predictions=False):
             "campaigns": counts, "validated_checkpoints": len(metrics),
             "completed_experiments": sum(x["experiment_complete"] for x in statuses),
             "diagnostic_rows": len(observations), "gradient_rows": len(gradients),
+            "sampling_coverage_rows": len(coverage),
             "include_predictions": include_predictions, "warnings": export.warnings,
             "collector_sha256": digest(Path(__file__).read_bytes()), "files": list(export.files)}
         data = encode(manifest)
