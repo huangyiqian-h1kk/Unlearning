@@ -1189,6 +1189,7 @@ def main(argv=None):
     p.add_argument("--hours", type=float, default=10)
     p.add_argument("--reserve-gb", type=float, default=100)
     p = commands.add_parser("prepare-followup")
+    p.add_argument("--profile", choices=("original", "llama-ms"), default="original")
     p.add_argument("--project-root", required=True)
     p.add_argument("--source-campaign", required=True)
     p.add_argument("--campaign", required=True)

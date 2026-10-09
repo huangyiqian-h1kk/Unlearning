@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only, stdlib-only export of both ConRep campaigns while jobs keep running."""
+"""Read-only, stdlib-only export of ConRep campaigns while jobs keep running."""
 
 import argparse
 from collections import Counter
@@ -14,6 +14,7 @@ import zipfile
 
 
 DEFAULT_CAMPAIGNS = ("conrep-night-20261008", "conrep-followup-20261008")
+OPTIONAL_CAMPAIGNS = ("conrep-llama-ms-20261009",)
 INDEX = ["campaign", "experiment", "model", "variant", "seed"]
 
 
@@ -279,13 +280,14 @@ def collect(campaigns, output, *, include_predictions=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
-    parser.add_argument("--campaign", type=Path, action="append", help="Repeat to override the two default campaigns")
+    parser.add_argument("--campaign", type=Path, action="append", help="Repeat to override the default campaigns, including Llama M-S when present")
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--include-predictions", action="store_true", help="Also copy verified per-example predictions")
     args = parser.parse_args()
     root = args.root.resolve()
     base = root / "results/validated_v2/0390"
-    campaigns = args.campaign or [base / name for name in DEFAULT_CAMPAIGNS]
+    campaigns = args.campaign or ([base / name for name in DEFAULT_CAMPAIGNS]
+        + [base / name for name in OPTIONAL_CAMPAIGNS if (base / name).exists()])
     campaigns = [p if p.is_absolute() else root / p for p in campaigns]
     stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     output = args.output_dir or base / "conrep-exports" / ("0390-conrep-results-" + stamp + "-" + uuid.uuid4().hex[:6])

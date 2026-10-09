@@ -1,4 +1,4 @@
-"""The approved 27-run continuation, built from the previous frozen campaign."""
+"""Follow-up matrices built from the previous frozen campaign."""
 
 import copy
 import csv
@@ -11,6 +11,7 @@ from .io import read, write, file_sha, sha, training_identity
 from .positives import audit, fact_positive_audit, fact_fields
 
 NAME = "0390-conrep-followup-v1"
+PROFILES = ("original", "llama-ms")
 CHANGES = {
     "M": ("K", {"lora.r": 256, "lora.lora_alpha": 512}),
     "N": ("K", {"unlearn.learning_rate": 5e-6}),
@@ -22,7 +23,18 @@ CHANGES = {
 }
 
 
-def specs():
+def specs(profile="original"):
+    if profile not in PROFILES:
+        raise ValueError(f"Unknown follow-up profile: {profile}")
+    if profile == "llama-ms":
+        # Admit every seed-42 setting before admitting the seed-43 repeats.
+        # Worker preference is only a tie-breaker; all three share this pool.
+        return [{"id": f"llama8b-{variant}-s{seed}", "model": "llama8b",
+                 "variant": variant, "seed": seed, "priority": priority,
+                 "preferred_worker": index % 3, "late_admission": True,
+                 "stage": "completion-and-replication"}
+                for priority, seed in enumerate((42, 43))
+                for index, variant in enumerate(CHANGES)]
     first = [("llama8b", "J", 42), ("llama8b", "K", 42), ("gemma2_9b", "K", 43)]
     next_rank = [("llama8b", "J", 43), ("llama8b", "K", 43),
                  ("gemma2_9b", "J", 43), ("gemma2_9b", "J", 44), ("gemma2_9b", "K", 44)]
@@ -74,6 +86,8 @@ def diagnostic_rows(rows, group, count):
 
 def prepare(args):
     from experiments.config import read_rows
+    profile = getattr(args, "profile", "original")
+    matrix = specs(profile)
     root, origin, campaign = (Path(p).resolve() for p in
                               (args.project_root, args.source_campaign, args.campaign))
     parent = read(origin / "plan.json")
@@ -81,13 +95,15 @@ def prepare(args):
         raise ValueError("Follow-up must be a new campaign under the same checkout")
     if (campaign / "plan.json").exists():
         existing = read(campaign / "plan.json")
-        if existing.get("followup", {}).get("ref") != args.ref:
-            raise ValueError("Existing follow-up uses another revision; preserve it")
+        if (existing.get("followup", {}).get("ref") != args.ref
+                or existing.get("followup", {}).get("profile", "original") != profile):
+            raise ValueError("Existing follow-up uses another revision/profile; preserve it")
         c.verify_snapshot(campaign, existing)
         print("Follow-up already prepared; no task/state reset and no PBS submitted.")
         return existing
     metadata = read(campaign / "PREPARING.json")
-    if metadata["ref"] != args.ref or metadata["source_campaign"] != str(origin):
+    if (metadata["ref"] != args.ref or metadata["source_campaign"] != str(origin)
+            or metadata.get("profile", "original") != profile):
         raise ValueError("Bootstrap provenance mismatch")
     # Bootstrap has checked the original immutable snapshot. Check inputs again
     # before deriving any configs; old trainers/evaluators are not reinstalled.
@@ -101,7 +117,7 @@ def prepare(args):
             raise ValueError(f"Parent input changed: {name}")
     assets = read(origin / "model-assets.json")
     bases, diagnostics, audits, qa_audits = {}, {}, {}, {}
-    for model in ("gemma2_9b", "llama8b"):
+    for model in sorted({task["model"] for task in matrix}):
         task = next(t for t in parent["tasks"] if t["model"] == model
                     and t["variant"] == "A" and t["seed"] == 42)
         if file_sha(task["config"]) != task["config_hash"]:
@@ -118,7 +134,7 @@ def prepare(args):
         audits[model] = audit(collections["retain"])
         if not audits[model]["eligible_rows"]:
             raise ValueError("Protected positives have zero coverage")
-        if model == "gemma2_9b":
+        if any(task["model"] == model and task["variant"] == "Q" for task in matrix):
             qa_audits[model] = fact_positive_audit(collections["retain"])
             write(campaign / "fact-positive-audit.json", qa_audits)
             if qa_audits[model]["unsupported_rows"] or not qa_audits[model]["eligible_rows"]:
@@ -152,7 +168,7 @@ def prepare(args):
     write(campaign / "model-assets.json", assets)
     write(campaign / "positive-audit.json", audits)
     tasks = []
-    for spec in specs():
+    for spec in matrix:
         directory = campaign / "experiments" / spec["id"]
         cfg = apply_variant(bases[spec["model"]], spec["variant"], spec["seed"], directory / "training")
         cfg["diagnostics"] = copy.deepcopy(diagnostics[spec["model"]])
@@ -171,15 +187,20 @@ def prepare(args):
         "max_attempts": 3, "recovery_policy": dict(c.RECOVERY_DEFAULTS),
         "source_hash": source_hash, "tasks": tasks, "initial_task_seconds": 3600,
         "reserve_bytes": int(args.reserve_gb * 10**9),
-        "followup": {"version": NAME, "ref": args.ref, "parent_campaign": str(origin),
-                     "parent_source_hash": source["source_hash"], "completion_runs": 20, "exploration_runs": 7}}
+        "followup": {"version": NAME, "ref": args.ref, "profile": profile,
+                     "parent_campaign": str(origin), "parent_source_hash": source["source_hash"],
+                     "completion_runs": sum(t["stage"] == "completion-and-replication" for t in tasks),
+                     "exploration_runs": sum(t["stage"] == "exploration" for t in tasks)}}
     write(campaign / "state.json", {"status": "prepared", "started_at": None, "deadline": None,
         "tasks": {t["id"]: {"status": "pending", "attempts": 0, "failures": 0} for t in tasks},
         "workers": {str(i): {"job_id": None, "status": "new", "allocations": 0,
                               "recovery_failures": 0} for i in range(3)}})
     write(campaign / "plan.json", plan)  # Publish only after every config/input is complete.
-    print(json.dumps({"campaign": str(campaign), "tasks": len(tasks), "llama_runs": 16,
-        "gemma_replications": 4, "gemma_explorations": 7, "workers": 3,
+    print(json.dumps({"campaign": str(campaign), "profile": profile, "tasks": len(tasks),
+        "llama_runs": sum(t["model"] == "llama8b" for t in tasks),
+        "gemma_replications": sum(t["model"] == "gemma2_9b" and t["stage"] == "completion-and-replication" for t in tasks),
+        "gemma_explorations": sum(t["model"] == "gemma2_9b" and t["stage"] == "exploration" for t in tasks),
+        "workers": 3,
         "pbs_walltime": plan["walltime"], "budget_hours": args.hours,
         "diagnostics_every_steps": 25, "status": "prepared; no PBS submitted"}, indent=2))
     return plan

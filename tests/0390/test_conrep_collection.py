@@ -116,6 +116,23 @@ def test_uncommitted_or_invalid_results_are_not_counted(tmp_path, defect):
     assert len(manifest["warnings"]) == 1
 
 
+def test_default_cli_includes_llama_ms_only_when_present(tmp_path, monkeypatch):
+    base = tmp_path / "results/validated_v2/0390"
+    for name in c.DEFAULT_CAMPAIGNS:
+        campaign(base / name)
+    first = tmp_path / "first-export"
+    monkeypatch.setattr(sys, "argv", [str(SCRIPT), "--root", str(tmp_path), "--output-dir", str(first)])
+    c.main()
+    assert len(json.loads((first / "manifest.json").read_text())["campaigns"]) == 2
+    campaign(base / "conrep-llama-ms-20261009")
+    second = tmp_path / "second-export"
+    monkeypatch.setattr(sys, "argv", [str(SCRIPT), "--root", str(tmp_path), "--output-dir", str(second)])
+    c.main()
+    manifest = json.loads((second / "manifest.json").read_text())
+    assert len(manifest["campaigns"]) == 3
+    assert manifest["completed_experiments"] == 3 and manifest["validated_checkpoints"] == 6
+
+
 def test_isolated_cli_can_include_verified_predictions(tmp_path):
     source = tmp_path / "source"
     campaign(source)

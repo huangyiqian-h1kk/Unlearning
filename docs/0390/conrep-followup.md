@@ -1,5 +1,9 @@
 # ConRep follow-up: 27 experiments and sparse diagnostics
 
+The additional [Llama M-S campaign](conrep-llama-ms.md) uses the same variant
+definitions with seeds 42/43 through `--profile llama-ms`; the default profile
+below remains the original 27 runs.
+
 This continues `conrep-night-20261008` in a separate campaign. It inherits that
 campaign's frozen SFT paths, prepared data, model helpers and full validation
 evaluator. The bootstrap copies its fingerprinted source and overlays the night

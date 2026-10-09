@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare the approved 27-run follow-up without overwriting the server checkout.
+"""Prepare a follow-up matrix without overwriting the server checkout.
 
 Extract this file from a fetched ref and run it with python -I. The previous
 campaign supplies the frozen model/data/evaluator helpers; only the additive
@@ -45,7 +45,9 @@ def write(path, value):
     os.replace(temp, path)
 
 
-def prepare(root, source, campaign, ref, *, hours=10, reserve_gb=100):
+def prepare(root, source, campaign, ref, *, hours=10, reserve_gb=100, profile="original"):
+    if profile not in ("original", "llama-ms"):
+        raise ValueError(f"Unknown follow-up profile: {profile}")
     root, source, campaign = (Path(p).resolve() for p in (root, source, campaign))
     if campaign == source or campaign.is_relative_to(source) or source.is_relative_to(campaign):
         raise ValueError("Source and follow-up campaigns must be separate, non-nested directories")
@@ -70,6 +72,8 @@ def prepare(root, source, campaign, ref, *, hours=10, reserve_gb=100):
     metadata = {"ref": commit, "source_campaign": str(source),
                 "parent_source_hash": parent["source_hash"],
                 "overlay_files": {name: hashlib.sha256(data).hexdigest() for name, data in payloads.items()}}
+    if profile != "original":
+        metadata["profile"] = profile
     campaign.mkdir(parents=True, exist_ok=True)
     with (campaign / "prepare.lock").open("a+") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -104,7 +108,8 @@ def prepare(root, source, campaign, ref, *, hours=10, reserve_gb=100):
         command = [sys.executable, "-I", str(code / ENTRY), "prepare-followup",
                    "--project-root", str(root), "--source-campaign", str(source),
                    "--campaign", str(campaign), "--ref", commit,
-                   "--hours", str(hours), "--reserve-gb", str(reserve_gb)]
+                   "--hours", str(hours), "--reserve-gb", str(reserve_gb),
+                   "--profile", profile]
         subprocess.run(command, cwd=root, check=True)
 
 
@@ -114,11 +119,12 @@ def main():
     parser.add_argument("--source-campaign", type=Path, required=True)
     parser.add_argument("--campaign", type=Path, required=True)
     parser.add_argument("--ref", required=True)
+    parser.add_argument("--profile", choices=("original", "llama-ms"), default="original")
     parser.add_argument("--hours", type=float, default=10)
     parser.add_argument("--reserve-gb", type=float, default=100)
     args = parser.parse_args()
     prepare(args.root, args.source_campaign, args.campaign, args.ref,
-            hours=args.hours, reserve_gb=args.reserve_gb)
+            hours=args.hours, reserve_gb=args.reserve_gb, profile=args.profile)
 
 
 if __name__ == "__main__":
