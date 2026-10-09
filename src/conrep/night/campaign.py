@@ -393,6 +393,13 @@ def train_command(plan, config, *, resume=None, deadline=None, stop_file=None, s
     return command
 
 
+def smoke_task(plan, worker_id):
+    task_id = plan.get("smoke_tasks", {}).get(str(worker_id))
+    if task_id is None:
+        return plan["tasks"][worker_id]
+    return next(t for t in plan["tasks"] if t["id"] == task_id)
+
+
 def gpu_smoke(campaign, plan, worker_id, deadline, interrupted):
     event(campaign, event="smoke-start", worker=worker_id,
           job_id=os.environ.get("PBS_JOBID"))
@@ -400,7 +407,8 @@ def gpu_smoke(campaign, plan, worker_id, deadline, interrupted):
     if not torch.cuda.is_available() or torch.cuda.device_count() < 8:
         raise RuntimeError("Each worker requires one allocated HF node with 8 visible GPUs")
     root = campaign / "smoke" / f"worker-{worker_id}-{os.environ.get('PBS_JOBID', 'local')}"
-    cfg = read(plan["tasks"][worker_id]["config"])
+    task = smoke_task(plan, worker_id)
+    cfg = read(task["config"])
     cfg["unlearn"].update(max_steps=2, save_steps=1)
     cfg["run"]["output_dir"] = str(root / "training")
     config = root / "config.json"
@@ -423,7 +431,8 @@ def gpu_smoke(campaign, plan, worker_id, deadline, interrupted):
                      pause_marker=root / "training/PAUSED.json")
     if code != 0 or not (root / "training/TRAINING_COMPLETE.json").exists():
         raise RuntimeError(f"GPU resume smoke failed: {code}")
-    write(root / "PASSED.json", {"world_size": 8, "resume_from_step": 1, "final_step": 2})
+    write(root / "PASSED.json", {"world_size": 8, "resume_from_step": 1, "final_step": 2,
+          "shape_task": task["id"], "config_hash": file_sha(config)})
     event(campaign, event="smoke-passed", worker=worker_id, path=str(root / "PASSED.json"))
 
 
@@ -1189,7 +1198,7 @@ def main(argv=None):
     p.add_argument("--hours", type=float, default=10)
     p.add_argument("--reserve-gb", type=float, default=100)
     p = commands.add_parser("prepare-followup")
-    p.add_argument("--profile", choices=("original", "llama-ms", "mixed-grid"), default="original")
+    p.add_argument("--profile", choices=("original", "llama-ms", "mixed-grid", "positive-grid"), default="original")
     p.add_argument("--project-root", required=True)
     p.add_argument("--source-campaign", required=True)
     p.add_argument("--campaign", required=True)

@@ -14,7 +14,7 @@ import zipfile
 
 
 DEFAULT_CAMPAIGNS = ("conrep-night-20261008", "conrep-followup-20261008")
-OPTIONAL_CAMPAIGNS = ("conrep-llama-ms-20261009", "conrep-mixed-grid-20261009")
+OPTIONAL_CAMPAIGNS = ("conrep-llama-ms-20261009", "conrep-mixed-grid-20261009", "conrep-positive-grid-20261010")
 INDEX = ["campaign", "experiment", "model", "variant", "seed"]
 
 
@@ -112,7 +112,7 @@ def validated_checkpoint(export, directory, task, cfg, include_predictions):
         return None
 
 
-def collect(campaigns, output, *, include_predictions=False):
+def collect(campaigns, output, *, include_predictions=None):
     campaigns = list(dict.fromkeys(Path(p).resolve() for p in campaigns))
     output = Path(output).resolve()
     if not campaigns or len({p.name for p in campaigns}) != len(campaigns):
@@ -128,19 +128,25 @@ def collect(campaigns, output, *, include_predictions=False):
     bundle = output / (output.name + ".zip")
     temporary = bundle.with_suffix(".zip.incomplete")
     metrics, statuses, observations, gradients, counts = [], [], [], [], []
-    configurations, coverage = [], []
+    configurations, coverage, augmentations, prediction_campaigns = [], [], [], []
     with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         export = Export(archive)
         for campaign in campaigns:
             prefix = "raw/" + campaign.name
             plan = export.read(campaign / "plan.json", prefix + "/plan.json")
             state = export.read(campaign / "state.json", prefix + "/state.json")
-            for name in ("positive-audit.json", "fact-positive-audit.json", "inputs.json", "model-assets.json", "grid-design.json"):
+            capture_predictions = (plan.get("followup", {}).get("profile") == "positive-grid"
+                                   if include_predictions is None else include_predictions)
+            if capture_predictions:
+                prediction_campaigns.append(campaign.name)
+            for name in ("positive-audit.json", "fact-positive-audit.json", "inputs.json", "model-assets.json", "grid-design.json", "retain-noise-audit.json", "positive-grid-design.json"):
                 path = campaign / name
                 if path.exists():
                     export.read(path, prefix + "/" + name)
             for path in sorted((campaign / "diagnostic-inputs").glob("*.json")):
                 export.read(path, prefix + "/diagnostic-inputs/" + path.name)
+            for path in sorted((campaign / "smoke").glob("*/PASSED.json")):
+                export.read(path, prefix + "/smoke/" + path.parent.name + "/PASSED.json")
             provenance = campaign / "source.json"
             if provenance.exists():
                 source = export.read(provenance)
@@ -167,8 +173,13 @@ def collect(campaigns, output, *, include_predictions=False):
                     rank=cfg.get("lora", {}).get("r"), alpha=cfg.get("lora", {}).get("lora_alpha"),
                     learning_rate=cfg.get("unlearn", {}).get("learning_rate"),
                     forget_weight=options.get("forget_cl_weight", 1),
+                    forget_corruption=options.get("corruption_rate"),
+                    forget_negative_views=options.get("negative_views", options.get("views")),
                     forget_views=options.get("views"), retain_views=options.get("specified_views", 1),
                     retain_negative_views=options.get("specified_negative_views", 1),
+                    retain_noise_probability=options.get("specified_noise_probability", 0),
+                    retain_noise_policy=options.get("specified_noise_policy", "none"),
+                    retain_negative_source=options.get("specified_negative_source", "legacy_positive_view"),
                     retain_construction=options.get("specified_positive"),
                     config_hash=task["config_hash"]))
                 task_root = Path(task["output"]).resolve()
@@ -183,7 +194,7 @@ def collect(campaigns, output, *, include_predictions=False):
                 record = state.get("tasks", {}).get(task["id"], {})
                 for step in expected:
                     directory = task_root / "validation" / f"checkpoint-{step}"
-                    found = validated_checkpoint(export, directory, task, cfg, include_predictions)
+                    found = validated_checkpoint(export, directory, task, cfg, capture_predictions)
                     if found is None:
                         continue
                     report, payloads = found
@@ -252,6 +263,11 @@ def collect(campaigns, output, *, include_predictions=False):
                             row = json.loads(line)
                             last_step = row.get("step", last_step)
                             lines.append(line)
+                            if "specified_positive_cosine" in row:
+                                fields = {k: v for k, v in row.items() if k.startswith("specified_")
+                                    or k in {"forget_positive_cosine", "step", "job_id", "resume_from"}}
+                                augmentations.append(dict(common, **fields, observation_index=len(lines),
+                                    observation_only=True))
                         except ValueError:
                             export.warn(log, "Skipped malformed training log record")
                     export.add(task_prefix + "/training/train.jsonl", b"".join(lines), log)
@@ -295,6 +311,7 @@ def collect(campaigns, output, *, include_predictions=False):
             "experiment-status.csv": (statuses, INDEX + ["state_status", "experiment_complete"]),
             "experiment-configurations.csv": (configurations, INDEX),
             "sampling-coverage.csv": (coverage, INDEX + ["step", "group", "committed"]),
+            "augmentation-diagnostics.csv": (augmentations, INDEX + ["step", "observation_index"]),
             "diagnostic-results.csv": (observations, INDEX + ["step"]),
             "gradient-diagnostics.csv": (gradients, INDEX + ["step", "microbatch"])}
         for name, (rows, leading) in tables.items():
@@ -307,6 +324,7 @@ def collect(campaigns, output, *, include_predictions=False):
             "experiment-status.csv: every planned experiment and its missing checkpoint validations.\n"
             "experiment-configurations.csv: batch sizes, rank, weights and positive-view definitions.\n"
             "sampling-coverage.csv: actual counts saved with committed training checkpoints.\n"
+            "augmentation-diagnostics.csv: per-step positive diversity and noise counts; observations may include replayed steps.\n"
             "raw/**/training/sampling/: observed row indices; uncommitted/replayed draws may also appear.\n"
             "diagnostic-results.csv / gradient-diagnostics.csv: sparse training observations.\n"
             "raw/: captured plans, states, configs, committed metrics/markers and diagnostic records.\n\n"
@@ -315,7 +333,7 @@ def collect(campaigns, output, *, include_predictions=False):
             "Source campaign, config identity and validation protocol are preserved per row.\n"
             "No seed averaging, checkpoint selection, test evaluation, or baseline recomputation occurs.\n"
             "Diagnostic gradients cover sampled LoRA matrices, not the full model.\n"
-            "Prediction files included: " + str(include_predictions) + ". No model/optimizer weights included.\n")
+            "Prediction campaigns: " + ", ".join(prediction_campaigns) + ". No model/optimizer weights included.\n")
         (output / "README.txt").write_text(readme)
         export.add("README.txt", readme.encode())
         manifest = {"schema": "0390-conrep-results-snapshot-v1", "started_at": started, "finished_at": now(),
@@ -323,7 +341,8 @@ def collect(campaigns, output, *, include_predictions=False):
             "completed_experiments": sum(x["experiment_complete"] for x in statuses),
             "diagnostic_rows": len(observations), "gradient_rows": len(gradients),
             "sampling_coverage_rows": len(coverage),
-            "include_predictions": include_predictions, "warnings": export.warnings,
+            "include_predictions": bool(prediction_campaigns), "prediction_campaigns": prediction_campaigns,
+            "warnings": export.warnings,
             "collector_sha256": digest(Path(__file__).read_bytes()), "files": list(export.files)}
         data = encode(manifest)
         (output / "manifest.json").write_bytes(data)
@@ -337,7 +356,8 @@ def main():
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--campaign", type=Path, action="append", help="Repeat to override the default campaigns, including Llama M-S when present")
     parser.add_argument("--output-dir", type=Path)
-    parser.add_argument("--include-predictions", action="store_true", help="Also copy verified per-example predictions")
+    parser.add_argument("--include-predictions", action=argparse.BooleanOptionalAction, default=None,
+        help="Copy verified predictions; default includes them for positive-grid campaigns")
     args = parser.parse_args()
     root = args.root.resolve()
     base = root / "results/validated_v2/0390"

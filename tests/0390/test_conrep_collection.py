@@ -65,6 +65,38 @@ def snapshot(path):
     return {str(p.relative_to(path)): p.read_bytes() for p in path.rglob("*") if p.is_file()}
 
 
+def test_positive_grid_exports_noise_fields_audit_and_predictions_by_default(tmp_path):
+    source = tmp_path / "positive"
+    root = campaign(source)
+    plan = json.loads((source / "plan.json").read_text())
+    plan["followup"] = {"profile": "positive-grid"}
+    task = plan["tasks"][0]
+    config = Path(task["config"])
+    cfg = json.loads(config.read_text())
+    cfg["conrep"] = {"corruption_rate": .7, "views": 4, "negative_views": 4,
+        "specified_views": 4, "specified_negative_views": 1, "specified_noise_probability": .2,
+        "specified_noise_policy": "training-fact-offset-protection-v1", "specified_negative_source": "clean_dropout"}
+    write(config, cfg)
+    task["config_hash"] = c.digest(config.read_bytes())
+    write(source / "plan.json", plan)
+    write(source / "retain-noise-audit.json", {"gemma2_9b": {"eligible_rows": 900}})
+    write(source / "positive-grid-design.json", {"historical_controls": ["fixture"]})
+    (root / "training/train.jsonl").write_text(json.dumps({"step": 10,
+        "specified_positive_cosine": .99, "specified_noise_replaced_tokens": 7,
+        "specified_noise_eligible_opportunities": 200}) + "\n")
+    output = tmp_path / "export"
+    manifest, bundle = c.collect([source], output)
+    assert manifest["include_predictions"] and manifest["prediction_campaigns"] == ["positive"]
+    config_row = rows(output / "experiment-configurations.csv")[0]
+    assert config_row["retain_noise_probability"] == "0.2"
+    assert config_row["forget_negative_views"] == "4" and config_row["retain_negative_source"] == "clean_dropout"
+    assert rows(output / "augmentation-diagnostics.csv")[0]["specified_noise_replaced_tokens"] == "7"
+    with zipfile.ZipFile(bundle) as archive:
+        assert len([name for name in archive.namelist() if name.endswith("predictions.jsonl")]) == 4
+        assert "raw/positive/retain-noise-audit.json" in archive.namelist()
+        assert "raw/positive/positive-grid-design.json" in archive.namelist()
+
+
 def test_running_snapshot_merges_campaigns_without_changing_sources(tmp_path):
     first, second = tmp_path / "night", tmp_path / "followup"
     campaign(first)

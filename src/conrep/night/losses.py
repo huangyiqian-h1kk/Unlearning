@@ -5,6 +5,28 @@ import torch
 from conrep.v2.losses import multi_positive
 
 
+def retain_noise_loss(anchor, positives, clean_negative, forget, *, temperature=0.1):
+    """No noisy positive is ever another anchor's negative; average over K.
+
+    Each anchor has exactly 2*(R-1)+F negatives: the other clean anchors,
+    one independently encoded clean dropout view each, and forget anchors.
+    The own clean dropout view is excluded. All branches receive gradients.
+    """
+    k, n, dim = positives.shape
+    if k < 1 or anchor.shape != (n, dim) or clean_negative.shape != anchor.shape:
+        raise ValueError("Expected [K,R,D] positives and one [R,D] clean negative bank")
+    targets = torch.cat([anchor, clean_negative, positives.reshape(-1, dim), forget])
+    positive = torch.zeros(n, len(targets), device=anchor.device, dtype=torch.bool)
+    index = torch.arange(n, device=anchor.device)
+    for view in range(k):
+        positive[index, (2 + view) * n + index] = True
+    allowed = torch.ones_like(positive)
+    allowed[index, index] = False
+    allowed[index, n + index] = False
+    allowed[:, 2*n:(2+k)*n] = positive[:, 2*n:(2+k)*n]
+    return multi_positive(anchor, targets, positive, allowed, temperature)
+
+
 def retain_loss(anchor, positives, forget=None, *, temperature=0.1, negative_views=1):
     """Average per-positive InfoNCE with a fixed other-anchor view budget.
 

@@ -23,14 +23,47 @@ from experiments.runtime import initialize, sync_gradients, barrier, local_batch
 from conrep.v2.model import embed, load_model, load_tokenizer, text_batch
 from conrep.v2.corruption import corrupt, safe_token_ids
 from conrep.v2.losses import gather, paired_loss
-from .losses import forget_loss, retain_loss
+from .losses import forget_loss, retain_loss, retain_noise_loss
 from .positives import make_positive, fact_positive_candidates
 from .io import complete_checkpoint, read, write, training_identity
+
+
+def noisy_retain(model, tokenizer, rows, encoded, anchor, forget, options, generator):
+    from .noise import POLICY, eligible_mask, noise_metrics
+    k = options.get("specified_views", 1)
+    if (type(k) is not int or k < 1 or options.get("specified_negative_views", 1) != 1
+            or options.get("specified_positive") != "dropout"
+            or options.get("protected_positive", False)
+            or options.get("specified_noise_policy") != POLICY
+            or options.get("specified_negative_source") != "clean_dropout"):
+        raise ValueError("Retain noise requires audited dropout positives and a separate clean negative bank")
+    batch, pool_mask = encoded
+    eligible = eligible_mask(tokenizer, rows, batch, pool_mask, options["max_length"])
+    ids = corrupt(batch["input_ids"], eligible,
+        safe_token_ids(tokenizer, model.get_input_embeddings().num_embeddings),
+        views=k, probability=options["specified_noise_probability"], generator=generator)
+    clean_negative = gather(embed(model, batch, pool_mask))
+    positives = torch.stack([gather(embed(model, dict(batch, input_ids=view), pool_mask)) for view in ids])
+    value = retain_noise_loss(anchor, positives, clean_negative, forget,
+                              temperature=options["temperature_retain"])
+    metrics = noise_metrics(batch["input_ids"], ids, eligible, pool_mask)
+    metrics.update(specified_cl=value,
+        specified_positive_cosine=(anchor[None] * positives).sum(-1).mean().detach(),
+        specified_views=value.detach().new_tensor(k),
+        specified_negatives_per_anchor=value.detach().new_tensor(2 * (len(anchor) - 1) + len(forget)))
+    if k > 1:
+        p = positives.detach().float()
+        metrics["specified_view_pair_cosine"] = ((p.sum(0).square().sum(-1)
+            - p.square().sum((0, 2))) / (k * (k - 1))).mean()
+    return value, metrics
 
 
 def losses(model, tokenizer, groups, cfg, corruption_rng, positive_rng):
     device = next(model.parameters()).device
     options = cfg["conrep"]
+    noise_probability = options.get("specified_noise_probability", 0.0)
+    if not 0 <= noise_probability <= 1:
+        raise ValueError("specified_noise_probability must be in [0,1]")
     encoded = {name: text_batch(tokenizer, [row["text"] for row in rows],
                                 options["max_length"], device)
                for name, rows in groups.items()}
@@ -55,7 +88,12 @@ def losses(model, tokenizer, groups, cfg, corruption_rng, positive_rng):
                         stop_gradient_retain=options.get("stop_gradient_retain", False))
     total = options.get("forget_cl_weight", 1.0) * loss_f
     metrics = {"forget_cl": loss_f, "forget_positive_cosine": (f[None] * c).sum(-1).mean().detach()}
-    if options["specified_cl_weight"]:
+    if options["specified_cl_weight"] and noise_probability > 0:
+        value, noise_metrics = noisy_retain(model, tokenizer, groups["retain"],
+            encoded["retain"], r, f, options, positive_rng)
+        metrics.update(noise_metrics)
+        total = total + options["specified_cl_weight"] * value
+    elif options["specified_cl_weight"]:
         count_views = options.get("specified_views", 1)
         negative_views = options.get("specified_negative_views", 1)
         if (type(count_views) is not int or type(negative_views) is not int

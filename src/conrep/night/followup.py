@@ -12,7 +12,7 @@ from .io import read, write, file_sha, sha, training_identity
 from .positives import audit, fact_positive_audit, fact_fields
 
 NAME = "0390-conrep-followup-v1"
-PROFILES = ("original", "llama-ms", "mixed-grid")
+PROFILES = ("original", "llama-ms", "mixed-grid", "positive-grid")
 # Seven new cells per rank; the eighth (B16/W5/P1) is historical J/M.
 # Start with the largest new batch/view shape so each Gemma worker's GPU
 # save/resume smoke exercises that shape before running full experiments.
@@ -32,6 +32,9 @@ CHANGES = {
 def specs(profile="original"):
     if profile not in PROFILES:
         raise ValueError(f"Unknown follow-up profile: {profile}")
+    if profile == "positive-grid":
+        from .positive_grid import specs as positive_specs
+        return positive_specs()
     if profile == "mixed-grid":
         llama = specs("llama-ms")
         result = []
@@ -114,6 +117,9 @@ def diagnostic_rows(rows, group, count):
 
 
 def prepare(args):
+    if getattr(args, "profile", "original") == "positive-grid":
+        from .positive_grid import prepare as prepare_positive
+        return prepare_positive(args)
     from experiments.config import read_rows
     profile = getattr(args, "profile", "original")
     matrix = specs(profile)
