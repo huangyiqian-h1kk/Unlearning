@@ -88,8 +88,9 @@ def test_low_dose_count_distribution_and_fail_closed_boundaries():
 
 
 @pytest.mark.parametrize("views,mode", [(2, "fixed1"), (3, "fixed2"), (4, "binomial2p20")])
-def test_gemma_insertion_training_resume_restores_weights_rng_and_sampling(tmp_path, views, mode):
-    cfg = helpers.noisy_tiny(tmp_path, "gemma")
+@pytest.mark.parametrize("family", ["gemma", "llama"])
+def test_insertion_training_resume_restores_weights_rng_and_sampling(tmp_path, views, mode, family):
+    cfg = helpers.noisy_tiny(tmp_path, family)
     cfg["conrep"].update(views=4, specified_views=views, specified_noise_probability=0.,
         specified_noise_kind="insertion", specified_noise_policy=POLICY, specified_insertion_mode=mode)
     cfg["run"]["output_dir"] = str(tmp_path / "full")

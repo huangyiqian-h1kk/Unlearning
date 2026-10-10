@@ -12,7 +12,7 @@ from .io import read, write, file_sha, sha, training_identity
 from .positives import audit, fact_positive_audit, fact_fields
 
 NAME = "0390-conrep-followup-v1"
-PROFILES = ("original", "llama-ms", "mixed-grid", "positive-grid", "insertion-grid")
+PROFILES = ("original", "llama-ms", "mixed-grid", "positive-grid", "insertion-grid", "llama-positive-completion")
 # Seven new cells per rank; the eighth (B16/W5/P1) is historical J/M.
 # Start with the largest new batch/view shape so each Gemma worker's GPU
 # save/resume smoke exercises that shape before running full experiments.
@@ -32,6 +32,9 @@ CHANGES = {
 def specs(profile="original"):
     if profile not in PROFILES:
         raise ValueError(f"Unknown follow-up profile: {profile}")
+    if profile == "llama-positive-completion":
+        from .llama_positive_completion import specs as completion_specs
+        return completion_specs()
     if profile == "insertion-grid":
         from .insertion_grid import specs as insertion_specs
         return insertion_specs()
@@ -120,6 +123,9 @@ def diagnostic_rows(rows, group, count):
 
 
 def prepare(args):
+    if getattr(args, "profile", "original") == "llama-positive-completion":
+        from .llama_positive_completion import prepare as prepare_completion
+        return prepare_completion(args)
     if getattr(args, "profile", "original") == "insertion-grid":
         from .insertion_grid import prepare as prepare_insertion
         return prepare_insertion(args)

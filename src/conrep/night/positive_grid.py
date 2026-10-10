@@ -98,7 +98,7 @@ def check_base(cfg, model):
         raise ValueError(f"Expected fixed seed42 SFT/data and full v5 validation: {model}")
 
 
-def historical_controls(origin, root):
+def historical_controls(origin, root, *, controls=CONTROLS):
     """Search only the supplied campaign, its ancestry, and the known follow-up."""
     locations, current = [], origin
     while current not in locations:
@@ -115,7 +115,7 @@ def historical_controls(origin, root):
             if n.startswith("src/") and not n.startswith("src/conrep/night/")}
     parent_inputs = read(origin / "inputs.json")
     records, configs = [], {}
-    for model, variant in CONTROLS:
+    for model, variant in controls:
         found = None
         for location in locations:
             plan = read(location / "plan.json")
@@ -174,7 +174,7 @@ def historical_controls(origin, root):
     bases = {"gemma2_9b": configs["gemma2_9b", "G256B32W2P1"], "llama8b": configs["llama8b", "M"]}
     for model, base in bases.items():
         check_base(base, model)
-    for model, variant in CONTROLS:
+    for model, variant in controls:
         if variant == "J":
             control = spec(model, 64, 16, 5, 1)
         elif variant == "M":

@@ -20,7 +20,7 @@ import uuid
 ENTRY = "scripts/abci/0390_conrep_night.py"
 OVERLAY = [ENTRY, "scripts/abci/0390_conrep_night_worker.sh"] + [
     f"src/conrep/night/{name}.py" for name in
-    ("__init__", "campaign", "trainer", "io", "losses", "positives", "followup", "diagnostics", "grid", "sampling", "noise", "positive_grid", "insertion", "insertion_grid", "chain")]
+    ("__init__", "campaign", "trainer", "io", "losses", "positives", "followup", "diagnostics", "grid", "sampling", "noise", "positive_grid", "insertion", "insertion_grid", "chain", "llama_positive_completion")]
 
 
 def read(path):
@@ -46,7 +46,7 @@ def write(path, value):
 
 
 def prepare(root, source, campaign, ref, *, hours=10, reserve_gb=100, profile="original"):
-    if profile not in ("original", "llama-ms", "mixed-grid", "positive-grid", "insertion-grid"):
+    if profile not in ("original", "llama-ms", "mixed-grid", "positive-grid", "insertion-grid", "llama-positive-completion"):
         raise ValueError(f"Unknown follow-up profile: {profile}")
     root, source, campaign = (Path(p).resolve() for p in (root, source, campaign))
     if campaign == source or campaign.is_relative_to(source) or source.is_relative_to(campaign):
@@ -119,7 +119,7 @@ def main():
     parser.add_argument("--source-campaign", type=Path, required=True)
     parser.add_argument("--campaign", type=Path, required=True)
     parser.add_argument("--ref", required=True)
-    parser.add_argument("--profile", choices=("original", "llama-ms", "mixed-grid", "positive-grid", "insertion-grid"), default="original")
+    parser.add_argument("--profile", choices=("original", "llama-ms", "mixed-grid", "positive-grid", "insertion-grid", "llama-positive-completion"), default="original")
     parser.add_argument("--hours", type=float, default=10)
     parser.add_argument("--reserve-gb", type=float, default=100)
     args = parser.parse_args()

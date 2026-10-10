@@ -125,11 +125,13 @@ def test_running_snapshot_merges_campaigns_without_changing_sources(tmp_path):
             assert c.digest(archive.read(item["path"])) == item["sha256"]
 
 
-def test_insertion_export_preserves_mode_audit_handoff_and_stays_light(tmp_path):
+@pytest.mark.parametrize("profile,design", [("insertion-grid", "insertion-grid-design.json"),
+    ("llama-positive-completion", "llama-positive-completion-design.json")])
+def test_insertion_export_preserves_mode_audit_handoff_and_stays_light(tmp_path, profile, design):
     source = tmp_path / "insertion"
     root = campaign(source)
     plan = json.loads((source / "plan.json").read_text())
-    plan["followup"] = {"profile": "insertion-grid"}
+    plan["followup"] = {"profile": profile}
     task = plan["tasks"][0]
     config = Path(task["config"])
     cfg = json.loads(config.read_text())
@@ -138,7 +140,7 @@ def test_insertion_export_preserves_mode_audit_handoff_and_stays_light(tmp_path)
     write(config, cfg)
     task["config_hash"] = c.digest(config.read_bytes())
     write(source / "plan.json", plan)
-    for name in ("retain-insertion-audit.json", "insertion-grid-design.json", "handoff.json", "handoff-state.json"):
+    for name in ("retain-insertion-audit.json", design, "handoff.json", "handoff-state.json"):
         write(source / name, {"fixture": True})
     output = tmp_path / "export"
     manifest, bundle = c.collect([source], output, include_predictions=False)
@@ -148,6 +150,7 @@ def test_insertion_export_preserves_mode_audit_handoff_and_stays_light(tmp_path)
     assert row["retain_views"] == "3"
     with zipfile.ZipFile(bundle) as archive:
         assert "raw/insertion/retain-insertion-audit.json" in archive.namelist()
+        assert "raw/insertion/" + design in archive.namelist()
         assert "raw/insertion/handoff-state.json" in archive.namelist()
         assert not any(n.endswith("predictions.jsonl") for n in archive.namelist())
 
