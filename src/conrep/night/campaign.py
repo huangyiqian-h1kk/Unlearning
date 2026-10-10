@@ -1066,6 +1066,9 @@ def start(args, *, resume=False):
     if resume and plan.get("recovery_policy"):
         reconcile(campaign, plan, active_jobs(qstat(), getpass.getuser()), reassess=True)
     state = read(campaign / "state.json")
+    if plan.get("start_after_campaign") and state["started_at"] is None:
+        from .chain import require_parent_ready
+        require_parent_ready(plan)
     if state["workers"] and all(w["status"] in BLOCKED_WORKER_STATES
                                  for w in state["workers"].values()):
         reasons = {key: {field: w.get(field) for field in (
@@ -1149,6 +1152,8 @@ def recover(args):
     campaign = Path(args.campaign).resolve()
     plan = read(campaign / "plan.json")
     verify_snapshot(campaign, plan)
+    if plan.get("start_after_campaign") and read(campaign / "state.json")["started_at"] is None:
+        raise ValueError("Successor has not started; use chain to arm it without consuming the budget")
     hours = getattr(args, "hours", None)
     requeue_jobs = getattr(args, "requeue_jobs", None) or []
     if hours is not None and hours <= 0:
@@ -1198,7 +1203,7 @@ def main(argv=None):
     p.add_argument("--hours", type=float, default=10)
     p.add_argument("--reserve-gb", type=float, default=100)
     p = commands.add_parser("prepare-followup")
-    p.add_argument("--profile", choices=("original", "llama-ms", "mixed-grid", "positive-grid"), default="original")
+    p.add_argument("--profile", choices=("original", "llama-ms", "mixed-grid", "positive-grid", "insertion-grid"), default="original")
     p.add_argument("--project-root", required=True)
     p.add_argument("--source-campaign", required=True)
     p.add_argument("--campaign", required=True)
@@ -1217,6 +1222,9 @@ def main(argv=None):
             p.add_argument("--worker", type=int, choices=range(MAX_NODES), required=True)
         if name == "stop":
             p.add_argument("--cancel-jobs", action="store_true")
+    for name in ("chain", "chain-watch", "chain-status", "chain-stop"):
+        p = commands.add_parser(name)
+        p.add_argument("--campaign", required=True)
     p = commands.add_parser("train")
     p.add_argument("--config", required=True)
     p.add_argument("--resume")
@@ -1228,6 +1236,18 @@ def main(argv=None):
     p.add_argument("--checkpoint", required=True)
     p.add_argument("--output", required=True)
     args = parser.parse_args(argv)
+    if args.command.startswith("chain"):
+        from . import chain
+        if args.command == "chain":
+            return chain.arm(args)
+        if args.command == "chain-watch":
+            return chain.watch(args)
+        if args.command == "chain-status":
+            chain.status(args)
+            return 0
+        (Path(args.campaign) / "HANDOFF_STOP").touch()
+        print("Handoff stop requested; no PBS jobs cancelled.")
+        return 0
     if args.command == "prepare-followup":
         if args.hours <= 0 or args.reserve_gb < 0:
             parser.error("hours must be positive and reserve-gb nonnegative")

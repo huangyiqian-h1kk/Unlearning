@@ -125,6 +125,33 @@ def test_running_snapshot_merges_campaigns_without_changing_sources(tmp_path):
             assert c.digest(archive.read(item["path"])) == item["sha256"]
 
 
+def test_insertion_export_preserves_mode_audit_handoff_and_stays_light(tmp_path):
+    source = tmp_path / "insertion"
+    root = campaign(source)
+    plan = json.loads((source / "plan.json").read_text())
+    plan["followup"] = {"profile": "insertion-grid"}
+    task = plan["tasks"][0]
+    config = Path(task["config"])
+    cfg = json.loads(config.read_text())
+    cfg["conrep"] = {"specified_views": 3, "specified_noise_kind": "insertion",
+        "specified_noise_probability": 0., "specified_insertion_mode": "fixed2"}
+    write(config, cfg)
+    task["config_hash"] = c.digest(config.read_bytes())
+    write(source / "plan.json", plan)
+    for name in ("retain-insertion-audit.json", "insertion-grid-design.json", "handoff.json", "handoff-state.json"):
+        write(source / name, {"fixture": True})
+    output = tmp_path / "export"
+    manifest, bundle = c.collect([source], output, include_predictions=False)
+    assert not manifest["include_predictions"] and not manifest["warnings"]
+    row = rows(output / "experiment-configurations.csv")[0]
+    assert row["retain_noise_kind"] == "insertion" and row["retain_insertion_mode"] == "fixed2"
+    assert row["retain_views"] == "3"
+    with zipfile.ZipFile(bundle) as archive:
+        assert "raw/insertion/retain-insertion-audit.json" in archive.namelist()
+        assert "raw/insertion/handoff-state.json" in archive.namelist()
+        assert not any(n.endswith("predictions.jsonl") for n in archive.namelist())
+
+
 @pytest.mark.parametrize("defect", ["metrics", "identity", "prediction_size", "missing_mmlu", "protocol"])
 def test_uncommitted_or_invalid_results_are_not_counted(tmp_path, defect):
     source = tmp_path / "source"

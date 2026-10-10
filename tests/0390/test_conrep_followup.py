@@ -110,6 +110,12 @@ def configured(tmp_path, family="llama", mode="default"):
         cfg["conrep"]["stop_gradient_controls"] = True
     elif mode == "S":
         cfg["conrep"]["stop_gradient_retain"] = True
+    elif mode == "insertion":
+        from conrep.night.insertion import POLICY
+        cfg["conrep"].update(specified_views=3, specified_negative_views=1,
+            specified_noise_kind="insertion", specified_noise_probability=0.,
+            specified_noise_policy=POLICY, specified_insertion_mode="binomial2p20",
+            specified_negative_source="clean_dropout")
     probe_rows = []
     for group, offset in (("forget", 0), ("retain", 4), ("general", 8)):
         rows = [{"id": f"{group}:{i}", "text": f"The condition of patient P{i + offset} is asthma .",
@@ -137,7 +143,7 @@ def identical(a, b):
 
 
 @pytest.mark.parametrize("family", ["llama", "gemma"])
-@pytest.mark.parametrize("mode", ["default", "Q", "R", "S"])
+@pytest.mark.parametrize("mode", ["default", "Q", "R", "S", "insertion"])
 def test_diagnostics_do_not_change_training_and_resume_is_exact(tmp_path, family, mode):
     cfg = configured(tmp_path, family, mode)
     disabled = copy.deepcopy(cfg)

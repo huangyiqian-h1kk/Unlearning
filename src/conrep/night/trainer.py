@@ -30,23 +30,33 @@ from .io import complete_checkpoint, read, write, training_identity
 
 def noisy_retain(model, tokenizer, rows, encoded, anchor, forget, options, generator):
     from .noise import POLICY, eligible_mask, noise_metrics
+    from .insertion import POLICY as INSERTION_POLICY, insertion_views
     k = options.get("specified_views", 1)
+    insertion = options.get("specified_noise_kind", "replacement") == "insertion"
     if (type(k) is not int or k < 1 or options.get("specified_negative_views", 1) != 1
             or options.get("specified_positive") != "dropout"
             or options.get("protected_positive", False)
-            or options.get("specified_noise_policy") != POLICY
+            or options.get("specified_noise_policy") != (INSERTION_POLICY if insertion else POLICY)
             or options.get("specified_negative_source") != "clean_dropout"):
         raise ValueError("Retain noise requires audited dropout positives and a separate clean negative bank")
     batch, pool_mask = encoded
-    eligible = eligible_mask(tokenizer, rows, batch, pool_mask, options["max_length"])
-    ids = corrupt(batch["input_ids"], eligible,
-        safe_token_ids(tokenizer, model.get_input_embeddings().num_embeddings),
-        views=k, probability=options["specified_noise_probability"], generator=generator)
+    vocabulary = safe_token_ids(tokenizer, model.get_input_embeddings().num_embeddings)
+    if insertion:
+        if options.get("specified_noise_probability", 0):
+            raise ValueError("Insertion cannot also enable replacement")
+        encoded_views, metrics, _ = insertion_views(tokenizer, rows, batch, pool_mask, vocabulary,
+            views=k, mode=options["specified_insertion_mode"], max_length=options["max_length"], generator=generator)
+    else:
+        eligible = eligible_mask(tokenizer, rows, batch, pool_mask, options["max_length"])
+        ids = corrupt(batch["input_ids"], eligible, vocabulary,
+            views=k, probability=options["specified_noise_probability"], generator=generator)
+        encoded_views = [(dict(batch, input_ids=view), pool_mask) for view in ids]
     clean_negative = gather(embed(model, batch, pool_mask))
-    positives = torch.stack([gather(embed(model, dict(batch, input_ids=view), pool_mask)) for view in ids])
+    positives = torch.stack([gather(embed(model, view, mask)) for view, mask in encoded_views])
     value = retain_noise_loss(anchor, positives, clean_negative, forget,
                               temperature=options["temperature_retain"])
-    metrics = noise_metrics(batch["input_ids"], ids, eligible, pool_mask)
+    if not insertion:
+        metrics = noise_metrics(batch["input_ids"], ids, eligible, pool_mask)
     metrics.update(specified_cl=value,
         specified_positive_cosine=(anchor[None] * positives).sum(-1).mean().detach(),
         specified_views=value.detach().new_tensor(k),
@@ -62,6 +72,9 @@ def losses(model, tokenizer, groups, cfg, corruption_rng, positive_rng):
     device = next(model.parameters()).device
     options = cfg["conrep"]
     noise_probability = options.get("specified_noise_probability", 0.0)
+    noise_kind = options.get("specified_noise_kind", "replacement")
+    if noise_kind not in ("replacement", "insertion"):
+        raise ValueError("Unknown specified_noise_kind")
     if not 0 <= noise_probability <= 1:
         raise ValueError("specified_noise_probability must be in [0,1]")
     encoded = {name: text_batch(tokenizer, [row["text"] for row in rows],
@@ -88,7 +101,7 @@ def losses(model, tokenizer, groups, cfg, corruption_rng, positive_rng):
                         stop_gradient_retain=options.get("stop_gradient_retain", False))
     total = options.get("forget_cl_weight", 1.0) * loss_f
     metrics = {"forget_cl": loss_f, "forget_positive_cosine": (f[None] * c).sum(-1).mean().detach()}
-    if options["specified_cl_weight"] and noise_probability > 0:
+    if options["specified_cl_weight"] and (noise_probability > 0 or noise_kind == "insertion"):
         value, noise_metrics = noisy_retain(model, tokenizer, groups["retain"],
             encoded["retain"], r, f, options, positive_rng)
         metrics.update(noise_metrics)

@@ -14,7 +14,7 @@ import zipfile
 
 
 DEFAULT_CAMPAIGNS = ("conrep-night-20261008", "conrep-followup-20261008")
-OPTIONAL_CAMPAIGNS = ("conrep-llama-ms-20261009", "conrep-mixed-grid-20261009", "conrep-positive-grid-20261010")
+OPTIONAL_CAMPAIGNS = ("conrep-llama-ms-20261009", "conrep-mixed-grid-20261009", "conrep-positive-grid-20261010", "conrep-insertion-grid-20261010")
 INDEX = ["campaign", "experiment", "model", "variant", "seed"]
 
 
@@ -139,7 +139,7 @@ def collect(campaigns, output, *, include_predictions=None):
                                    if include_predictions is None else include_predictions)
             if capture_predictions:
                 prediction_campaigns.append(campaign.name)
-            for name in ("positive-audit.json", "fact-positive-audit.json", "inputs.json", "model-assets.json", "grid-design.json", "retain-noise-audit.json", "positive-grid-design.json"):
+            for name in ("positive-audit.json", "fact-positive-audit.json", "inputs.json", "model-assets.json", "grid-design.json", "retain-noise-audit.json", "positive-grid-design.json", "retain-insertion-audit.json", "insertion-grid-design.json", "handoff.json", "handoff-state.json"):
                 path = campaign / name
                 if path.exists():
                     export.read(path, prefix + "/" + name)
@@ -179,6 +179,8 @@ def collect(campaigns, output, *, include_predictions=None):
                     retain_negative_views=options.get("specified_negative_views", 1),
                     retain_noise_probability=options.get("specified_noise_probability", 0),
                     retain_noise_policy=options.get("specified_noise_policy", "none"),
+                    retain_noise_kind=options.get("specified_noise_kind", "replacement" if options.get("specified_noise_probability", 0) else "none"),
+                    retain_insertion_mode=options.get("specified_insertion_mode", "none"),
                     retain_negative_source=options.get("specified_negative_source", "legacy_positive_view"),
                     retain_construction=options.get("specified_positive"),
                     config_hash=task["config_hash"]))

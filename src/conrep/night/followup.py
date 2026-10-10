@@ -12,7 +12,7 @@ from .io import read, write, file_sha, sha, training_identity
 from .positives import audit, fact_positive_audit, fact_fields
 
 NAME = "0390-conrep-followup-v1"
-PROFILES = ("original", "llama-ms", "mixed-grid", "positive-grid")
+PROFILES = ("original", "llama-ms", "mixed-grid", "positive-grid", "insertion-grid")
 # Seven new cells per rank; the eighth (B16/W5/P1) is historical J/M.
 # Start with the largest new batch/view shape so each Gemma worker's GPU
 # save/resume smoke exercises that shape before running full experiments.
@@ -32,6 +32,9 @@ CHANGES = {
 def specs(profile="original"):
     if profile not in PROFILES:
         raise ValueError(f"Unknown follow-up profile: {profile}")
+    if profile == "insertion-grid":
+        from .insertion_grid import specs as insertion_specs
+        return insertion_specs()
     if profile == "positive-grid":
         from .positive_grid import specs as positive_specs
         return positive_specs()
@@ -75,7 +78,7 @@ def specs(profile="original"):
 
 
 def apply_variant(base, variant, seed, output):
-    grid = re.fullmatch(r"G(64|256)B(16|32|64)W(1|2|5)P(1|2|4|8)", variant)
+    grid = re.fullmatch(r"G(64|256)B(16|32|64)W(1|2|5)P(1|2|3|4|8)", variant)
     if grid:
         rank, batch, weight, views = map(int, grid.groups())
         cfg = apply_variant(base, "J" if rank == 64 else "M", seed, output)
@@ -117,6 +120,9 @@ def diagnostic_rows(rows, group, count):
 
 
 def prepare(args):
+    if getattr(args, "profile", "original") == "insertion-grid":
+        from .insertion_grid import prepare as prepare_insertion
+        return prepare_insertion(args)
     if getattr(args, "profile", "original") == "positive-grid":
         from .positive_grid import prepare as prepare_positive
         return prepare_positive(args)
