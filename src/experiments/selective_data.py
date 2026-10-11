@@ -19,8 +19,10 @@ def write_rows(path, rows):
     path.write_text(''.join(__import__('json').dumps(r,ensure_ascii=False,allow_nan=False)+'\n' for r in rows))
 
 def rows(path):
-    import json
-    return [json.loads(s) for s in Path(path).read_text().splitlines() if s.strip()]
+    # Use the evaluator's reader: str.splitlines also splits U+0085/U+2028/U+2029
+    # inside otherwise valid JSON strings (e.g. MMLU question text).
+    from .config import read_rows
+    return read_rows(path)
 
 def normalized_facts(facts):
     out={}

@@ -98,6 +98,51 @@ python -I "$sel_campaign/code/scripts/abci/0390_selective.py" arm --campaign "$s
 `arm` is idempotent. It starts a detached supervisor; it does not promise immediate
 PBS allocation. The scheduler decides when a submitted job actually starts.
 
+## Repair the initial MMLU reference reader failure
+
+The first deployment's two SFT references completed validation but failed during
+test MMLU overlap checking with `JSONDecodeError: Unterminated string`.
+The selective JSONL reader used `str.splitlines()`, which also splits Unicode
+U+0085/U+2028/U+2029 inside JSON strings. It now delegates to the same `read_rows`
+function that the frozen MMLU evaluator uses. Genuine malformed data and overlap
+are still errors; no question, answer, split, parser or generation setting changes.
+
+For a campaign blocked at the two reference tasks, run the following once. The
+repair refuses active selective allocations or any already-started downstream
+task. It verifies the old source and inputs, checks both MMLU sets without a GPU,
+and only permits the exact reviewed reader edit. It saves before/after files in
+`repairs/mmlu-reader-v1`, updates source/config/training provenance, and preserves
+the original state and every prediction byte. The evaluation implementation and
+its signature do not change, so validated reference partitions are reused and
+test resumes from cached generations. No validation marker is synthesized.
+An interrupted repair can be rerun from the same command.
+
+```bash
+(
+set -euo pipefail
+cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
+source local.env
+source "$CONREP_ENV/bin/activate"
+sel_campaign="$PWD/results/validated_v2/0390/selective-extensive-20261011"
+git fetch origin codex/0390-selective-training-20261011
+sel_fix_ref="$(git rev-parse FETCH_HEAD)"
+sel_fix_dir="$(mktemp -d /tmp/0390_selective_fix.XXXXXX)"
+git show "${sel_fix_ref}:scripts/abci/0390_repair_selective_mmlu.py" > "$sel_fix_dir/repair.py"
+python -I "$sel_fix_dir/repair.py" \
+  --root "$PWD" --campaign "$sel_campaign" --ref "$sel_fix_ref"
+python -I "$sel_campaign/code/scripts/abci/0390_selective.py" resume \
+  --campaign "$sel_campaign" --retry-failed
+python -I "$sel_campaign/code/scripts/abci/0390_selective.py" status \
+  --campaign "$sel_campaign"
+qstat
+)
+```
+
+After this repair, use the frozen `status`/`resume`/`export` entry points below;
+do not rerun the initial bootstrap, whose original provenance deliberately differs.
+The Qwen campaign is unaffected. An empty `qstat` does not establish SFT success;
+inspect its own final state and PBS history independently.
+
 ## Status, resume and export
 
 Each block is independently copyable.
