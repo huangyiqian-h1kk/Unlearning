@@ -80,6 +80,57 @@ q3_entry="$q3_campaign/code/scripts/abci/0390_qwen3_rich.py"
 不会同时启动另一个Qwen训练。初次base评测只使用一张GPU，随后释放模型并进行8卡SFT。
 不自动清理旧Gemma/Llama、父campaign或历史SFT权重。
 
+## 修复首次 prepare 的 Parent configuration changed
+
+初版 `88b73509` 错将父campaign的文件字节SHA256与解析后JSON的SHA256比较，
+导致未修改的配置也被拒绝。修复后使用父campaign一致的 `file_sha`，保留严格校验。
+新增测试使用父campaign实际的缩进JSON写入方式；配置内容、格式字节或输入改动仍被拒绝。
+
+如果首次启动停在此异常，环境安装和模型下载已经完成，尚未生成Qwen plan或提交job。
+以下命令只归档这个尚未准备完成的目录，然后重建冻结代码并继续prepare/start。
+原环境、模型、父campaign和评测数据均复用；后续状态/续跑/导出路径不变。
+若已有plan、state、训练或调度文件，归档步骤拒绝执行；不能用它重置已开始的实验。
+
+```bash
+(
+set -euo pipefail
+cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
+source local.env
+q3_python="$(dirname "$CONREP_ENV")/conrep-qwen3-py311-cu124/bin/python"
+q3_base="$PWD/results/validated_v2/0390"
+q3_campaign="$q3_base/qwen3-4b-rich-sft-20261011"
+q3_model="$CONREP_MODEL_ROOT/Qwen3-4B-Instruct-2507"
+q3_boot="$(mktemp -d /tmp/0390_qwen3_fix.XXXXXX)"
+
+git fetch origin codex/0390-qwen3-rich-sft-20261011
+q3_ref="$(git rev-parse FETCH_HEAD)"
+git show "${q3_ref}:scripts/abci/0390_prepare_qwen3_rich.py" > "$q3_boot/prepare.py"
+
+"$q3_python" -I - "$q3_campaign" "$q3_ref" <<'PY'
+import json, pathlib, sys, uuid
+p = pathlib.Path(sys.argv[1])
+if p.exists():
+    boot = json.loads((p / "PREPARING.json").read_text())
+    if boot["ref"] != sys.argv[2]:
+        allowed = {"prepare.lock", "PREPARING.json", "code", "code-files.json"}
+        extra = {x.name for x in p.iterdir()} - allowed
+        if extra:
+            raise SystemExit(f"Refusing to archive a campaign with runtime files: {sorted(extra)}")
+        backup = p.with_name(p.name + ".before-hash-fix-" + uuid.uuid4().hex[:8])
+        p.rename(backup)
+        print(f"Preserved failed preparation: {backup}")
+PY
+
+"$q3_python" -I "$q3_boot/prepare.py" --root "$PWD" --ref "$q3_ref" \
+  --parent "$q3_base/conrep-llama-positive-completion-20261010" \
+  --campaign "$q3_campaign"
+q3_entry="$q3_campaign/code/scripts/abci/0390_qwen3_rich.py"
+"$q3_python" -I "$q3_entry" prepare --campaign "$q3_campaign" --model-dir "$q3_model"
+"$q3_python" -I "$q3_entry" start --campaign "$q3_campaign"
+"$q3_python" -I "$q3_entry" status --campaign "$q3_campaign"
+)
+```
+
 ## 状态、续跑、停止
 
 查看状态；`logs/supervisor.log`记录队列等待/恢复，`logs/<PBS_JOBID>/console.log`

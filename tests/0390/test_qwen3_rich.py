@@ -17,6 +17,55 @@ def write(path,value):
     path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(value))
 
 
+@pytest.fixture
+def frozen_parent(tmp_path):
+    parent = tmp_path / "parent"
+    config = parent / "configs/llama8b.json"
+    original = dict(model={"name_or_path": "llama8b"},
+                    data={"injection_scope": "all_structured"},
+                    evaluation={"scoring": "pmc-ia-v5"})
+    # Match llama_positive_completion.prepare: durable, indented JSON followed
+    # by a newline, then a byte-level file hash in plan.json.
+    q.write(config, original)
+    data = parent / "frozen-input.json"
+    q.write(data, {"version": 5})
+    q.write(parent / "inputs.json", {str(data): q.file_sha(data)})
+    q.write(parent / "plan.json", {"tasks": [dict(model="llama8b",
+            config=str(config), config_hash=q.file_sha(config))]})
+    return parent, config, data, original
+
+
+def test_parent_config_accepts_existing_campaign_file_hash(frozen_parent):
+    parent, config, _, original = frozen_parent
+    assert q.file_sha(config) != q.sha(q.read(config))  # reproduces old failure
+    assert q.parent_config(parent) == original
+    assert q.parent_config(parent) == original
+
+
+@pytest.mark.parametrize("damage", ["value", "formatting", "semantic_hash"])
+def test_parent_config_preserves_strict_file_integrity(frozen_parent, damage):
+    parent, config, _, original = frozen_parent
+    if damage == "value":
+        original["model"]["name_or_path"] = "changed"
+        q.write(config, original)
+    elif damage == "formatting":
+        config.write_text(config.read_text() + "\n")
+        assert q.read(config) == original
+    else:
+        plan = q.read(parent / "plan.json")
+        plan["tasks"][0]["config_hash"] = q.sha(original)
+        q.write(parent / "plan.json", plan)
+    with pytest.raises(ValueError, match="Parent configuration changed:.*expected file SHA256"):
+        q.parent_config(parent)
+
+
+def test_parent_config_still_rejects_changed_inputs(frozen_parent):
+    parent, _, data, _ = frozen_parent
+    q.write(data, {"version": 6})
+    with pytest.raises(ValueError, match="Parent input changed"):
+        q.parent_config(parent)
+
+
 def checkpoint(path,step=50,world=8):
     path.mkdir(parents=True)
     write(path/"config.json",{});(path/"model.safetensors").write_bytes(b"weights")

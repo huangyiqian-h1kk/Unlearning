@@ -131,6 +131,22 @@ def audit_data(cfg, tokenizer):
                 general_text_mixture=0)
 
 
+def parent_config(parent):
+    parent = Path(parent)
+    parent_plan = read(parent / "plan.json")
+    task = next(t for t in parent_plan["tasks"] if t["model"] == "llama8b")
+    # Parent campaigns record file_sha(path), including indentation/newlines.
+    # sha(read(path)) hashes a different serialization even for unchanged files.
+    actual = file_sha(task["config"])
+    if actual != task["config_hash"]:
+        raise ValueError(f"Parent configuration changed: {task['config']} "
+                         f"(expected file SHA256 {task['config_hash']}, got {actual})")
+    original = read(task["config"])
+    for name, expected in read(parent / "inputs.json").items():
+        if file_sha(name) != expected: raise ValueError(f"Parent input changed: {name}")
+    return original
+
+
 def prepare(campaign, model_dir):
     from transformers import AutoConfig, AutoTokenizer
     from .validation_v5 import protocol_metadata, checked_rows, MCQ
@@ -141,12 +157,7 @@ def prepare(campaign, model_dir):
         if Path(cfg["model"]["name_or_path"]) != Path(model_dir).resolve(): raise ValueError("Model changed")
         print("Preparation verified; use start/status."); return plan
     profile = read(campaign / "code/configs/0390/qwen3_4b_rich_sft.json")
-    parent_plan = read(parent / "plan.json")
-    task = next(t for t in parent_plan["tasks"] if t["model"] == "llama8b")
-    original = read(task["config"])
-    if sha(original) != task["config_hash"]: raise ValueError("Parent configuration changed")
-    for name, expected in read(parent / "inputs.json").items():
-        if file_sha(name) != expected: raise ValueError(f"Parent input changed: {name}")
+    original = parent_config(parent)
     cfg = {k: copy.deepcopy(original[k]) for k in ("model","data","evaluation")}
     cfg["run"] = dict(seed=profile["seed"], output_dir=str(campaign / "sft"))
     cfg["sft"] = profile["sft"]
