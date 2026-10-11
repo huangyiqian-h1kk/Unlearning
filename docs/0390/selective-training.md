@@ -17,14 +17,21 @@ change the environment, or modify the running Qwen/SFT campaign.
 - Every selective worker requests one `rt_HF` node, eight GPUs, 12 hours,
   project `gcg51557`, queue `R9920261000`. Workers serially claim experiments and
   use the same allocation for training, calibration, and per-GPU evaluation.
-- Fixed historical recipes come first: 180 main trainings, then 116 seed/request/
-  mechanism trainings. Only when their training **and evaluation** are complete
+- Fixed historical recipes come first: 180 main trainings have priority over the
+  116 seed/request/mechanism trainings, with ready work filling idle workers.
+  Only when their training **and evaluation** are complete
   are grids appended: 32 learning-rate, six forget-weight, four retain-LM runs.
   Total: 338 trainings, plus shared SFT evaluation and up to two historical-weight
   C0 bridges. These are not 338 simultaneous PBS jobs.
 - A failed baseline does not block other fixed experiments. It remains visibly
   failed and prevents opening the grid gate. Plain `G256B32W2P4` is excluded;
   the previously agreed `P4C70V4IB2N20` insertion candidate remains.
+- Reference evaluation and fixed training may run concurrently. Within fixed work,
+  stages 0/5/10/20/30/40 are priorities rather than global barriers. A finished
+  training whose model's reference is incomplete stays `pending` with
+  `waiting_for_reference=true`; its weights are kept and the worker takes another
+  task. When that reference completes, evaluation resumes without retraining.
+  Failed references block new work for that model until explicitly repaired.
 
 ## Training and evaluation
 
@@ -153,6 +160,53 @@ do not rerun the initial bootstrap, whose original provenance deliberately diffe
 The Qwen campaign is unaffected. An empty `qstat` does not establish SFT success;
 inspect its own final state and PBS history independently.
 
+## Upgrade a running campaign to dependency scheduling
+
+The first deployment admitted only the two model-reference jobs, and then only
+the two historical bridge evaluations, even after SFT released the third slot.
+This update removes that unintended fixed-stage barrier. It uses the same shared
+account lock, three-job/three-node limit, queue, walltime, and recovery policy.
+
+The upgrade freezes a separate controller under `controllers/`. It does not edit
+the original frozen code, scientific configs, training identities, checkpoints,
+or evaluation caches. Every file outside the two dispatch modules must match the
+original source manifest; the calibration/smoke/training block must also have an
+identical AST. The original scientific source hash and the controller hash are
+recorded separately in `plan.json`.
+
+The old supervisor exits at its next poll via a temporary campaign handoff state.
+No STOP signal or qdel is sent to workers. Current children finish their work;
+queued/running old workers remain accounted for and can share the task queue with
+the new controller. New allocations use the new worker entry. A task that finishes
+during handoff is retained, never reset to pending. The handoff may take about one
+poll interval (30 seconds); the script waits for it and starts the new supervisor.
+
+```bash
+(
+set -euo pipefail
+cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
+source local.env
+source "$CONREP_ENV/bin/activate"
+sel_campaign="$PWD/results/validated_v2/0390/selective-extensive-20261011"
+git fetch origin codex/0390-selective-training-20261011
+sel_sched_ref="$(git rev-parse FETCH_HEAD)"
+sel_sched_dir="$(mktemp -d /tmp/0390_selective_scheduler.XXXXXX)"
+git show "${sel_sched_ref}:scripts/abci/0390_upgrade_selective_scheduler.py" > "$sel_sched_dir/upgrade.py"
+python -I "$sel_sched_dir/upgrade.py" \
+  --root "$PWD" --campaign "$sel_campaign" --ref "$sel_sched_ref"
+sel_entry="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["entry"])' "$sel_campaign/plan.json")"
+python -I "$sel_entry" status --campaign "$sel_campaign"
+qstat
+)
+```
+
+With two selective allocations and a completed SFT campaign, the next dispatch tick
+admits the third allocation without waiting for the references or historical bridges.
+Actual start time still belongs to PBS. `dispatch.policy` should be
+`selective-dependencies-v2`; status also reports ready work, reference status,
+waiting evaluations, account nodes and SFT peer reservations. Repeating the same
+upgrade reuses the controller and never duplicates submissions.
+
 ## Status, resume and export
 
 Each block is independently copyable.
@@ -164,7 +218,8 @@ cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
 source local.env
 source "$CONREP_ENV/bin/activate"
 sel_campaign="$PWD/results/validated_v2/0390/selective-extensive-20261011"
-python -I "$sel_campaign/code/scripts/abci/0390_selective.py" status --campaign "$sel_campaign"
+sel_entry="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["entry"])' "$sel_campaign/plan.json")"
+python -I "$sel_entry" status --campaign "$sel_campaign"
 qstat
 tail -n 30 "$sel_campaign/events.jsonl"
 )
@@ -177,7 +232,8 @@ cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
 source local.env
 source "$CONREP_ENV/bin/activate"
 sel_campaign="$PWD/results/validated_v2/0390/selective-extensive-20261011"
-python -I "$sel_campaign/code/scripts/abci/0390_selective.py" resume --campaign "$sel_campaign"
+sel_entry="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["entry"])' "$sel_campaign/plan.json")"
+python -I "$sel_entry" resume --campaign "$sel_campaign"
 )
 ```
 
@@ -194,7 +250,8 @@ cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
 source local.env
 source "$CONREP_ENV/bin/activate"
 sel_campaign="$PWD/results/validated_v2/0390/selective-extensive-20261011"
-python -I "$sel_campaign/code/scripts/abci/0390_selective.py" export \
+sel_entry="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["entry"])' "$sel_campaign/plan.json")"
+python -I "$sel_entry" export \
   --campaign "$sel_campaign" --include-predictions
 )
 ```
@@ -218,6 +275,13 @@ prediction recovery, and exact tiny-model interrupted/resumed weights for all se
 methods on Llama and Gemma architectures. Real rich data construction and the frozen-v5
 generation/scoring/reference integration were exercised locally. Existing campaign
 recovery tests also pass.
+
+Dependency dispatch regressions additionally cover the real 300-task topology,
+two existing queued allocations plus exactly one new allocation, reference/model
+dependencies, the full fixed/grid completion gate, and deferred evaluation without
+retraining. A concurrent handoff test preserves a task completed by an old process
+during supervisor replacement. Scheduler tests mock PBS and GPU work; they do not
+claim to measure ABCI runtime or eight-GPU performance.
 
 This environment has no ABCI/GPU access and disallows the sockets needed for a local
 multi-process Gloo test. Actual eight-GPU execution is therefore **not claimed as tested**.

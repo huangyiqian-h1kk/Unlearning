@@ -10,7 +10,7 @@ import shutil
 import subprocess
 
 OVERLAY=['src/experiments/selective_'+n+'.py' for n in
-         ('common','design','data','eval','train','calibrate','prepare','campaign','grid','export')]+[
+         ('common','design','data','eval','train','calibrate','prepare','campaign','scheduler','grid','export')]+[
  'scripts/abci/0390_selective.py','scripts/abci/0390_selective_worker.sh',
  'scripts/abci/0390_plan_selective_extensive.py','src/conrep/night/io.py','src/conrep/night/trainer.py']
 

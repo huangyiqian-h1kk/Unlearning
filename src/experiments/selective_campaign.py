@@ -14,6 +14,7 @@ import time
 from conrep.night import campaign as n
 from conrep.night.io import read,write,sha,file_sha,locked
 from .selective_common import training_identity,complete_checkpoint,latest_checkpoint
+from .selective_scheduler import ready,task_order,can_evaluate,record_result,describe,verify_controller,POLICY
 
 
 def verify(campaign,plan):
@@ -29,21 +30,7 @@ def verify(campaign,plan):
         p=Path(name)
         if p.stat().st_size!=expected['size'] or p.stat().st_mtime_ns!=expected['mtime_ns']:raise ValueError('SFT asset changed')
     if environment()!=plan['environment']:raise ValueError('Environment changed from prepare')
-
-
-def ready(plan,state):
-    eligible=[]
-    for task in plan['tasks']:
-        if not n.ready_to_claim(state['tasks'][task['id']]):continue
-        if task['kind']!='reference':
-            reference=state['tasks'][task['model']+'-sft-reference']
-            if reference['status']!='completed':continue
-        eligible.append(task)
-    # Stage barriers are based on pending/running work, excluding explicitly failed work.
-    phases=[t['stage'] for t in plan['tasks'] if state['tasks'][t['id']]['status'] in ('running','pending','paused','interrupted')
-            and (t['kind']=='reference' or state['tasks'][t['model']+'-sft-reference']['status']=='completed')]
-    phase=min(phases,default=999)
-    return [t for t in eligible if t['stage']==phase]
+    verify_controller(campaign,plan)
 
 
 def reserved_peer_slots(plan,active):
@@ -218,7 +205,7 @@ def worker(campaign,worker_id):
             break
         with n.state_transaction(campaign) as state:
             if state['status']!='running':break
-            choices=sorted(ready(plan,state),key=lambda t:(t['preferred_worker']!=worker_id,t['id']))
+            choices=sorted(ready(plan,state),key=lambda t:task_order(t,worker_id))
             if not choices:break
             task=choices[0];record=state['tasks'][task['id']]
             reserved=sum(t.get('storage',{}).get('additional_bytes',0) for t in plan['tasks'] if state['tasks'][t['id']]['status']=='running')
@@ -229,7 +216,7 @@ def worker(campaign,worker_id):
                 break
             record.update(status='running',worker=worker_id,job_id=os.environ['PBS_JOBID'],attempts=record['attempts']+1,claimed_at=time.time())
             record.setdefault('job_ids',[]).append(os.environ['PBS_JOBID']);state['workers'][str(worker_id)]['task']=task['id']
-        cfg=read(task['config']);root=Path(task['output']);root.mkdir(parents=True,exist_ok=True);begin=time.time();rc=0;error=None
+        cfg=read(task['config']);root=Path(task['output']);root.mkdir(parents=True,exist_ok=True);begin=time.time();rc=0;error=None;deferred=False
         pause=root/'PAUSE_TRAINING';pause.unlink(missing_ok=True)
         try:
             if task['kind']=='train' and not trained(task,cfg):
@@ -246,15 +233,21 @@ def worker(campaign,worker_id):
                     project=plan['project_root'],deadline=end,stop_file=pause,interrupted=interrupted,
                     pause_marker=Path(cfg['run']['output_dir'])/'PAUSED.json')
                 if rc==0 and not trained(task,cfg):raise RuntimeError('Trainer missing planned checkpoint outputs')
-            if rc==0:rc=evaluate_all(campaign,plan,task,cfg,end,interrupted)
+            if rc==0:
+                if can_evaluate(task,read(campaign/'state.json')):
+                    rc=evaluate_all(campaign,plan,task,cfg,end,interrupted)
+                elif task['kind']=='train' and trained(task,cfg):
+                    deferred=True
+                else:raise RuntimeError('Evaluation dependency missing without complete training')
         except Exception as exc:rc=75 if interrupted() or time.time()>end-200 else 1;error=repr(exc)
         with n.state_transaction(campaign) as state:
-            record=state['tasks'][task['id']];record.update(status=('interrupted' if stopped[0] else 'paused') if rc==75 else 'completed' if rc==0 else 'failed',
-                exit_code=rc,error=error,elapsed_seconds=record.get('elapsed_seconds',0)+time.time()-begin)
+            if stopped[0] and deferred:deferred=False;rc=75
+            record=state['tasks'][task['id']]
+            record_result(record,rc,deferred=deferred,stopped=stopped[0],error=error,elapsed=time.time()-begin)
             if rc==0:record['output_bytes']=sum(p.stat().st_size for p in root.rglob('*') if p.is_file())
             state['workers'][str(worker_id)]['task']=None
             if rc==0:state['workers'][str(worker_id)].update(bounded_failures=0,recovery_failures=0)
-        n.event(campaign,event='task-end',task=task['id'],exit_code=rc,error=error)
+        n.event(campaign,event='training-awaiting-reference' if deferred else 'task-end',task=task['id'],exit_code=rc,error=error)
         if rc==75:break
     with n.state_transaction(campaign) as state:state['workers'][str(worker_id)].update(status='interrupted' if stopped[0] else 'drained',ended_at=time.time())
     return 75 if stopped[0] else 0
@@ -263,7 +256,7 @@ def worker(campaign,worker_id):
 def watch(campaign):
     from .selective_grid import advance
     with locked(campaign/'supervisor.lock',blocking=False):
-        write(campaign/'supervisor.json',dict(pid=os.getpid(),started=time.time()))
+        write(campaign/'supervisor.json',dict(pid=os.getpid(),started=time.time(),policy=POLICY))
         while not (campaign/'STOP').exists():
             try:
                 plan=read(campaign/'plan.json');state=read(campaign/'state.json')
@@ -283,7 +276,8 @@ def watch(campaign):
                         tasks={k:v for k,v in state['tasks'].items() if v['status']!='completed'}));return
                 submit_available(campaign,plan)
                 write(campaign/'heartbeat.json',dict(time=time.time(),pid=os.getpid(),ready=len(ready(plan,state)),
-                    account_active=len(active),peer_reserved=reserved_peer_slots(plan,active)))
+                    account_active=len(active),peer_reserved=reserved_peer_slots(plan,active),
+                    dispatch=describe(plan,state)))
             except Exception as exc:n.event(campaign,event='supervisor-error',error=repr(exc))
             time.sleep(30)
 
@@ -338,8 +332,15 @@ def main():
         elapsed=sum(t.get('elapsed_seconds',0) for t in state['tasks'].values())
         measured=[t['elapsed_seconds'] for t in state['tasks'].values() if t['status']=='completed' and t.get('elapsed_seconds')]
         pending=sum(t['status']!='completed' for t in state['tasks'].values())
+        dispatch=describe(plan,state)
+        try:
+            active=n.active_jobs(n.qstat(),getpass.getuser())
+            dispatch.update(account_active=len(active),account_active_nodes=sum(n.allocated_nodes(j) for j in active.values()),
+                            peer_reserved=reserved_peer_slots(plan,active),free_slots=free_slots(plan,state,active))
+        except Exception as exc:dispatch['pbs_status_error']=repr(exc)
         print(json.dumps(dict(status=state['status'],tasks=dict(Counter(t['status'] for t in state['tasks'].values())),
             workers=state['workers'],grid_phase=plan['grid_phase'],heartbeat=read(campaign/'heartbeat.json') if (campaign/'heartbeat.json').exists() else None,
+            dispatch=dispatch,
             node_hours=elapsed/3600,remaining_node_hours_rough=(pending*sum(measured)/len(measured)/3600 if measured else None),
             eta_caveat='Rolling estimate; methods, calibration and target sizes differ; excludes ungenerated later grid',
             disk_free_bytes=shutil.disk_usage(campaign).free,storage_block=state.get('storage'),
