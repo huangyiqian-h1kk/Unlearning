@@ -209,6 +209,9 @@ def save_checkpoint(model, tokenizer, optimizer, scheduler, root, step, cfg,
         sampling.snapshot(temp, step)
     barrier()
     if rank == 0:
+        if cfg.get('selective'):
+            from experiments.selective_common import sync_directory
+            sync_directory(temp)
         files = {p.name: p.stat().st_size for p in temp.iterdir()
                  if p.is_file() and p.name != "COMPLETE.json"}
         write(temp / "COMPLETE.json", {"schema": "0390-conrep-night-v1", "step": step,
@@ -216,6 +219,10 @@ def save_checkpoint(model, tokenizer, optimizer, scheduler, root, step, cfg,
         if target.exists():
             target.rename(root / f".invalid-checkpoint-{step}-{time.time_ns()}")
         temp.rename(target)
+    barrier()
+    if rank == 0 and cfg.get("selective"):
+        from experiments.selective_common import trim_resume_states
+        trim_resume_states(root, cfg)
     barrier()
 
 

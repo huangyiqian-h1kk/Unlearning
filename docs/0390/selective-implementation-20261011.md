@@ -1,7 +1,7 @@
 # Selective unlearning extensive experiment：实施规格
 
 版本：2026-10-11，替代上一版讨论稿。本次交付是完整实施规格、CPU target构造脚本和实际审计结果。
-**GPU selective campaign仍待按此规格实现；未提交ABCI job。** 文中的待实现接口不是启动命令。
+**训练实现已发布；启动命令见 [selective-training.md](selective-training.md)。** 尚未在开发环境提交 ABCI job；实际 8 GPU 检查由启动流程执行。本文件保留实验设计和分析目标，具体已实现行为及验证边界以运行说明为准。
 
 ## 1. 范围、证据与命名
 
@@ -267,17 +267,17 @@ ReLearn旧augmentation不自动适用于新请求。固定teacher/checkpoint/tem
 补齐缺失fact；仍不足阻塞该task并输出缺口，不捏造replacement、跳过fact或填0分。
 其他任务继续，baseline表保留失败状态。校准/augmentation耗时单报，不能藏在训练时间之外。
 
-## 9. 工程落点与契约（待实现）
+## 9. 工程落点与契约
 
 新profile selective-extensive，冻结parent代码再叠加新文件；不修改运行中的Qwen/旧campaign snapshot。
-以下文件名是实施约定，不表示现在已存在或已可启动。
+实际入口为 `scripts/abci/0390_selective.py`；模块对应关系及调用方式见运行说明。
 
 | 模块 | 责任和输出 |
 | --- | --- |
 | src/experiments/selective_data.py | 从审计membership生成train/probes；泄漏/唯一答案/空集合审计 |
 | src/experiments/selective_eval.py | frozen typed parser、relation聚合、F/same/other与SFT配对、raw预测恢复 |
-| src/conrep/night/selective_grid.py | 分阶段DAG、独立training/eval identity、reuse ledger、晋级冻结 |
-| src/experiments/selective_baselines.py | native方法数据/校准/augmentation/resume适配及config diff |
+| src/experiments/selective_grid.py | 分阶段DAG、独立training/eval identity、reuse ledger、晋级冻结 |
+| src/experiments/selective_train.py | native方法数据/校准/augmentation/resume适配及config diff |
 | scripts/abci/0390_prepare_selective.py | 只读验证parent/model/data/env，生成manifest/token audit/smoke输入 |
 | scripts/abci/0390_selective.py | prepare/status/start/arm/resume/stop，共享限额与阶段释放 |
 | scripts/abci/0390_selective_worker.sh | 单8GPU节点，校准/训练后分配GPU评测，信号与退出码 |

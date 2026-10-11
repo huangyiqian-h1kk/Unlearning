@@ -48,6 +48,9 @@ def locked(path, *, blocking=True):
 
 
 def training_identity(cfg):
+    if cfg.get("selective"):
+        from experiments.selective_common import training_identity as selective_identity
+        return selective_identity(cfg)
     value = {**{key: cfg[key] for key in ("model", "data", "unlearn", "conrep", "lora")},
                 "seed": cfg["run"]["seed"],
                 "source_hash": cfg.get("night", {}).get("source_hash"),
@@ -62,6 +65,9 @@ def training_identity(cfg):
 def complete_checkpoint(path, *, identity=None, world=None):
     path = Path(path)
     try:
+        if (path / "delta.json").exists() or (path / "COMPLETE.json").exists() and read(path / "COMPLETE.json").get("resume_pruned"):
+            from experiments.selective_common import complete_checkpoint as selective_complete
+            return selective_complete(path, identity=identity, world=world)
         marker = read(path / "COMPLETE.json")
         if marker.get("schema") != "0390-conrep-night-v1":
             return False
