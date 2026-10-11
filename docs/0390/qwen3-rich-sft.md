@@ -9,6 +9,11 @@
 
 ## 固定配置
 
+依赖补充：PyArrow 固定为 `19.0.1`，与 NumPy `1.26.4` 配套。
+只执行 `pip check` 或核对 distribution metadata 不足以验证可导入性。
+新环境安装及 prepare/start/worker 均实际检查 Arrow/NumPy/Pandas/Datasets
+互操作，并导入 Trainer、PEFT 和 DeepSpeed，失败时不进入评测或训练。
+
 | 项目 | 配置 |
 | --- | --- |
 | 数据 | 现有 `pmc-rich-all-ia`，975 位患者、2,925 条结构化关系 |
@@ -130,6 +135,48 @@ q3_entry="$q3_campaign/code/scripts/abci/0390_qwen3_rich.py"
 "$q3_python" -I "$q3_entry" status --campaign "$q3_campaign"
 )
 ```
+
+## 修复 Trainer 导入时的 PyArrow / NumPy 冲突
+
+如果日志包含 `pyarrow requires NumPy 2.0 or newer, found 1.26.4`，
+说明初版依赖遗漏了 PyArrow pin；错误发生于 Trainer 导入，尚未进入 SFT 更新。
+保持 NumPy `1.26.4`，将 PyArrow 固定为 `19.0.1`。
+新版本 requirements、环境安装和 prepare/start/worker 都补充了真实训练导入检查。
+
+已准备的 `51569a25` campaign 使用下面的独立修复入口；不要重新运行 prepare
+或重建 `code/`。修复入口验证原有冻结代码/配置/输入，检查 PBS 最终记录和
+supervisor/worker 锁，只在没有活动作业时安装 PyArrow wheel（`--no-deps`）。
+随后执行 `pip check`、Arrow/Datasets 数据转换和 tiny Qwen3 的一次 CPU Trainer
+更新；其他包的版本必须保持一致，全部通过才调用原有 `resume`。
+这不是八卡 GPU/DeepSpeed 运行验证，实际 GPU 训练仍需查看重启后的日志。
+
+修复记录和前后依赖清单写入 `maintenance/pyarrow-*/`。原 `plan.json`、
+冻结代码、评测 marker 和逐题结果保留，原 worker 会验证并复用完整的 base 评测。
+该环境仅用于本 Qwen campaign；Gemma/Llama 的独立环境不在安装目标中。
+
+在 ABCI login 节点执行，输出直接写到终端，避免当前 shell 的 stdout 管道隐藏输出：
+
+```bash
+(
+set -euo pipefail
+cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
+q3_campaign="$PWD/results/validated_v2/0390/qwen3-4b-rich-sft-20261011"
+q3_python="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["python"])' "$q3_campaign/plan.json")"
+q3_boot="$(mktemp -d /tmp/0390_qwen3_arrow.XXXXXX)"
+git fetch origin codex/0390-qwen3-rich-sft-20261011
+q3_ref="$(git rev-parse FETCH_HEAD)"
+git show "${q3_ref}:scripts/abci/0390_repair_qwen3_arrow.py" > "$q3_boot/repair.py"
+"$q3_python" -I "$q3_boot/repair.py" --campaign "$q3_campaign" --resume
+"$q3_python" -I "$q3_campaign/code/scripts/abci/0390_qwen3_rich.py" status --campaign "$q3_campaign"
+qstat
+) > /dev/tty 2>&1
+```
+
+出现 `QWEN3_TRAINING_PREFLIGHT_PASS`、`REPAIR_VERIFIED=...` 和
+`Supervisor PID=...` 表示环境检查与恢复入口成功。调度器仍遵守账户最多三个
+活动 job/node 的限制，可能先等待空位，再提交新的 Qwen job ID。
+如果提示 PBS 作业或 supervisor 仍活动，等待其结束后重跑同一段；
+入口不会主动删除作业、清除 STOP 或在状态不明时改环境。
 
 ## 状态、续跑、停止
 

@@ -23,5 +23,6 @@ export TMPDIR="$CONREP_WORK_ROOT/tmp"
 "$QWEN3_ENV/bin/python" -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu124
 DS_BUILD_OPS=0 "$QWEN3_ENV/bin/python" -m pip install -r "$q3_source/environments/0390/requirements-qwen3.txt"
 "$QWEN3_ENV/bin/python" -m pip check
+"$QWEN3_ENV/bin/python" -I "$q3_source/scripts/abci/0390_repair_qwen3_arrow.py" --check
 "$QWEN3_ENV/bin/python" -m pip freeze > "$QWEN3_ENV/0390-environment-freeze.txt"
 printf 'QWEN3_ENV=%s\n' "$QWEN3_ENV"

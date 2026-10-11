@@ -11,7 +11,7 @@ import subprocess
 OVERLAY = ["src/experiments/qwen3_rich.py", "scripts/abci/0390_qwen3_rich.py",
            "scripts/abci/0390_qwen3_worker.sh", "scripts/abci/0390_setup_qwen3_env.sh",
            "environments/0390/requirements-qwen3.txt", "configs/0390/qwen3_4b_rich_sft.json",
-           "configs/0390/zero2.json"]
+           "configs/0390/zero2.json", "scripts/abci/0390_repair_qwen3_arrow.py"]
 
 
 def digest(path):

@@ -30,7 +30,13 @@ MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
 ENTRY = "scripts/abci/0390_qwen3_rich.py"
 REQUIRED = {"transformers": "4.51.3", "peft": "0.14.0", "accelerate": "1.3.0",
             "tokenizers": "0.21.1", "huggingface-hub": "0.30.2", "deepspeed": "0.16.2",
-            "numpy": "1.26.4", "safetensors": "0.5.2", "datasets": "3.2.0", "PyYAML": "6.0.2"}
+            "numpy": "1.26.4", "safetensors": "0.5.2", "datasets": "3.2.0", "PyYAML": "6.0.2",
+            "pyarrow": "19.0.1"}
+
+
+def training_preflight(campaign):
+    subprocess.run([sys.executable, "-I", str(Path(campaign) / "code/scripts/abci/0390_repair_qwen3_arrow.py"),
+                    "--check"], check=True)
 
 
 def rows(path):
@@ -171,6 +177,7 @@ def prepare(campaign, model_dir):
     if cfg["evaluation"].get("partition") != "validation" or cfg["evaluation"].get("limit"):
         raise ValueError("Use full validation split for SFT curves")
     versions = environment()
+    training_preflight(campaign)
     if AutoConfig.from_pretrained(model_dir,local_files_only=True).model_type != "qwen3": raise ValueError("Wrong model type")
     tokenizer = AutoTokenizer.from_pretrained(model_dir,local_files_only=True,use_fast=True)
     if not tokenizer.chat_template or not tokenizer.is_fast: raise ValueError("Native fast tokenizer required")
@@ -420,6 +427,7 @@ def worker(campaign):
     if not os.environ.get("PBS_JOBID") or torch.cuda.device_count()!=8: raise ValueError("Expected one PBS node with eight GPUs")
     with locked(campaign/"worker.lock",blocking=False):
         if (campaign/"STOP").exists(): return
+        training_preflight(campaign)
         p=child(plan,"evaluate","--name","base","--checkpoint",cfg["model"]["name_or_path"])
         if p.wait(): raise RuntimeError("Base evaluation failed; see console log")
         complete=campaign/"sft/TRAINING_COMPLETE.json"
@@ -505,6 +513,7 @@ def watch(campaign):
 
 def start(campaign,resume=False):
     plan,cfg=verify(campaign)
+    training_preflight(campaign)
     with locked(campaign/"start.lock"):
         try:
             with locked(campaign/"supervisor.lock",blocking=False): pass
