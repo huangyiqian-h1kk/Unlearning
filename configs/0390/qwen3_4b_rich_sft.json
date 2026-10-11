@@ -1,0 +1,21 @@
+{
+  "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+  "seed": 42,
+  "sft": {
+    "epochs": 5,
+    "learning_rate": 0.00001,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 4,
+    "max_length": 4096,
+    "warmup_ratio": 0.05,
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "save_steps": 50,
+    "logging_steps": 5
+  },
+  "milestones": [50, 100, 300, 600, 900, 1200, 1500],
+  "world_size": 8,
+  "reserve_bytes": 100000000000,
+  "mmlu_review_drop": 0.05,
+  "min_qa_gain": 0.05
+}
