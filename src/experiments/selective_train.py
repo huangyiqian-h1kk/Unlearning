@@ -13,6 +13,7 @@ from conrep.night.io import read, write
 from conrep.night.trainer import save_checkpoint as save_adapter
 from conrep.v2.model import load_model, load_tokenizer
 from .runtime import initialize, sync_gradients, barrier, local_batch_sizes
+from .retain_policy import active_groups, active_batch_config, sampling_seed
 from .data import sample_batch,chat_example,pad_examples
 from .selective_common import SCHEMA,training_identity,complete_checkpoint,load_delta,trim_resume_states
 from .selective_data import rows
@@ -67,7 +68,7 @@ def setup_lunar(cfg,device):
     fit=torch.nn.Linear(original.in_features,original.out_features,bias=False).to(device,dtype=torch.float32)
     fit.weight.data.copy_(original.weight.float())
     data={name:[dict(r,id=r['fact_id'],text=r['prompt']) for r in rows(cfg['data'][name+'_requests'])]
-          for name in ('forget','retain')}
+          for name in active_groups(cfg) if name != 'general'}
     data['general']=rows(Path(cfg['data']['prepared_dir'])/'general.jsonl')
     refusal=[r.get('instruction',r.get('prompt','')) for r in rows(options['refusal_file'])][:options['calibration_samples']]
     if not refusal or not all(refusal):raise ValueError('Missing LUNAR refusal calibration')
@@ -127,7 +128,7 @@ def run(cfg,resume=None,*,deadline=None,stop_file=None,stop_after_step=None):
                        if method=='falcon' and options['optimizer']=='sophia' else
                        torch.optim.AdamW(parameters,lr=train['learning_rate'],weight_decay=train['weight_decay']))
             scheduler=get_linear_schedule_with_warmup(optimizer,round(train['max_steps']*train['warmup_ratio']),train['max_steps'])
-            data={name:rows(Path(cfg['data']['prepared_dir'])/f'{name}.jsonl') for name in ('forget','retain','general')}
+            data={name:rows(Path(cfg['data']['prepared_dir'])/f'{name}.jsonl') for name in active_groups(cfg)}
         augment=None
         if method=='relearn':
             from collections import defaultdict
@@ -153,7 +154,7 @@ def run(cfg,resume=None,*,deadline=None,stop_file=None,stop_after_step=None):
         if rank==0:
             write(root/'identity.json',dict(identity=identity));write(root/'resolved_config.json',cfg)
             write(root/'lineage.json',dict(method=method,options=options,steps=train['max_steps'],world_size=world,identity=identity))
-        sizes=local_batch_sizes(train,world)
+        sizes=local_batch_sizes(active_batch_config(cfg),world)
         def should_stop():
             flag=torch.tensor(int(bool(stopped[0] or stop_file and Path(stop_file).exists() or deadline and time.time()>=deadline)),device=device)
             if world>1:torch.distributed.all_reduce(flag,op=torch.distributed.ReduceOp.MAX)
@@ -164,7 +165,7 @@ def run(cfg,resume=None,*,deadline=None,stop_file=None,stop_after_step=None):
                 return 75
             begin=time.monotonic();optimizer.zero_grad(set_to_none=True)
             if device.type=='cuda':torch.cuda.reset_peak_memory_stats(device)
-            groups={n:sample_batch(r,sizes[n],cfg['run']['seed']+i*10007,step,rank,world) for i,(n,r) in enumerate(data.items())}
+            groups={n:sample_batch(r,sizes[n],sampling_seed(cfg['run']['seed'],n),step,rank,world) for n,r in data.items()}
             sampling.observe(groups,step+1,0)
             tokens={name:sum(min(train['max_length'],len(tok.encode(r['text']))) for r in group) for name,group in groups.items()}
             if method=='lunar':
@@ -207,6 +208,7 @@ def run(cfg,resume=None,*,deadline=None,stop_file=None,stop_after_step=None):
             if world>1:torch.distributed.all_reduce(amounts);torch.distributed.all_reduce(peak,op=torch.distributed.ReduceOp.MAX)
             if rank==0:
                 record.update(step=step+1,grad_norm=float(norm),forget_draws=(step+1)*8,elapsed_seconds=time.monotonic()-begin,
+                    specified_retain_draws=(step+1)*train['batch_sizes']['retain'],
                     canonical_input_tokens=dict(zip(tokens,amounts.tolist())),cuda_peak_allocated_bytes_max_rank=int(peak),
                     resume_from=first,job_id=os.environ.get('PBS_JOBID'))
                 with (root/'train.jsonl').open('a') as stream:stream.write(json.dumps(record)+'\n')

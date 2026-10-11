@@ -58,6 +58,10 @@ def losses(method, model, reference, batches, options, control, falcon=None):
         ("retain", options["specified_weight"]),
         ("general", options["general_weight"]),
     ):
+        if name not in batches:
+            if name != 'retain' or weight != 0:
+                raise ValueError('Missing active baseline data group: ' + name)
+            continue
         batch = batches[name]
         if method in ("npo", "sago"):
             value = model(**batch, use_cache=False).loss

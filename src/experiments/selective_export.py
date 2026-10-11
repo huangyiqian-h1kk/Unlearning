@@ -10,6 +10,33 @@ from conrep.night.io import read,write,file_sha
 from .selective_eval import valid
 
 
+def training_costs(plan):
+    result=[]
+    for task in plan['tasks']:
+        if task['kind']!='train':continue
+        cfg=read(task['config']);root=Path(cfg['run']['output_dir']);path=root/'train.jsonl'
+        logs=[];partial_tail=False
+        if path.exists():
+            with path.open() as stream:
+                for line in stream:
+                    if not line.strip():continue
+                    try:logs.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        if not line.endswith('\n') and not stream.read():partial_tail=True;break
+                        raise
+        tokens=Counter()
+        for row in logs:tokens.update(row.get('canonical_input_tokens',{}))
+        calibration=Path(task['output'])/'calibration-time.json'
+        result.append(dict(experiment=task['id'],logged_step_attempts=len(logs),
+            partial_log_tail_ignored=partial_tail,
+            logged_step_seconds=sum(r.get('elapsed_seconds',0) for r in logs),
+            canonical_input_tokens=dict(tokens),
+            peak_allocated_bytes=max((r.get('cuda_peak_allocated_bytes_max_rank',0) for r in logs),default=0),
+            calibration_seconds=read(calibration)['seconds'] if calibration.exists() else None,
+            caveat='Includes logged retried steps; excludes setup/evaluation; canonical tokens are not FLOPs'))
+    return result
+
+
 def seed_statistics(records,plan):
     import statistics
     specs={t['id']:t for t in plan['tasks']};groups=defaultdict(dict)
@@ -92,6 +119,10 @@ def export(campaign,predictions=False):
     manifest=dict(schema='0390-selective-export-v1',campaign=str(campaign),source_hash=plan['source_hash'],
         states=dict(Counter(t['status'] for t in state['tasks'].values())),validated_rows=len(records),
         warnings=warnings,predictions_separate=predictions,weights_included=False)
+    if plan.get('companion_parent'):
+        manifest.update(ablation='T0 general-only',compute_matched=False,parent=plan['companion_parent'],
+            training_budget='same original F/G bytes and draws; specified retain removed',
+            token_caveat='canonical input tokens exclude repeated contrastive views; not FLOPs')
     buffer=io.StringIO();keys=sorted({k for r in records for k in r});writer=csv.DictWriter(buffer,fieldnames=keys);writer.writeheader();writer.writerows(records)
     summary=dest/(base+'-summary.zip')
     with zipfile.ZipFile(summary,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
@@ -99,9 +130,17 @@ def export(campaign,predictions=False):
         z.writestr('paired-t1-test.json',json.dumps(paired_intervals(plan),indent=2))
         z.writestr('seed-statistics.json',json.dumps(seed_statistics(records,plan),indent=2))
         z.writestr('matched-forgetting.json',json.dumps(matched,indent=2))
+        z.writestr('training-cost.json',json.dumps(training_costs(plan),indent=2))
         for name in ('plan.json','state.json','PREPARING.json','source.json','inputs.json','model-assets.json',
                      'reuse-ledger.json','tokenizer-audit.json','grid-selection-1.json','grid-selection-2.json','BLOCKED.json'):
             if (campaign/name).is_file():z.write(campaign/name,name)
+        for name in ('reference-sources.json','references-import.json','peer-attachment.json'):
+            if (campaign/name).is_file():z.write(campaign/name,name)
+        if plan.get('companion_parent'):
+            for p in (campaign/'references').glob('*/*/metrics.json'):
+                z.write(p,str(p.relative_to(campaign)))
+            for p in (campaign/'references').glob('*/*/*predictions.jsonl'):
+                prediction_files.append((str(p.relative_to(campaign)),p))
         for p in (campaign/'configs').glob('*.json'):z.write(p,str(p.relative_to(campaign)))
         for relative,report in reports:z.writestr(relative,json.dumps(report,ensure_ascii=False))
         for task in plan['tasks']:

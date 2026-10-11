@@ -13,6 +13,8 @@ OVERLAY=['src/experiments/selective_'+n+'.py' for n in
          ('common','design','data','eval','train','calibrate','prepare','campaign','scheduler','grid','export')]+[
  'scripts/abci/0390_selective.py','scripts/abci/0390_selective_worker.sh',
  'scripts/abci/0390_plan_selective_extensive.py','src/conrep/night/io.py','src/conrep/night/trainer.py']
+OVERLAY += ['src/experiments/retain_policy.py', 'src/experiments/baselines/trainer.py',
+            'src/experiments/baselines/prepare.py']
 
 def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 

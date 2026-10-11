@@ -20,6 +20,7 @@ from transformers import get_linear_schedule_with_warmup
 from experiments.config import read_rows
 from experiments.data import chat_example, pad_examples, sample_batch
 from experiments.runtime import initialize, sync_gradients, barrier, local_batch_sizes
+from experiments.retain_policy import general_only, active_groups, active_batch_config, sampling_seed
 from conrep.v2.model import embed, load_model, load_tokenizer, text_batch
 from conrep.v2.corruption import corrupt, safe_token_ids
 from conrep.v2.losses import gather, paired_loss
@@ -183,6 +184,45 @@ def losses(model, tokenizer, groups, cfg, corruption_rng, positive_rng):
     return total, metrics
 
 
+def general_only_losses(model, tokenizer, groups, cfg, corruption_rng, positive_rng):
+    """Same F/G objectives, with no specified anchors, positives or negatives."""
+    if not general_only(cfg) or set(groups) != {'forget', 'general'}:
+        raise ValueError('General-only loss requires exactly F and G')
+    device = next(model.parameters()).device
+    options = cfg['conrep']
+    encoded = {name: text_batch(tokenizer, [row['text'] for row in rows],
+                               options['max_length'], device) for name, rows in groups.items()}
+    f_batch, f_mask = encoded['forget']
+    controls = corrupt(f_batch['input_ids'], f_mask,
+                       safe_token_ids(tokenizer, model.get_input_embeddings().num_embeddings),
+                       views=options['views'], probability=options['corruption_rate'], generator=corruption_rng)
+    f = gather(embed(model, f_batch, f_mask))
+    g = gather(embed(model, *encoded['general']))
+    c = torch.stack([gather(embed(model, dict(f_batch, input_ids=ids), f_mask)) for ids in controls])
+    loss_f = forget_loss(f, c, g, temperature=options['temperature_forget'],
+                        retain_weight=options['retain_negative_weight'], margin=options['retain_margin'],
+                        inter_instance_negatives=options['inter_instance_negatives'], shared_target=options['shared_target'],
+                        negative_views=options.get('negative_views'),
+                        stop_gradient_controls=options.get('stop_gradient_controls', False),
+                        stop_gradient_retain=options.get('stop_gradient_retain', False))
+    total = options.get('forget_cl_weight', 1.) * loss_f
+    metrics = {'forget_cl': loss_f, 'forget_positive_cosine': (f[None] * c).sum(-1).mean().detach()}
+    if options['general_cl_weight']:
+        if cfg['lora']['lora_dropout'] <= 0:
+            raise ValueError('General positives require nonzero dropout')
+        second = gather(embed(model, *encoded['general']))
+        value = paired_loss(g, second, temperature=options['temperature_general'])
+        metrics['general_cl'] = value
+        total = total + options['general_cl_weight'] * value
+    if options['general_lm_weight']:
+        batch = pad_examples([chat_example(tokenizer, dict(row, kind='document'), options['max_length'])
+                              for row in groups['general']], tokenizer.pad_token_id, device)
+        value = model(**batch, use_cache=False).loss
+        metrics['general_lm'] = value
+        total = total + options['general_lm_weight'] * value
+    return total, metrics
+
+
 def save_checkpoint(model, tokenizer, optimizer, scheduler, root, step, cfg,
                     generators, rank, world, sampling=None):
     identity = training_identity(cfg)
@@ -255,8 +295,8 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
                                       weight_decay=options["weight_decay"])
         scheduler = get_linear_schedule_with_warmup(optimizer, round(steps * options["warmup_ratio"]), steps)
         data = {name: read_rows(Path(cfg["data"]["prepared_dir"]) / f"{name}.jsonl")
-                for name in ("forget", "retain", "general")}
-        sizes = local_batch_sizes(options, world)
+                for name in active_groups(cfg)}
+        sizes = local_batch_sizes(active_batch_config(cfg), world)
         generators = {"corruption": torch.Generator().manual_seed(cfg["run"]["seed"] + rank),
                       "positive": torch.Generator().manual_seed(cfg["run"]["seed"] + 10000019 + rank)}
         first_step = 0
@@ -320,17 +360,21 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
                 torch.cuda.reset_peak_memory_stats(device)
             optimizer.zero_grad(set_to_none=True)
             logged = {}
+            tokens = {name: 0 for name in data}
             accumulation = options["gradient_accumulation_steps"]
             for micro in range(accumulation):
                 draw = step * accumulation + micro
-                groups = {name: sample_batch(rows, sizes[name], cfg["run"]["seed"] + offset * 10007,
+                groups = {name: sample_batch(rows, sizes[name], sampling_seed(cfg["run"]["seed"], name),
                                              draw, rank, world)
-                          for offset, (name, rows) in enumerate(data.items())}
+                          for name, rows in data.items()}
+                for name, group in groups.items():
+                    tokens[name] += sum(min(options['max_length'], len(tokenizer.encode(row['text']))) for row in group)
                 if sampling is not None:
                     sampling.observe(groups, step + 1, micro)
                 context = torch.autocast("cuda", dtype=torch.bfloat16) if device.type == "cuda" and mc["dtype"] == "bfloat16" else nullcontext()
                 with context:
-                    loss, components = losses(model, tokenizer, groups, cfg,
+                    objective = general_only_losses if general_only(cfg) else losses
+                    loss, components = objective(model, tokenizer, groups, cfg,
                                                generators["corruption"], generators["positive"])
                 if not torch.isfinite(loss):
                     raise FloatingPointError(f"Non-finite loss at step {step + 1}")
@@ -352,12 +396,18 @@ def run(cfg, resume=None, *, deadline=None, stop_file=None, stop_after_step=None
                 peak[1] = torch.cuda.max_memory_reserved(device)
             if world > 1:
                 torch.distributed.all_reduce(peak, op=torch.distributed.ReduceOp.MAX)
+            amounts = torch.tensor(list(tokens.values()), device=device, dtype=torch.long)
+            if world > 1:
+                torch.distributed.all_reduce(amounts)
             if rank == 0:
                 record = dict(step=step + 1, **logged, grad_norm=float(norm),
                               learning_rate=scheduler.get_last_lr()[0], elapsed_seconds=time.monotonic() - begin,
                               cuda_peak_allocated_bytes_max_rank=int(peak[0]),
                               cuda_peak_reserved_bytes_max_rank=int(peak[1]),
                               job_id=os.environ.get("PBS_JOBID"), resume_from=first_step)
+                record.update(canonical_input_tokens=dict(zip(tokens, amounts.tolist())),
+                              forget_draws=(step + 1) * options['batch_sizes']['forget'] * accumulation,
+                              specified_retain_draws=(step + 1) * options['batch_sizes']['retain'] * accumulation)
                 with (root / "train.jsonl").open("a") as stream:
                     stream.write(json.dumps(record, allow_nan=False) + "\n")
                 print(json.dumps(record), flush=True)

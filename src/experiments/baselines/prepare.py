@@ -9,6 +9,7 @@ import torch
 from conrep.v2.model import load_model, load_tokenizer, text_batch
 from experiments.config import read_rows, write_json, write_rows
 from experiments.data import parse_injection
+from experiments.retain_policy import active_groups
 from experiments.validation import generate, scalar_answer
 from .common import activation, vendor_module, ROOT
 
@@ -73,11 +74,8 @@ def falcon_layers(cfg, output):
     )
     count = cfg["baseline"]["calibration_samples"]
     root = Path(cfg["data"]["prepared_dir"])
-    forget = read_rows(root / "forget.jsonl")[:count]
-    retain = read_rows(root / "retain.jsonl")[:count]
-    general = read_rows(root / "general.jsonl")[:count]
-    # Include both retain components in the layer decision; report each MI separately.
-    groups = {"forget": forget, "retain": retain, "general": general}
+    groups = {name: read_rows(root / (name + '.jsonl'))[:count] for name in active_groups(cfg)}
+    # Only supplied retain components may participate in calibration.
     vectors = {
         key: {layer: [] for layer in range(model.config.num_hidden_layers)}
         for key in groups
@@ -103,7 +101,9 @@ def falcon_layers(cfg, output):
     for layer in range(model.config.num_hidden_layers):
         entry = {}
         valid = True
-        for name in ("retain", "general"):
+        for name in groups:
+            if name == 'forget':
+                continue
             mi, hf, hr, hj = analyzer.calculate_mutual_information(
                 np.stack(vectors["forget"][layer]), np.stack(vectors[name][layer])
             )
@@ -116,7 +116,7 @@ def falcon_layers(cfg, output):
             valid &= all(np.isfinite(x) and x != 0 for x in (hf, hr, hj))
         entry["valid"] = bool(valid)
         entry["weighted_mi"] = (
-            cfg["baseline"]["specified_weight"] * entry["retain"]["mi"]
+            cfg["baseline"]["specified_weight"] * entry.get("retain", {}).get("mi", 0.)
             + cfg["baseline"]["general_weight"] * entry["general"]["mi"]
         )
         results[layer] = entry

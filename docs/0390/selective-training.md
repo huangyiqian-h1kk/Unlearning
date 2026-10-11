@@ -1,6 +1,9 @@
 # Selective unlearning: runnable campaign
 
 The training implementation is available on `codex/0390-selective-training-20261011`.
+
+The optional [T0 general-only supplement](t0-general-only.md) adds 14 separate
+trainings without changing this campaign's scientific snapshot or running jobs.
 It freezes the server's existing Llama positive-completion campaign and overlays the new
 controller, selective adapters, and checkpoint support. It does not check out a branch,
 change the environment, or modify the running Qwen/SFT campaign.
