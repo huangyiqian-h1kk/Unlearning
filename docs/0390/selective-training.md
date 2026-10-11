@@ -12,6 +12,8 @@ change the environment, or modify the running Qwen/SFT campaign.
 
 - Shared PBS submission lock; account-wide limit of three active jobs and three nodes.
   Queued, held, running, transitioning and exiting jobs all consume capacity.
+  The separately authorized T0-General-only 3+1 mode allows exactly one additional
+  companion allocation (four account jobs/nodes total); see its linked launch instructions.
 - With one SFT allocation, at most two selective allocations are submitted. After it
   finishes, another selective worker is admitted automatically when work is ready.
 - The existing Qwen campaign reserves one slot while armed or waiting for a retry.

@@ -31,18 +31,31 @@ to data locality or claim equal-compute superiority from this control. The expor
 includes `training-cost.json` with logged training-attempt costs, separate from
 evaluation and model-loading time.
 
-The parent is not modified scientifically: source, task configs, identities,
-checkpoints and running children remain intact. Only its operational `peers`
-list gains this supplement. While the parent is unfinished, the supplement runs
-one worker and reserves the next free account slot; the parent can use the other
-two. Existing three allocations are never interrupted to create that slot, so
-admission may wait until an existing allocation ends. Once the parent is complete,
-the supplement may use up to three workers. Shared submission locks, queued jobs,
-unseen/ambiguous qsub records and node counts enforce the total cap of three.
-Attachment waits for the existing supervisor to reload the peer reservation
-(normally two polling cycles); it cannot race a dispatch cycle holding the old plan.
-The existing 20-minute administrator-kill recovery policy is inherited.
-On completion, STOP or a blocked supplement, the reservation is released.
+The explicitly authorized temporary mode is **three parent allocations plus one
+supplement allocation, at most four jobs and four nodes across the account**.
+The supplement keeps one worker even after the parent completes. This is a finite
+14-training exception; the parent cannot use the fourth slot itself. Other account
+jobs still count. PBS may queue the fourth allocation according to availability.
+
+`0390_extra_node.py` installs a separately frozen supervisor and records the exact
+parent/companion pair and their scientific source hashes in both operational plans.
+It replaces the previous next-free-slot reservation, so the parent can still refill
+its third worker while the supplement is running. Shared submission locks, queued
+jobs, node counts and **both** controllers' unseen/ambiguous qsub records prevent
+duplicate admission. References must finish before the supplement starts training.
+
+Original sources, entries, worker shells, task configs, identities and checkpoints
+are not changed. Already queued scripts still invoke their original frozen code.
+The installer hands off supervisors using the existing handoff-state protocol,
+without qdel or signals to training children. A worker at a task boundary during
+handoff can finish its allocation normally; completed work remains recorded and
+the replacement supervisor replenishes capacity. Administrator-kill recovery keeps
+the existing 20-minute delay. Repeated activation preserves an already installed
+3+1 supervisor; failed tasks and manual cancellations are never silently reset.
+
+The original three-total mode remains available in the frozen scientific CLI,
+but **use the capacity entry below for arm/resume after activating 3+1**. Directly
+arming the legacy entry would restore its older three-total admission behavior.
 
 Launch (safe to repeat):
 
@@ -56,16 +69,24 @@ go_base="$PWD/results/validated_v2/0390"
 go_parent="$go_base/selective-extensive-20261011"
 go_campaign="$go_base/selective-t0-general-only-20261012"
 git fetch origin codex/0390-selective-training-20261011
-go_ref="$(git rev-parse FETCH_HEAD)"
+go_capacity_ref="$(git rev-parse FETCH_HEAD)"
+if [ -f "$go_campaign/plan.json" ]; then
+  go_capacity_ref="$(python -c 'import json,sys; p=json.load(open(sys.argv[1])); print(p.get("temporary_extra_node",{}).get("ref",sys.argv[2]))' "$go_campaign/plan.json" "$go_capacity_ref")"
+fi
+go_ref="967c711453c8b62057f54f858d7b6fe313dbea23"
 if [ -f "$go_campaign/PREPARING.json" ]; then
   go_ref="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["ref"])' "$go_campaign/PREPARING.json")"
 fi
 go_boot="$(mktemp -d /tmp/0390_general_only.XXXXXX)"
-git show "${go_ref}:scripts/abci/0390_prepare_t0_general_only.py" > "$go_boot/prepare.py"
-python -I "$go_boot/prepare.py" --root "$PWD" --parent "$go_parent" \
-  --campaign "$go_campaign" --ref "$go_ref"
-python -I "$go_campaign/code/scripts/abci/0390_t0_general_only.py" prepare --campaign "$go_campaign"
-python -I "$go_campaign/code/scripts/abci/0390_t0_general_only.py" arm --campaign "$go_campaign"
+if [ ! -f "$go_campaign/plan.json" ]; then
+  git show "${go_ref}:scripts/abci/0390_prepare_t0_general_only.py" > "$go_boot/prepare.py"
+  python -I "$go_boot/prepare.py" --root "$PWD" --parent "$go_parent" \
+    --campaign "$go_campaign" --ref "$go_ref"
+  python -I "$go_campaign/code/scripts/abci/0390_t0_general_only.py" prepare --campaign "$go_campaign"
+fi
+git show "${go_capacity_ref}:scripts/abci/0390_extra_node.py" > "$go_boot/extra_node.py"
+python -I "$go_boot/extra_node.py" activate --root "$PWD" --parent "$go_parent" \
+  --campaign "$go_campaign" --ref "$go_capacity_ref" --allow-four-nodes
 )
 ```
 
@@ -78,7 +99,9 @@ cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
 source local.env
 source "$CONREP_ENV/bin/activate"
 go_campaign="$PWD/results/validated_v2/0390/selective-t0-general-only-20261012"
-python -I "$go_campaign/code/scripts/abci/0390_t0_general_only.py" status --campaign "$go_campaign"
+go_entry="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["temporary_extra_node"]["entry"])' "$go_campaign/plan.json")"
+python -I "$go_entry" status --campaign "$PWD/results/validated_v2/0390/selective-extensive-20261011"
+python -I "$go_entry" status --campaign "$go_campaign"
 qstat
 )
 ```
@@ -92,7 +115,8 @@ cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
 source local.env
 source "$CONREP_ENV/bin/activate"
 go_campaign="$PWD/results/validated_v2/0390/selective-t0-general-only-20261012"
-python -I "$go_campaign/code/scripts/abci/0390_t0_general_only.py" resume \
+go_entry="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["temporary_extra_node"]["entry"])' "$go_campaign/plan.json")"
+python -I "$go_entry" resume \
   --campaign "$go_campaign" --retry-failed
 )
 ```
@@ -110,7 +134,8 @@ cd /groups/gcg51557/experiments/0390_rlsd/unlearning/Unlearning
 source local.env
 source "$CONREP_ENV/bin/activate"
 go_campaign="$PWD/results/validated_v2/0390/selective-t0-general-only-20261012"
-python -I "$go_campaign/code/scripts/abci/0390_t0_general_only.py" export \
+go_entry="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["temporary_extra_node"]["entry"])' "$go_campaign/plan.json")"
+python -I "$go_entry" export \
   --campaign "$go_campaign" --include-predictions
 )
 ```
@@ -122,6 +147,8 @@ the existing parent's optional two C0 bridges are not all 14 matched controls.
 Validation: tests include real tiny Llama/Gemma training and exact interrupted
 resume for all seven methods with no specified file, FALCON calibration without
 specified data, ConRep general-only negatives, stable F/G sampling, legacy ReLearn
-IDs, idempotent peer attachment and one-to-three admission. These CPU checks do
-not constitute an ABCI production run. Every model/method also runs the established
+IDs, and the original three-total mode. Capacity tests cover concurrent submission,
+qstat visibility lag, the parent refilling its third slot, one-only supplemental
+admission, account job/node limits and live handoff without changing worker entries.
+These CPU checks do not constitute an ABCI production run. Every model/method runs the established
 two-step 8-GPU interrupted/resumed smoke in its actual PBS allocation.
