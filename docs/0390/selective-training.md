@@ -107,6 +107,16 @@ U+0085/U+2028/U+2029 inside JSON strings. It now delegates to the same `read_row
 function that the frozen MMLU evaluator uses. Genuine malformed data and overlap
 are still errors; no question, answer, split, parser or generation setting changes.
 
+The correct reader was already present in `config.py` in the original 0390
+framework and used by both the frozen v5 MMLU scorer and its overlap check. The
+selective wrapper introduced a duplicate reader, causing this regression. The
+earlier tiny-model evaluation integration fixture disabled both MMLU paths, so
+that test did not validate the failing branch. Reader regressions now include
+Unicode separators and preserve rejection of genuinely overlapping partitions.
+The CPU design planner also imports the shared reader. This last change applies
+to future preparation; the stage-zero repair only changes `selective_data.py` in
+the existing frozen campaign and leaves its already-prepared data intact.
+
 For a campaign blocked at the two reference tasks, run the following once. The
 repair refuses active selective allocations or any already-started downstream
 task. It verifies the old source and inputs, checks both MMLU sets without a GPU,

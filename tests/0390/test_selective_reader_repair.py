@@ -11,6 +11,7 @@ import unittest
 from conrep.night.io import read, write
 from experiments.config import read_rows
 from experiments.selective_data import rows, write_rows
+from experiments.selective_design import read_rows as design_rows
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('reader_repair', ROOT / 'scripts/abci/0390_repair_selective_mmlu.py')
@@ -34,6 +35,7 @@ class ReaderRepairTests(unittest.TestCase):
                     [json.loads(s) for s in path.read_text().splitlines() if s.strip()]
                 self.assertEqual(rows(path), original)
                 self.assertEqual(rows(path), read_rows(path))
+                self.assertEqual(design_rows(path), original)
 
     def test_standard_jsonl_blank_lines_and_corruption(self):
         path = self.root / 'test.jsonl'

@@ -10,6 +10,7 @@ from collections import Counter, defaultdict
 import hashlib
 import json
 from pathlib import Path
+from .config import read_rows
 
 
 ATTRS = ("age", "gender", "diagnosis")
@@ -36,10 +37,6 @@ def digest(value):
 
 def file_sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
-
-
-def read_rows(path):
-    return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
 
 
 def relation(row):
