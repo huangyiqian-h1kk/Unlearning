@@ -18,6 +18,10 @@ CANDIDATES = {
     "gemma2_9b": ["G256B32W2P1C70V4N10", "G256B32W2P4C70V4IB2N20", "G256B32W2P2C70V4I1"],
     "llama8b": ["G256B32W2P1C50V8N00", "G256B32W2P1C70V8N00", "G256B32W2P4C70V4IB2N20"],
 }
+REPLICATION_CANDIDATES = {
+    "gemma2_9b": ["G256B32W2P1C70V4N10", "G256B32W2P4C70V4IB2N20"],
+    "llama8b": ["G256B32W2P1C50V8N00", "G256B32W2P4C70V4IB2N20"],
+}
 
 
 def require(condition, message):
@@ -167,15 +171,18 @@ def run_counts(baseline_count):
     b = baseline_count
     counts = {
         "bridge_and_t1_initial": 2 * 2 * (3 + b),
-        "t1_conrep_grid": 8 + 6 + 4,
-        "t1_baseline_grid": 2 * 2 * b,
-        "t2_through_t8": 7 * 2 * (2 + b),
+        "t2_through_t8_fixed_historical": 7 * 2 * (3 + b),
+        "e2_fixed_historical": 2 * (3 + b),
         "training_seeds_t1_t2_t3": 2 * 3 * 2 * (2 + b),
         "request_seeds_t1": 2 * 2 * (2 + 2),
-        "e2_fixed_entity": 2 * (2 + b),
         "coverage_c50_and_retain_cl_off": 2 + 2,
+        "t1_conrep_grid_after_selective": 8 + 6 + 4,
+        "t1_baseline_grid_after_selective": 2 * 2 * b,
     }
-    return {"by_stage": counts, "total_max_new_trainings": sum(counts.values()),
+    return {"by_stage": counts, "stage_order": list(counts),
+            "fixed_historical_main_trainings": 10 * 2 * (3 + b),
+            "pre_grid_trainings": sum(value for key, value in counts.items() if "grid_after" not in key),
+            "total_max_new_trainings": sum(counts.values()),
             "optional_b64_not_included": 2,
             "excludes": ["historical checkpoint reevaluation", "SFT reference evaluation", "calibration", "resume attempts"]}
 
@@ -219,6 +226,16 @@ def main():
     legacy = build_legacy(facts, old)
     requests = [build_request(facts, seed) for seed in args.request_seeds]
     audit = {"schema": SCHEMA, "scope": "CPU membership feasibility only; no training, tokenizer audit, or job submission",
+             "execution_policy": {
+                 "revision": "20261011-fixed-historical-first",
+                 "main_candidates": CANDIDATES,
+                 "replication_candidates": REPLICATION_CANDIDATES,
+                 "request_replication_baselines": ["sago", "lunar"],
+                 "main_config_selection": "frozen from historical experiments; no selective-task promotion",
+                 "grid_gate": "all required pre-grid training and evaluation complete; blocked/failed/pending are not complete",
+                 "grid_results_replace_main_results": False,
+                 "scheduler_implemented": False,
+             },
              "inputs_sha256": hashes, "facts": len(facts), "patients": 975,
              "p4_policy": "Exclude plain G256B32W2P4; retain P4C70V4IB2N20 insertion candidate",
              "legacy": {name: task["counts"] for name, task in legacy["tasks"].items()},

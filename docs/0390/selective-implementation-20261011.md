@@ -108,53 +108,69 @@ legacy导入记录旧identity、config SHA、checkpoint完整性和映射证明�
 旧baseline常止于120步：历史桥接使用common step120；不把ConRep125与baseline120称作严格预算对齐。
 旧120步结束的schedule不能直接延至125。新任务按新完整预算从头初始化所有方法。
 
-## 5. 阶段与训练数量
+## 5. 执行顺序：先完整固定配置selective，再grid
 
-六baseline：NPO、RMU、FALCON、LUNAR、SAGO、ReLearn。数字是新增训练数上限，按ledger再扣重复；
-复评、校准、SFT参考及resume尝试不算新增训练。
+2026-10-11顺序修订：此前“先T0/T1→grid→调参后扩展T2–T8”的顺序取消。
+**所有T0–T8及E2主实验均先使用第3节的既往三套配置/模型，超参数冻结；不得先在T1调参，
+也不得根据T1结果淘汰其中某一候选后才扩展其他任务。** 新任务只改F/R数据、按F暴露对应的步数和输出，
+仍独立从相同SFT起点开始。这样主结果直接回答既往最优配置能否迁移到更selective的任务。
 
-| 阶段 | 内容 | 六baseline全可用 | ReLearn全受阻，其余五个 |
+六baseline为NPO、RMU、FALCON、LUNAR、SAGO、ReLearn，同样先冻结历史resolved配置完成新任务。
+下表数字是新增训练上限，按ledger再扣重复；SFT参考/复评/校准/恢复尝试不计为新训练。
+
+| 顺序 | 内容 | 六baseline全可用 | ReLearn全受阻，其余五个 |
 | --- | --- | ---: | ---: |
-| A | T0-C100和T1；每模型3 ConRep+全部baseline，seed42 | 36 | 32 |
-| B | T1 ConRep grid18+baseline LR grid | 42 | 38 |
-| C | T2–T8；每模型冻结2 ConRep+全部baseline，seed42 | 112 | 98 |
-| D1 | T1/T2/T3补training seeds43/44，同C的方法 | 96 | 84 |
-| D2 | T1 request102/103；seed42；2 ConRep+2 baseline/模型 | 16 | 16 |
-| E | 固定实体E2同C方法；另C50及retain-CL-off各2 | 20 | 18 |
-| **合计** | 分阶段释放，不是同时提交这些PBS job | **322** | **286** |
+| A1 | T0-C100、T1；每模型既往3 ConRep+全部baseline，seed42 | 36 | 32 |
+| A2 | T2–T8；沿用相同3 ConRep+全部baseline，不先grid | 126 | 112 |
+| A3 | E2固定实体；同A2配置 | 18 | 16 |
+| B1 | T1/T2/T3补training seeds43/44；历史预定2 ConRep+全部baseline | 96 | 84 |
+| B2 | T1 request102/103；seed42；历史预定2 ConRep+SAGO/LUNAR | 16 | 16 |
+| B3 | C50及retain-CL-off机制补充，各模型各1条 | 4 | 4 |
+| C1 | 完成上述selective后，T1 ConRep grid | 18 | 18 |
+| C2 | T1 baseline LR grid | 24 | 20 |
+| **合计** | 先固定配置主实验，再鲁棒性/机制，最后grid | **338** | **302** |
 
-A完成再释放B，B冻结参数后释放C/D/E；先T2/T3与D1，再属性/规模曲线。
-主实验+seed302，机制/固定实体补充20。ReLearn部分受阻时数字介于两列之间，逐任务标明，失败不填0分。
+固定配置主实验A共180条（五baseline时160条）；补齐B后296条（五baseline264条），
+最后grid新增42条（五baseline38条）。相较旧322上限多16条，是T2–T8/E2保留历史第三候选，
+不再通过selective结果先筛成两条。不是增加新的超参数网格。
 
-### ConRep grid：18条
+A1→A2→A3→B→C为释放顺序；B内可按资源调度，但任何C类grid都不得抢在必需的A/B训练及评测
+完成之前。pending/failed/blocked不当作完成，grid保持waiting_for_fixed_setup_selective。
+ReLearn未通过augmentation的任务显式列出，不拖住其它A/B任务；五baseline列只是缺席情况下的
+预算，不代表调度器可默默跳过它并宣布全部完成。
 
-1. LR：每模型保留共同插入G2/L3，另从余下两条按T1 validation选模型专用候选。
-   各测5e-6/1e-5/2e-5，复用A的1e-5，新增8。直接检验Llama插入是否受LR影响。
-2. W：每模型从已选LR的两候选中选一条，测W=1/2/3/5，复用W2，新增6。
-3. Retain LM：沿同一候选及其选定W，指定LM权重=.5/1/2，复用1，新增4。
+### B：配置由历史预定，不依赖T1晋级
 
-另一候选保留其最佳LR。最终每模型冻结共同插入族一条及模型专用族一条；T2–T8不逐任务调参。
-C/V/P/插入剂量不再扩grid。若仍有明显R-same误伤，才考虑B32→B64各模型1条；这2条不计入322，
-不预先加入自动队列。纯P4也不重新加入机制对照。
-
-### Baseline grid：24条
-
-各模型各方法在T1调自己的原生LR×.5/1/2；1倍复用A，新增2×6×2=24。
-LUNAR调baseline.fit_learning_rate，其它方法调实际optimizer使用的字段；从server resolved配置
-继承原值，不把ConRep LR或rank强套给baseline。公开双方搜索预算及未调参结果，
-不能宣称结构搜索与baseline搜索预算完全相等。
-
-### 晋级、seed与机制规则
-
-仅用request101/training42/T1 validation的**10-pass终点**选择：先gap_same=R-same-any−F-any，
-同分按R-other-any、MMLU、稳定config ID。保存不可变promotion.json，包括所有分数和输入/评测hash。
-这个规则只决定后续配置；保留所有checkpoint和曲线，不另设未经约定的MMLU硬阈值。
-D2两个竞争baseline按同规则从成功baseline中选前二，在看到102/103前冻结；不足两个则该分支阻塞。
+seed重复固定Gemma G1+G2、Llama L1+L3，即历史各模型gap第一与共同插入配置；
+它们直接继承原LR/W/retain LM等设置，不用新selective结果选择或更新参数。
+request重复baseline固定SAGO与LUNAR，也不按新请求结果换方法。
+C50用初始共同插入配置，匹配A的C100与历史C0；retain-CL-off同样使用历史共同插入配置，
+仅指定CL置0，retain LM和general分支不变。E2和T7/T3均已在A用相同历史配置完成。
 training seed与request seed并非3×3全交叉，不宣称9个独立重复。
 
-C50使用初始共同插入配置，匹配A的C100与历史C0，避免混入调参效果。
-retain-CL-off用T1最终共同插入配置，指定CL置0，retain LM和general分支不变。
-E2使用最终两ConRep和各baseline、request101/training42，和T7/T3构成固定实体三点。
+### C1：主实验完成后的ConRep grid，新增18条
+
+1. LR：固定Gemma G1/G2、Llama L1/L3，各测5e-6/1e-5/2e-5；复用A的1e-5，新增8。
+   直接检验Llama插入是否受LR影响，不需要先从新任务三候选中筛选结构。
+2. W：每模型从C1已有LR结果中选一条候选及LR，测W=1/2/3/5，复用W2，新增6。
+3. Retain LM：沿同一候选及选定W，指定LM权重=.5/1/2，复用1，新增4。
+
+C/V/P/插入剂量不再扩grid。若仍有明显R-same误伤，才考虑B32→B64各模型1条；不计入338，
+不预先加入队列。纯P4不重新加入机制对照。grid所得配置只形成单独的T1调参补充结果，
+**不会覆盖A/B主结果，也不会自动触发调好参数后重跑整个selective矩阵。**
+
+### C2：baseline grid，新增24条
+
+各模型各方法在T1调自己的原生LR×.5/1/2，1倍复用A，新增2×6×2=24。
+LUNAR调baseline.fit_learning_rate，其它方法调实际optimizer使用字段；继承server resolved原值，
+不强套ConRep LR或rank。公开双方搜索预算，固定配置主结果与调参结果分表。
+
+### 仅C阶段适用的grid晋级规则
+
+只用request101/training42/T1 validation的10-pass终点：先gap_same=R-same-any−F-any，
+同分按R-other-any、MMLU、稳定config ID；保存promotion.json及输入/评测hash。
+此规则只用于C1后续W/retain-LM实验以及grid报告，不决定A/B配置，不选掉已有主结果。
+保留全部checkpoint和曲线，不另设未经约定的MMLU硬阈值，也不读取A/B的test分数做grid晋级。
 
 ## 6. 暴露预算、权重保存与容量
 
@@ -173,7 +189,7 @@ F600每60+750。SFT为step0参考。保存所有验证点的可重建权重和�
 optimizer/scheduler/每rank RNG/采样游标/scaler（如用）单独保存最近两个完整resume状态。
 COMPLETE只在临时目录fsync并原子提交后发布；不改不删旧campaign权重。
 
-当前145-run摘要不足以推算可靠总时长，不承诺一晚完成。322×13最多4186个训练checkpoint验证点，
+当前145-run摘要不足以推算可靠总时长，不承诺一晚完成。338×13最多4394个训练checkpoint验证点，
 另有复评/SFT。首批测实际速度与checkpoint大小后更新ETA与容量forecast；task启动前验证剩余容量
 可容纳该task并额外保留100GB。不足记blocked_storage，不自动删历史权重。
 
@@ -220,7 +236,8 @@ k=3单列整实体遗忘。gender仍有二元chance问题。跨模型可辅报�
 主图给全13点的F-any vs R-same/R-other及Pareto。matched-forgetting摘要预定F-any阈值
 0–100每5pp，只在validation实际checkpoint中选满足阈值且retain最高的点，然后报告同一权重的test。
 test未达到相同阈值要标明；无可比点N/A，不外推/假定单调。它与10-pass终点的配置晋级用途不同。
-冻结后的最终两ConRep和baseline在揭示test前列出端点/曲线checkpoint清单；grid落选配置不参与test调参。
+A/B的历史三ConRep主配置、两条seed重复配置和baseline在揭示test前列出端点/曲线checkpoint清单；
+C阶段grid结果单独报告，落选配置不参与test调参，不覆盖固定配置主结果。
 MMLU validation用于调参诊断，disjoint test用于最终报告，输入和direct-choice parser固定。
 
 按患者paired cluster bootstrap，固定seed、10000重采样，不把三种表达当独立样本。
@@ -283,8 +300,9 @@ state.json保存可变执行状态。experiment ID例如llama8b-T1-rq101-conrep-
   qstat失败不推断空闲，不中断已有job。worker串行领取任务，训练和评测在allocation内分时使用GPU。
 - 提前prepare并arm，supervisor自动等槽位接续，幂等避免重复job；处理qsub成功但qstat短时不可见。
   全campaign运行到任务结束，不把总工作误限成一个10h/12h窗口。
-- DAG：prepare→CPU审计→GPU smoke→SFT参考/校准→A→B→冻结→C/D/E。
-  ReLearn失败不拖住不依赖它的任务；若它影响某个晋级比较，该晋级须显式记录不可用而非填0分。
+- DAG：prepare→CPU审计→GPU smoke→SFT参考/校准→A1/A2/A3固定配置全部任务→B鲁棒性/机制→C grid。
+  grid是独立后续队列，需确认必需的A/B训练和评测全部完成；blocked/failed/pending不能解除门控。
+  ReLearn失败不拖住其它A/B任务，但其缺席必须显式报告，不能伪造完成状态。
 - 证实的管理侧中断/节点故障/walltime在20分钟后自动续跑；手工qdel不自动复活，未知失败blocked。
   每rank恢复自己的RNG，optimizer边界响应暂停，继续同一schedule/采样游标；恢复失败不静默从零重训。
   训练完但eval未完只补eval。COMPLETE与identity检查先于加载。
@@ -309,7 +327,7 @@ reuse ledger/校准审计/日志摘要。显式另导predictions.zip，按checkp
    DDP顺序及delta重建；不能用ConRep通过替代LUNAR/Sophia通过，ReLearn先有已审核素材。
 5. 调度测试覆盖Qwen占槽、qstat失败、重复arm、qsub暂不可见、管理终止/手工取消、仅eval待恢复；
    部分导出按hash可重建报表，预测独立增量。
-6. 全部关口通过后发布真实可复制的prepare/start/status/resume/export命令，释放A。
+6. 全部关口通过后发布真实可复制的prepare/start/status/resume/export命令，释放A1，然后按既往固定配置接续A2/A3；不先释放grid。
    CPU设计器成功不等于GPU campaign已完成实施。
 
 CPU审计器现已可运行，只需标准库、不提交job：
@@ -326,5 +344,5 @@ prepared须含injection_facts.jsonl、forget.jsonl、retain.jsonl；输出目录
 不是可直接交给trainer的数据目录。
 
 Qwen本轮仍先完成独立rich SFT/reference evaluation，通过注入和utility复核后再加入冻结关键任务，
-不乘进322。fact-level retain-only重训reference也未计入：必须清除case/note/dialogue/profile中的
+不乘进338。fact-level retain-only重训reference也未计入：必须清除case/note/dialogue/profile中的
 目标事实，不能把旧“排除整患者”的retain-only SFT冒充局部删除oracle。
