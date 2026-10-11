@@ -212,3 +212,14 @@ def test_validation_selection_preserves_terminal_and_empty_same(tmp_path):
     assert result['steps']==[10,20]
     assert all(x['step'] is None for x in result['choices'] if x['axis']=='retain_same')
     c.freeze_test_selection(task,cfg)
+
+
+def test_changed_calibration_cannot_be_resumed(tmp_path):
+    from experiments.selective_calibrate import valid
+    from conrep.night.io import file_sha
+    path=tmp_path/'layers.json';write(path,dict(selected_layer=1))
+    cfg=dict(baseline=dict(method='falcon',layer_selection=str(path)),selective=dict(calibration_identity='frozen'))
+    write(tmp_path/'CALIBRATED.json',dict(identity='frozen',sha256=file_sha(path)))
+    assert valid(cfg)
+    write(path,dict(selected_layer=2));assert not valid(cfg)
+    with pytest.raises(ValueError,match='changed frozen calibration'):run(cfg)

@@ -86,6 +86,9 @@ def setup_lunar(cfg,device):
 
 
 def run(cfg,resume=None,*,deadline=None,stop_file=None,stop_after_step=None):
+    if cfg.get('selective',{}).get('calibration_identity'):
+        from .selective_calibrate import valid
+        if not valid(cfg):raise ValueError('Missing or changed frozen calibration')
     if cfg['baseline']['method']=='conrep':
         from conrep.night.trainer import run as conrep_run
         return conrep_run(cfg,resume,deadline=deadline,stop_file=stop_file,stop_after_step=stop_after_step)

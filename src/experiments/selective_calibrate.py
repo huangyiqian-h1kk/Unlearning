@@ -26,6 +26,8 @@ def run(cfg):
     dest.parent.mkdir(parents=True,exist_ok=True)
     with locked(dest.parent/'calibration.lock'):
         if valid(cfg):return
+        if (dest.parent/'CALIBRATED.json').exists():
+            raise ValueError('Previously completed calibration changed; refusing to alter training material during resume')
         if method=='falcon':
             report=falcon_layers(cfg,dest)
             if report.get('selected_layer') is None:raise ValueError('No valid FALCON layer')
