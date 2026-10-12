@@ -2,6 +2,11 @@
 
 The training implementation is available on `codex/0390-selective-training-20261011`.
 
+The October 12 [evaluation repair](selective-evaluation-repair.md) adds binary
+gender-MCQ scoring to existing frozen campaigns and recovers affected evaluation
+without retraining. It also records bounded continuation of incomplete ReLearn
+preparation; completed calibration remains unchanged.
+
 The optional [T0 general-only supplement](t0-general-only.md) adds 14 separate
 trainings without changing this campaign's scientific snapshot or running jobs.
 It freezes the server's existing Llama positive-completion campaign and overlays the new

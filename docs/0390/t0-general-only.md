@@ -1,5 +1,9 @@
 # T0 general-only control
 
+For the October 12 binary-MCQ and incomplete ReLearn failures, use the
+[evaluation recovery instructions](selective-evaluation-repair.md). They preserve
+trained weights and the existing 3+1 capacity policy while repairing both campaigns.
+
 This supplement adds 14 trainings: Gemma and Llama, one frozen ConRep recipe per
 model and all six baselines (NPO, RMU, FALCON, LUNAR, SAGO, ReLearn), seed 42.
 ConRep inherits Gemma `G256B32W2P1C70V4N10` and Llama
